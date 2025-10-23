@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { cronogramas, InsertCronograma, InsertSimulation, InsertUser, simulations, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,66 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Simulações
+export async function createSimulation(simulation: InsertSimulation) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(simulations).values(simulation);
+  return result[0].insertId;
+}
+
+export async function getSimulationById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(simulations).where(eq(simulations.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getSimulationsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db.select().from(simulations).where(eq(simulations.userId, userId)).orderBy(desc(simulations.createdAt));
+}
+
+export async function updateSimulation(id: number, data: Partial<InsertSimulation>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(simulations).set(data).where(eq(simulations.id, id));
+}
+
+export async function deleteSimulation(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Deleta cronogramas associados
+  await db.delete(cronogramas).where(eq(cronogramas.simulationId, id));
+  // Deleta simulação
+  await db.delete(simulations).where(eq(simulations.id, id));
+}
+
+// Cronogramas
+export async function createCronogramas(items: InsertCronograma[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  if (items.length === 0) return;
+  await db.insert(cronogramas).values(items);
+}
+
+export async function getCronogramasBySimulationId(simulationId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db.select().from(cronogramas).where(eq(cronogramas.simulationId, simulationId)).orderBy(cronogramas.mes);
+}
+
+export async function deleteCronogramasBySimulationId(simulationId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(cronogramas).where(eq(cronogramas.simulationId, simulationId));
+}

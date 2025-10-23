@@ -25,4 +25,78 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Tabela de simulações de investimento
+ * Armazena os parâmetros e resultados de cada simulação
+ */
+export const simulations = mysqlTable("simulations", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Dados da oferta
+  descricaoOferta: text("descricaoOferta"),
+  valorTotalOferta: int("valorTotalOferta").notNull(), // em centavos
+  valorInvestido: int("valorInvestido").notNull(), // em centavos
+  dataInicio: varchar("dataInicio", { length: 10 }).notNull(), // YYYY-MM-DD
+  prazoMeses: int("prazoMeses").notNull(),
+  taxaJurosAa: int("taxaJurosAa").notNull(), // em centésimos de % (ex: 2400 = 24%)
+  convencaoCalendario: varchar("convencaoCalendario", { length: 20 }).notNull().default("civil/365"),
+  tipoCapitalizacao: varchar("tipoCapitalizacao", { length: 20 }).notNull().default("composta"),
+  
+  // Regras de pagamento
+  periodicidadeJuros: varchar("periodicidadeJuros", { length: 20 }).notNull().default("mensal"),
+  periodicidadeAmortizacao: varchar("periodicidadeAmortizacao", { length: 20 }).notNull().default("mensal"),
+  carenciaJurosMeses: int("carenciaJurosMeses").notNull().default(0),
+  carenciaPrincipalMeses: int("carenciaPrincipalMeses").notNull().default(0),
+  capitalizarJurosEmCarencia: int("capitalizarJurosEmCarencia").notNull().default(1), // boolean: 0 ou 1
+  amortizacaoMetodo: varchar("amortizacaoMetodo", { length: 20 }).notNull().default("PRICE"),
+  pagamentoMinimoValor: int("pagamentoMinimoValor"), // em centavos, nullable
+  
+  // Custos e taxas
+  taxaSetupFixaBrl: int("taxaSetupFixaBrl").notNull().default(0), // em centavos
+  feeSucessoPercentSobreCaptacao: int("feeSucessoPercentSobreCaptacao").notNull().default(0), // em centésimos de %
+  feeManutencaoMensalBrl: int("feeManutencaoMensalBrl").notNull().default(0), // em centavos
+  taxaTransacaoPercent: int("taxaTransacaoPercent").notNull().default(0), // em centésimos de %
+  aliquotaImpostoRendaPercent: int("aliquotaImpostoRendaPercent").notNull().default(0), // em centésimos de %
+  
+  // Outros
+  identificadorInvestidor: varchar("identificadorInvestidor", { length: 100 }),
+  moedaReferencia: varchar("moedaReferencia", { length: 10 }).notNull().default("BRL"),
+  
+  // Resultados calculados (armazenados para performance)
+  totalJurosPagos: int("totalJurosPagos").notNull().default(0), // em centavos
+  totalAmortizado: int("totalAmortizado").notNull().default(0), // em centavos
+  totalRecebido: int("totalRecebido").notNull().default(0), // em centavos
+  tirMensal: int("tirMensal"), // em centésimos de % (nullable)
+  tirAnual: int("tirAnual"), // em centésimos de % (nullable)
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Simulation = typeof simulations.$inferSelect;
+export type InsertSimulation = typeof simulations.$inferInsert;
+
+/**
+ * Tabela de cronograma mensal
+ * Armazena cada parcela do cronograma de uma simulação
+ */
+export const cronogramas = mysqlTable("cronogramas", {
+  id: int("id").autoincrement().primaryKey(),
+  simulationId: int("simulationId").notNull(),
+  
+  mes: int("mes").notNull(), // 1 a N
+  dataParcela: varchar("dataParcela", { length: 10 }).notNull(), // YYYY-MM-DD
+  saldoInicial: int("saldoInicial").notNull(), // em centavos
+  juros: int("juros").notNull(), // em centavos
+  amortizacao: int("amortizacao").notNull(), // em centavos
+  parcela: int("parcela").notNull(), // em centavos (juros + amortização + taxas)
+  custosFixos: int("custosFixos").notNull().default(0), // em centavos
+  saldoFinal: int("saldoFinal").notNull(), // em centavos
+  observacoes: text("observacoes"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Cronograma = typeof cronogramas.$inferSelect;
+export type InsertCronograma = typeof cronogramas.$inferInsert;
