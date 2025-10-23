@@ -230,10 +230,9 @@ describe("Motor de Cálculo Financeiro", () => {
     // Verifica fee de sucesso no último mês
     expect(resultado.cronograma[11].observacoes).toContain("Fee de sucesso");
 
-    // Total recebido deve considerar custos
-    const totalCustos = 500000 + (300000 * 12) + Math.round((10000000 * 500) / 10000);
+    // Total recebido pelo investidor = juros + principal (custos são do captador)
     expect(resultado.resumo.totalRecebido).toBe(
-      resultado.resumo.totalJurosPagos + resultado.resumo.totalAmortizado - totalCustos
+      resultado.resumo.totalJurosPagos + resultado.resumo.totalAmortizado
     );
   });
 

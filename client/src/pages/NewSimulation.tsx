@@ -34,10 +34,10 @@ export default function NewSimulation() {
     capitalizarJurosEmCarencia: true,
     amortizacaoMetodo: "PRICE" as const,
 
-    // Custos e taxas
-    taxaSetupFixaBrl: "500000", // R$ 5.000 em centavos
-    feeSucessoPercentSobreCaptacao: "500", // 5% em centésimos
-    feeManutencaoMensalBrl: "300000", // R$ 3.000 em centavos
+    // Custos e taxas (opcionais)
+    taxaSetupFixaBrl: "",
+    feeSucessoPercentSobreCaptacao: "",
+    feeManutencaoMensalBrl: "",
   });
 
   const createMutation = trpc.simulations.create.useMutation({
@@ -69,11 +69,11 @@ export default function NewSimulation() {
       carenciaPrincipalMeses: parseInt(formData.carenciaPrincipalMeses),
       capitalizarJurosEmCarencia: formData.capitalizarJurosEmCarencia,
       amortizacaoMetodo: formData.amortizacaoMetodo,
-      taxaSetupFixaBrl: parseInt(formData.taxaSetupFixaBrl),
-      feeSucessoPercentSobreCaptacao: parseInt(formData.feeSucessoPercentSobreCaptacao),
-      feeManutencaoMensalBrl: parseInt(formData.feeManutencaoMensalBrl),
-      taxaTransacaoPercent: 0,
-      aliquotaImpostoRendaPercent: 0,
+      taxaSetupFixaBrl: formData.taxaSetupFixaBrl ? parseInt(formData.taxaSetupFixaBrl) : undefined,
+      feeSucessoPercentSobreCaptacao: formData.feeSucessoPercentSobreCaptacao ? parseInt(formData.feeSucessoPercentSobreCaptacao) : undefined,
+      feeManutencaoMensalBrl: formData.feeManutencaoMensalBrl ? parseInt(formData.feeManutencaoMensalBrl) : undefined,
+      taxaTransacaoPercent: undefined,
+      aliquotaImpostoRendaPercent: undefined,
     });
   };
 
@@ -285,8 +285,8 @@ export default function NewSimulation() {
           {/* Custos e Taxas */}
           <Card>
             <CardHeader>
-              <CardTitle>Custos e Taxas</CardTitle>
-              <CardDescription>Defina taxas de setup, sucesso e manutenção</CardDescription>
+              <CardTitle>Custos e Taxas (Opcional)</CardTitle>
+              <CardDescription>Custos do captador - deixe em branco se não aplicável</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
@@ -296,11 +296,11 @@ export default function NewSimulation() {
                     id="taxaSetup"
                     type="number"
                     step="0.01"
-                    value={(parseInt(formData.taxaSetupFixaBrl) / 100).toFixed(2)}
+                    value={formData.taxaSetupFixaBrl ? (parseInt(formData.taxaSetupFixaBrl) / 100).toFixed(2) : ""}
                     onChange={(e) =>
-                      setFormData({ ...formData, taxaSetupFixaBrl: (parseFloat(e.target.value) * 100).toString() })
+                      setFormData({ ...formData, taxaSetupFixaBrl: e.target.value ? (parseFloat(e.target.value) * 100).toString() : "" })
                     }
-                    placeholder="5000.00"
+                    placeholder="0.00"
                   />
                 </div>
 
@@ -310,14 +310,14 @@ export default function NewSimulation() {
                     id="feeSucesso"
                     type="number"
                     step="0.01"
-                    value={(parseInt(formData.feeSucessoPercentSobreCaptacao) / 100).toFixed(2)}
+                    value={formData.feeSucessoPercentSobreCaptacao ? (parseInt(formData.feeSucessoPercentSobreCaptacao) / 100).toFixed(2) : ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        feeSucessoPercentSobreCaptacao: (parseFloat(e.target.value) * 100).toString(),
+                        feeSucessoPercentSobreCaptacao: e.target.value ? (parseFloat(e.target.value) * 100).toString() : "",
                       })
                     }
-                    placeholder="5.00"
+                    placeholder="0.00"
                   />
                 </div>
 
@@ -327,14 +327,14 @@ export default function NewSimulation() {
                     id="feeManutencao"
                     type="number"
                     step="0.01"
-                    value={(parseInt(formData.feeManutencaoMensalBrl) / 100).toFixed(2)}
+                    value={formData.feeManutencaoMensalBrl ? (parseInt(formData.feeManutencaoMensalBrl) / 100).toFixed(2) : ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        feeManutencaoMensalBrl: (parseFloat(e.target.value) * 100).toString(),
+                        feeManutencaoMensalBrl: e.target.value ? (parseFloat(e.target.value) * 100).toString() : "",
                       })
                     }
-                    placeholder="3000.00"
+                    placeholder="0.00"
                   />
                 </div>
               </div>

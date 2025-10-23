@@ -175,7 +175,9 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
 
   let totalJurosPagos = 0;
   let totalAmortizado = 0;
-  let totalCustos = input.taxaSetupFixaBrl; // Taxa de setup no início
+  
+  // Custos são do captador, não afetam o fluxo do investidor
+  // Mantemos apenas para referência no relatório
 
   // Gera cronograma mês a mês
   for (let mes = 1; mes <= input.prazoMeses; mes++) {
@@ -237,26 +239,24 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
       saldo -= amortizacao;
     }
 
-    // Calcula parcela total
+    // Calcula parcela total (juros + amortização que o investidor recebe)
     const jurosPagosNoMes = emCarenciaJuros ? 0 : juros;
     let parcela = jurosPagosNoMes + amortizacao;
 
-    // Adiciona custos fixos mensais
-    const custosFixos = input.feeManutencaoMensalBrl;
-    totalCustos += custosFixos;
+    // Custos são do captador, não do investidor
+    // Fee de manutenção mensal (apenas para referência, não deduzido do investidor)
+    const custosFixos = input.feeManutencaoMensalBrl || 0;
 
-    // Adiciona taxa de setup no primeiro mês
-    if (mes === 1 && input.taxaSetupFixaBrl > 0) {
-      observacoes.push(`Taxa de setup: R$ ${(input.taxaSetupFixaBrl / 100).toFixed(2)}`);
+    // Observações sobre custos do captador (informativos)
+    if (mes === 1 && input.taxaSetupFixaBrl && input.taxaSetupFixaBrl > 0) {
+      observacoes.push(`Taxa de setup (captador): R$ ${(input.taxaSetupFixaBrl / 100).toFixed(2)}`);
     }
 
-    // Adiciona fee de sucesso no último mês
-    if (mes === input.prazoMeses && input.feeSucessoPercentSobreCaptacao > 0) {
+    if (mes === input.prazoMeses && input.feeSucessoPercentSobreCaptacao && input.feeSucessoPercentSobreCaptacao > 0) {
       const feeSucesso = arredondar(
         (input.valorInvestido * input.feeSucessoPercentSobreCaptacao) / 10000
       );
-      totalCustos += feeSucesso;
-      observacoes.push(`Fee de sucesso: R$ ${(feeSucesso / 100).toFixed(2)}`);
+      observacoes.push(`Fee de sucesso (captador): R$ ${(feeSucesso / 100).toFixed(2)}`);
     }
 
     const saldoFinal = saldo;
@@ -274,27 +274,17 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
     });
   }
 
-  // Calcula totais
-  const totalRecebido = totalJurosPagos + totalAmortizado - totalCustos;
+  // Calcula totais (do ponto de vista do investidor)
+  // O investidor recebe juros + principal de volta
+  const totalRecebido = totalJurosPagos + totalAmortizado;
 
-  // Calcula TIR
+  // Calcula TIR do ponto de vista do investidor
+  // Fluxo: investimento inicial negativo, recebimentos mensais positivos
   const fluxos: number[] = [-input.valorInvestido]; // Investimento inicial (saída)
   for (const mes of cronograma) {
-    let fluxoMes = mes.juros + mes.amortizacao - mes.custosFixos;
-    
-    // Deduz taxa de setup do primeiro mês
-    if (mes.mes === 1) {
-      fluxoMes -= input.taxaSetupFixaBrl;
-    }
-    
-    // Deduz fee de sucesso do último mês
-    if (mes.mes === input.prazoMeses && input.feeSucessoPercentSobreCaptacao > 0) {
-      const feeSucesso = arredondar(
-        (input.valorInvestido * input.feeSucessoPercentSobreCaptacao) / 10000
-      );
-      fluxoMes -= feeSucesso;
-    }
-    
+    // O investidor recebe juros + amortização
+    // Custos são do captador, não afetam o fluxo do investidor
+    const fluxoMes = mes.juros + mes.amortizacao;
     fluxos.push(fluxoMes);
   }
 

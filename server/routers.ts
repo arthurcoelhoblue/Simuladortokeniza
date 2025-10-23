@@ -78,12 +78,12 @@ export const appRouter = router({
           amortizacaoMetodo: z.enum(["PRICE", "SAC", "bullet"]).default("PRICE"),
           pagamentoMinimoValor: z.number().optional(),
 
-          // Custos e taxas
-          taxaSetupFixaBrl: z.number().nonnegative().default(0),
-          feeSucessoPercentSobreCaptacao: z.number().nonnegative().default(0),
-          feeManutencaoMensalBrl: z.number().nonnegative().default(0),
-          taxaTransacaoPercent: z.number().nonnegative().default(0),
-          aliquotaImpostoRendaPercent: z.number().nonnegative().default(0),
+          // Custos e taxas (opcionais)
+          taxaSetupFixaBrl: z.number().nonnegative().optional(),
+          feeSucessoPercentSobreCaptacao: z.number().nonnegative().optional(),
+          feeManutencaoMensalBrl: z.number().nonnegative().optional(),
+          taxaTransacaoPercent: z.number().nonnegative().optional(),
+          aliquotaImpostoRendaPercent: z.number().nonnegative().optional(),
 
           // Outros
           identificadorInvestidor: z.string().optional(),
@@ -122,11 +122,11 @@ export const appRouter = router({
           capitalizarJurosEmCarencia: input.capitalizarJurosEmCarencia,
           amortizacaoMetodo: input.amortizacaoMetodo as any,
           pagamentoMinimoValor: input.pagamentoMinimoValor,
-          taxaSetupFixaBrl: input.taxaSetupFixaBrl,
-          feeSucessoPercentSobreCaptacao: input.feeSucessoPercentSobreCaptacao,
-          feeManutencaoMensalBrl: input.feeManutencaoMensalBrl,
-          taxaTransacaoPercent: input.taxaTransacaoPercent,
-          aliquotaImpostoRendaPercent: input.aliquotaImpostoRendaPercent,
+          taxaSetupFixaBrl: input.taxaSetupFixaBrl || 0,
+          feeSucessoPercentSobreCaptacao: input.feeSucessoPercentSobreCaptacao || 0,
+          feeManutencaoMensalBrl: input.feeManutencaoMensalBrl || 0,
+          taxaTransacaoPercent: input.taxaTransacaoPercent || 0,
+          aliquotaImpostoRendaPercent: input.aliquotaImpostoRendaPercent || 0,
         };
 
         // Calcula simulação
@@ -150,11 +150,11 @@ export const appRouter = router({
           capitalizarJurosEmCarencia: input.capitalizarJurosEmCarencia ? 1 : 0,
           amortizacaoMetodo: input.amortizacaoMetodo,
           pagamentoMinimoValor: input.pagamentoMinimoValor || null,
-          taxaSetupFixaBrl: input.taxaSetupFixaBrl,
-          feeSucessoPercentSobreCaptacao: input.feeSucessoPercentSobreCaptacao,
-          feeManutencaoMensalBrl: input.feeManutencaoMensalBrl,
-          taxaTransacaoPercent: input.taxaTransacaoPercent,
-          aliquotaImpostoRendaPercent: input.aliquotaImpostoRendaPercent,
+          taxaSetupFixaBrl: input.taxaSetupFixaBrl || 0,
+          feeSucessoPercentSobreCaptacao: input.feeSucessoPercentSobreCaptacao || 0,
+          feeManutencaoMensalBrl: input.feeManutencaoMensalBrl || 0,
+          taxaTransacaoPercent: input.taxaTransacaoPercent || 0,
+          aliquotaImpostoRendaPercent: input.aliquotaImpostoRendaPercent || 0,
           identificadorInvestidor: input.identificadorInvestidor || null,
           moedaReferencia: input.moedaReferencia,
           totalJurosPagos: resultado.resumo.totalJurosPagos,
