@@ -80,6 +80,255 @@ export default function SimulationView() {
   };
 
   const generatePDFHTML = () => {
+    if (simulation?.modo === 'captador') {
+      return generateCaptadorPDFHTML();
+    }
+    return generateInvestidorPDFHTML();
+  };
+
+  const generateCaptadorPDFHTML = () => {
+    const formatCurrency = (cents: number) => {
+      return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(cents / 100);
+    };
+
+    const formatPercent = (centesimos: number) => {
+      return (centesimos / 100).toFixed(2) + "%";
+    };
+
+    const custosInvestidores = simulation.totalJurosPagos + simulation.valorInvestido;
+    const custosTokeniza = simulation.taxaSetupFixaBrl + (simulation.valorTotalOferta * simulation.feeSucessoPercentSobreCaptacao / 10000);
+    const custoTotal = custosInvestidores + custosTokeniza;
+    const custoMedioMensal = custoTotal / simulation.prazoMeses;
+
+    const cronogramaRows = (cronograma || [])
+      .map(
+        (item) => `
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">${item.mes}</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">${item.dataParcela}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(item.juros)}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(item.amortizacao)}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold; color: #84cc16;">${formatCurrency(item.parcela)}</td>
+      </tr>
+    `
+      )
+      .join("");
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Relatório de Custos de Captação #${simulationId}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      color: #333;
+    }
+    h1 {
+      color: #84cc16;
+      border-bottom: 3px solid #84cc16;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #65a30d;
+      margin-top: 30px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 5px;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .info-item {
+      padding: 10px;
+      background: #f7fee7;
+      border-left: 4px solid #84cc16;
+    }
+    .info-label {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .info-value {
+      font-size: 16px;
+      font-weight: bold;
+      color: #1e293b;
+      margin-top: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 12px;
+    }
+    th {
+      background: #84cc16;
+      color: black;
+      padding: 10px 8px;
+      text-align: left;
+      border: 1px solid #65a30d;
+      font-weight: bold;
+    }
+    th.right {
+      text-align: right;
+    }
+    .summary {
+      background: #f7fee7;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border: 2px solid #84cc16;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    .cost-breakdown {
+      background: #fef3c7;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #f59e0b;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #ddd;
+      text-align: center;
+      color: #64748b;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div style="text-align: center; margin-bottom: 30px;">
+    <h1 style="margin: 0; border: none; padding: 0; color: #84cc16; font-size: 36px;">Relatório de Custos de Captação</h1>
+    <p style="color: #64748b; margin-top: 5px; font-size: 14px;">${simulation.descricaoOferta || 'Simulação de Captação'}</p>
+    <p style="color: #84cc16; font-weight: bold; font-size: 12px; margin-top: 10px; background: #f7fee7; display: inline-block; padding: 5px 15px; border-radius: 20px;">MODO CAPTADOR</p>
+  </div>
+
+  <h2>Resumo Executivo</h2>
+  <div class="summary">
+    <div class="summary-grid">
+      <div>
+        <div class="info-label">Valor a Captar</div>
+        <div class="info-value" style="color: #84cc16; font-size: 24px;">${formatCurrency(simulation.valorTotalOferta)}</div>
+      </div>
+      <div>
+        <div class="info-label">Custo Total da Operação</div>
+        <div class="info-value" style="color: #dc2626; font-size: 24px;">${formatCurrency(custoTotal)}</div>
+      </div>
+      <div>
+        <div class="info-label">Custo Médio Mensal</div>
+        <div class="info-value">${formatCurrency(custoMedioMensal)}</div>
+      </div>
+      <div>
+        <div class="info-label">Percentual do Captado</div>
+        <div class="info-value">${formatPercent(custoTotal * 10000 / simulation.valorTotalOferta)}</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Detalhamento de Custos</h2>
+  <div class="cost-breakdown">
+    <h3 style="margin-top: 0; color: #92400e;">Custos com Investidores</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Principal a Devolver</div>
+        <div class="info-value">${formatCurrency(simulation.valorInvestido)}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Juros Totais</div>
+        <div class="info-value">${formatCurrency(simulation.totalJurosPagos)}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Subtotal Investidores</div>
+        <div class="info-value" style="color: #ea580c;">${formatCurrency(custosInvestidores)}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">% do Captado</div>
+        <div class="info-value">${formatPercent(custosInvestidores * 10000 / simulation.valorTotalOferta)}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cost-breakdown">
+    <h3 style="margin-top: 0; color: #92400e;">Custos com Tokeniza</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Taxa de Estruturação</div>
+        <div class="info-value">${formatCurrency(simulation.taxaSetupFixaBrl)}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Fee sobre Captação (${formatPercent(simulation.feeSucessoPercentSobreCaptacao)})</div>
+        <div class="info-value">${formatCurrency(simulation.valorTotalOferta * simulation.feeSucessoPercentSobreCaptacao / 10000)}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Subtotal Tokeniza</div>
+        <div class="info-value" style="color: #dc2626;">${formatCurrency(custosTokeniza)}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">% do Captado</div>
+        <div class="info-value">${formatPercent(custosTokeniza * 10000 / simulation.valorTotalOferta)}</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Parâmetros da Operação</h2>
+  <div class="info-grid">
+    <div class="info-item">
+      <div class="info-label">Prazo</div>
+      <div class="info-value">${simulation.prazoMeses} meses</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Taxa de Juros</div>
+      <div class="info-value">${formatPercent(simulation.taxaJurosAa)} a.a.</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Método de Amortização</div>
+      <div class="info-value">${simulation.amortizacaoMetodo.toUpperCase()}</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Tipo de Capitalização</div>
+      <div class="info-value">${simulation.tipoCapitalizacao === "simples" ? "Simples" : "Composta"}</div>
+    </div>
+  </div>
+
+  <h2>Cronograma de Pagamentos aos Investidores</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Mês</th>
+        <th>Data</th>
+        <th class="right">Juros</th>
+        <th class="right">Amortização</th>
+        <th class="right">Pagamento Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${cronogramaRows}
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <p>Relatório gerado em ${new Date().toLocaleString("pt-BR")}</p>
+    <p>Sistema de Simulação de Investimentos Tokenizados - Tokeniza</p>
+  </div>
+</body>
+</html>
+    `;
+  };
+
+  const generateInvestidorPDFHTML = () => {
     const formatCurrency = (cents: number) => {
       return new Intl.NumberFormat("pt-BR", {
         style: "currency",
