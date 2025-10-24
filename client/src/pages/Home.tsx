@@ -1,9 +1,9 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
+import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Calculator, FileText, Moon, Plus, Sun } from "lucide-react";
+import { Calculator, FileText, Moon, Plus, Sun, TrendingUp, Shield, Zap, BarChart3 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -28,57 +28,189 @@ export default function Home() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="container py-16">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="mb-8">
-              <img src={theme === 'dark' ? '/tokeniza-logo-light.svg' : '/tokeniza-logo-dark.svg'} alt="Tokeniza" className="h-16 mx-auto mb-4" />
-              <h1 className="text-4xl font-bold mb-4">{APP_TITLE}</h1>
-              <p className="text-xl text-muted-foreground">
-                Simule investimentos tokenizados com cálculos precisos de cronograma mensal,
-                carências configuráveis e amortização linear ou bullet.
+        {/* Hero Section */}
+        <div className="border-b">
+          <div className="container py-20">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="mb-8">
+                <img 
+                  src={theme === 'dark' ? '/tokeniza-logo-light.svg' : '/tokeniza-logo-dark.svg'} 
+                  alt="Tokeniza" 
+                  className="h-20 mx-auto mb-6" 
+                />
+                <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                  Simule Investimentos Tokenizados com Precisão Profissional
+                </h1>
+                <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                  Calcule retornos, analise cronogramas e tome decisões informadas com a plataforma 
+                  de simulação mais completa do mercado de tokenização.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <Button size="lg" className="text-lg px-8" asChild>
+                  <a href={getLoginUrl()}>
+                    <Calculator className="mr-2 h-5 w-5" />
+                    Começar Gratuitamente
+                  </a>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8" asChild>
+                  <a href="https://tokeniza.com.br" target="_blank" rel="noopener noreferrer">
+                    Conheça a Tokeniza
+                  </a>
+                </Button>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-blue-500" />
+                  <span>100% Seguro</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-blue-500" />
+                  <span>Cálculos Instantâneos</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4 text-blue-500" />
+                  <span>Relatórios Profissionais</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Features Section */}
+        <div className="container py-20">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Tudo que você precisa para simular investimentos</h2>
+              <p className="text-lg text-muted-foreground">
+                Ferramentas profissionais para investidores e captadores
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Cálculos Precisos</CardTitle>
+                  <TrendingUp className="h-8 w-8 text-blue-500 mb-2" />
+                  <CardTitle className="text-lg">Cálculo de TIR</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Motor de cálculo financeiro com suporte a PRICE, SAC e Bullet, incluindo TIR e carências.
+                    <strong>Taxa Interna de Retorno:</strong> descubra o rendimento real do seu investimento 
+                    considerando todos os fluxos de caixa ao longo do tempo.
                   </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Cronograma Detalhado</CardTitle>
+                  <Calculator className="h-8 w-8 text-blue-500 mb-2" />
+                  <CardTitle className="text-lg">Métodos Flexíveis</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Visualize mês a mês juros, amortização, saldo devedor e custos associados.
+                    Simule com <strong>amortização linear</strong> (parcelas mensais) ou <strong>bullet</strong> 
+                    (pagamento único no vencimento).
                   </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Exportação Fácil</CardTitle>
+                  <FileText className="h-8 w-8 text-blue-500 mb-2" />
+                  <CardTitle className="text-lg">Cronograma Completo</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Exporte relatórios em CSV para análise externa e compartilhamento.
+                    Visualize mês a mês: juros, amortização, saldo devedor e custos. 
+                    Exporte em CSV ou PDF profissional.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <Shield className="h-8 w-8 text-blue-500 mb-2" />
+                  <CardTitle className="text-lg">Carências Configuráveis</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Configure períodos de carência para juros e principal, com capitalização 
+                    simples ou composta.
                   </p>
                 </CardContent>
               </Card>
             </div>
 
-            <Button size="lg" asChild>
-              <a href={getLoginUrl()}>Entrar para Começar</a>
-            </Button>
+            {/* TIR Explanation */}
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  O que é TIR?
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-base">
+                  A <strong>Taxa Interna de Retorno (TIR)</strong> é a métrica mais importante para avaliar 
+                  a rentabilidade real de um investimento tokenizado.
+                </p>
+                <p className="text-base">
+                  Diferente da taxa de juros nominal, a TIR considera <strong>todos os fluxos de caixa</strong> 
+                  (investimento inicial, juros recebidos, amortizações, custos e taxas) para calcular o 
+                  rendimento efetivo anual do seu investimento.
+                </p>
+                <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                  <p className="text-sm font-semibold mb-2">Exemplo prático:</p>
+                  <p className="text-sm text-muted-foreground">
+                    Um investimento com taxa de juros de 12% a.a. pode ter uma TIR de 10,5% a.a. 
+                    após considerar custos de setup, fee de sucesso e período de carência. 
+                    A TIR mostra o retorno <strong>real</strong> que você receberá.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
+
+        {/* About Tokeniza */}
+        <div className="border-t bg-muted/30">
+          <div className="container py-20">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl font-bold mb-6">Sobre a Tokeniza</h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                A <strong>Tokeniza</strong> é a plataforma líder em tokenização de ativos no Brasil, 
+                democratizando o acesso a investimentos alternativos através da tecnologia blockchain.
+              </p>
+              <p className="text-base text-muted-foreground mb-8">
+                Conectamos investidores a oportunidades de investimento em ativos reais tokenizados, 
+                com transparência, segurança e liquidez. Nosso simulador permite que você analise 
+                retornos antes de investir, tomando decisões mais informadas.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" asChild>
+                  <a href={getLoginUrl()}>
+                    Criar Conta Gratuita
+                  </a>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <a href="https://tokeniza.com.br" target="_blank" rel="noopener noreferrer">
+                    Visitar Tokeniza.com.br
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="border-t py-8">
+          <div className="container text-center text-sm text-muted-foreground">
+            <p>© 2025 Tokeniza. Todos os direitos reservados.</p>
+          </div>
+        </footer>
       </div>
     );
   }
@@ -198,3 +330,4 @@ export default function Home() {
     </div>
   );
 }
+
