@@ -7,7 +7,7 @@ export interface SimulationInput {
   // Dados da oferta
   valorTotalOferta: number; // em centavos
   valorInvestido: number; // em centavos
-  dataInicio: string; // YYYY-MM-DD
+  dataEncerramentoOferta: string; // YYYY-MM-DD - Data de encerramento da captação
   prazoMeses: number;
   taxaJurosAa: number; // em centésimos de % (ex: 2400 = 24%)
   convencaoCalendario: "civil/365" | "30/360" | "252 úteis";
@@ -154,7 +154,7 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
 
   const cronograma: CronogramaMes[] = [];
   let saldo = input.valorInvestido;
-  const principalInicial = input.valorInvestido; // Juros sempre calculados sobre este valor
+  const principalInicial = input.valorInvestido; // Para capitalização simples
   
   // Determina número de parcelas para amortização
   const mesesComAmortizacao = input.prazoMeses - input.carenciaPrincipalMeses;
@@ -174,10 +174,17 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
   // Gera cronograma mês a mês
   for (let mes = 1; mes <= input.prazoMeses; mes++) {
     const saldoInicial = saldo;
-    const dataParcela = adicionarMeses(input.dataInicio, mes);
+    const dataParcela = adicionarMeses(input.dataEncerramentoOferta, mes);
     
-    // Calcula juros do período - SEMPRE sobre o principal inicial
-    let juros = arredondar(principalInicial * taxaMensalDecimal);
+    // Calcula juros do período
+    let juros: number;
+    if (input.tipoCapitalizacao === "simples") {
+      // Capitalização SIMPLES: juros sempre sobre o principal inicial
+      juros = arredondar(principalInicial * taxaMensalDecimal);
+    } else {
+      // Capitalização COMPOSTA: juros sempre sobre o saldo devedor atual
+      juros = arredondar(saldoInicial * taxaMensalDecimal);
+    }
     
     let amortizacao = 0;
     let observacoes: string[] = [];

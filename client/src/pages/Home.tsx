@@ -163,7 +163,7 @@ export default function Home() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-muted-foreground">Início:</span>
-                        <span className="font-medium">{formatDate(sim.dataInicio)}</span>
+                        <span className="font-medium">{formatDate(sim.dataEncerramentoOferta)}</span>
                       </div>
                       {sim.tirAnual && (
                         <div className="flex justify-between pt-2 border-t">

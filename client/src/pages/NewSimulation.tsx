@@ -20,7 +20,7 @@ export default function NewSimulation() {
     descricaoOferta: "",
     valorTotalOferta: "",
     valorInvestido: "",
-    dataInicio: new Date().toISOString().split("T")[0],
+    dataEncerramentoOferta: new Date().toISOString().split("T")[0],
     prazoMeses: "24",
     taxaJurosAa: "2400", // 24% em centésimos
     convencaoCalendario: "civil/365" as const,
@@ -58,7 +58,7 @@ export default function NewSimulation() {
       descricaoOferta: formData.descricaoOferta || undefined,
       valorTotalOferta: parseFloat(formData.valorTotalOferta) * 100,
       valorInvestido: parseFloat(formData.valorInvestido) * 100,
-      dataInicio: formData.dataInicio,
+      dataEncerramentoOferta: formData.dataEncerramentoOferta,
       prazoMeses: parseInt(formData.prazoMeses),
       taxaJurosAa: parseInt(formData.taxaJurosAa),
       convencaoCalendario: formData.convencaoCalendario,
@@ -139,13 +139,13 @@ export default function NewSimulation() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="dataInicio">Data de Início</Label>
+                  <Label htmlFor="dataEncerramentoOferta">Data de Encerramento da Oferta</Label>
                   <Input
-                    id="dataInicio"
+                    id="dataEncerramentoOferta"
                     type="date"
                     required
-                    value={formData.dataInicio}
-                    onChange={(e) => setFormData({ ...formData, dataInicio: e.target.value })}
+                    value={formData.dataEncerramentoOferta}
+                    onChange={(e) => setFormData({ ...formData, dataEncerramentoOferta: e.target.value })}
                   />
                 </div>
 

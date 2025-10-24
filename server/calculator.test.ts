@@ -6,7 +6,7 @@ describe("Motor de Cálculo Financeiro", () => {
     const input: SimulationInput = {
       valorTotalOferta: 500000000, // R$ 5.000.000
       valorInvestido: 10000000, // R$ 100.000
-      dataInicio: "2025-01-01",
+      dataEncerramentoOferta: "2025-01-01",
       prazoMeses: 24,
       taxaJurosAa: 2400, // 24% a.a.
       convencaoCalendario: "civil/365",
@@ -47,7 +47,7 @@ describe("Motor de Cálculo Financeiro", () => {
     const input: SimulationInput = {
       valorTotalOferta: 500000000,
       valorInvestido: 10000000,
-      dataInicio: "2025-01-01",
+      dataEncerramentoOferta: "2025-01-01",
       prazoMeses: 12,
       taxaJurosAa: 2400,
       convencaoCalendario: "civil/365",
@@ -84,7 +84,7 @@ describe("Motor de Cálculo Financeiro", () => {
     const input: SimulationInput = {
       valorTotalOferta: 500000000,
       valorInvestido: 10000000,
-      dataInicio: "2025-01-01",
+      dataEncerramentoOferta: "2025-01-01",
       prazoMeses: 12,
       taxaJurosAa: 2400,
       convencaoCalendario: "civil/365",
@@ -120,7 +120,7 @@ describe("Motor de Cálculo Financeiro", () => {
     const input: SimulationInput = {
       valorTotalOferta: 500000000,
       valorInvestido: 10000000,
-      dataInicio: "2025-01-01",
+      dataEncerramentoOferta: "2025-01-01",
       prazoMeses: 12,
       taxaJurosAa: 2400,
       convencaoCalendario: "civil/365",
@@ -163,7 +163,7 @@ describe("Motor de Cálculo Financeiro", () => {
     const input: SimulationInput = {
       valorTotalOferta: 500000000,
       valorInvestido: 10000000,
-      dataInicio: "2025-01-01",
+      dataEncerramentoOferta: "2025-01-01",
       prazoMeses: 12,
       taxaJurosAa: 2400,
       convencaoCalendario: "civil/365",
@@ -199,7 +199,7 @@ describe("Motor de Cálculo Financeiro", () => {
     const input: SimulationInput = {
       valorTotalOferta: 500000000,
       valorInvestido: 10000000,
-      dataInicio: "2025-01-01",
+      dataEncerramentoOferta: "2025-01-01",
       prazoMeses: 12,
       taxaJurosAa: 2400,
       convencaoCalendario: "civil/365",
@@ -240,7 +240,7 @@ describe("Motor de Cálculo Financeiro", () => {
     const input: SimulationInput = {
       valorTotalOferta: 500000000,
       valorInvestido: 10000000,
-      dataInicio: "2025-01-01",
+      dataEncerramentoOferta: "2025-01-01",
       prazoMeses: 12,
       taxaJurosAa: 2400,
       convencaoCalendario: "civil/365",
@@ -275,7 +275,7 @@ describe("Motor de Cálculo Financeiro", () => {
     const input: SimulationInput = {
       valorTotalOferta: 500000000, // R$ 5.000.000
       valorInvestido: 10000000, // R$ 100.000
-      dataInicio: "2025-06-01",
+      dataEncerramentoOferta: "2025-06-01",
       prazoMeses: 24,
       taxaJurosAa: 2400, // 24% a.a.
       convencaoCalendario: "civil/365",

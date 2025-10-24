@@ -37,7 +37,7 @@ export const simulations = mysqlTable("simulations", {
   descricaoOferta: text("descricaoOferta"),
   valorTotalOferta: int("valorTotalOferta").notNull(), // em centavos
   valorInvestido: int("valorInvestido").notNull(), // em centavos
-  dataInicio: varchar("dataInicio", { length: 10 }).notNull(), // YYYY-MM-DD
+  dataEncerramentoOferta: varchar("dataEncerramentoOferta", { length: 10 }).notNull(), // Data de encerramento da captação // YYYY-MM-DD
   prazoMeses: int("prazoMeses").notNull(),
   taxaJurosAa: int("taxaJurosAa").notNull(), // em centésimos de % (ex: 2400 = 24%)
   convencaoCalendario: varchar("convencaoCalendario", { length: 20 }).notNull().default("civil/365"),

@@ -172,8 +172,8 @@ export default function SimulationView() {
                 <p className="font-medium">{simulation.prazoMeses} meses</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Data Início</p>
-                <p className="font-medium">{simulation.dataInicio}</p>
+                <p className="text-sm text-muted-foreground">Data Encerramento</p>
+                <p className="font-medium">{simulation.dataEncerramentoOferta}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Método</p>

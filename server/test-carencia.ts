@@ -12,11 +12,11 @@ import { calcularSimulacao, SimulationInput } from "./calculator";
 const input: SimulationInput = {
   valorTotalOferta: 50000000, // R$ 500.000
   valorInvestido: 10000000, // R$ 100.000
-  dataInicio: "2025-01-01",
+  dataEncerramentoOferta: "2025-01-01",
   prazoMeses: 12,
   taxaJurosAa: 2682, // ~26.82% a.a. = 2% a.m. composto
   convencaoCalendario: "civil/365",
-  tipoCapitalizacao: "composta",
+  tipoCapitalizacao: "simples",
   periodicidadeJuros: "mensal",
   periodicidadeAmortizacao: "mensal",
   carenciaJurosMeses: 3,
