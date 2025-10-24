@@ -5,14 +5,32 @@ import { trpc } from "@/lib/trpc";
 import { ArrowLeft, Download, Trash2 } from "lucide-react";
 import { useLocation, useRoute } from "wouter";
 import { toast } from "sonner";
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function SimulationView() {
   const [, params] = useRoute("/simulation/:id");
   const [, setLocation] = useLocation();
   const simulationId = parseInt(params?.id || "0");
+  const [showCaptadorModal, setShowCaptadorModal] = useState(false);
 
   const { data: simulation, isLoading } = trpc.simulations.getById.useQuery({ id: simulationId });
   const { data: cronograma } = trpc.simulations.getCronograma.useQuery({ simulationId });
+
+  // Mostra modal para captador após carregar a simulação
+  useEffect(() => {
+    if (simulation && simulation.modo === 'captador' && !sessionStorage.getItem(`modal-shown-${simulationId}`)) {
+      setShowCaptadorModal(true);
+      sessionStorage.setItem(`modal-shown-${simulationId}`, 'true');
+    }
+  }, [simulation, simulationId]);
 
   const deleteMutation = trpc.simulations.delete.useMutation({
     onSuccess: () => {
@@ -210,7 +228,11 @@ export default function SimulationView() {
   </style>
 </head>
 <body>
-  <div style="text-align: center; margin-bottom: 30px;">
+  <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #84cc16; padding-bottom: 20px;">
+    <div style="background: #1a1a1a; padding: 20px; margin-bottom: 20px; border-radius: 8px;">
+      <img src="https://tokeniza.com.br/wp-content/uploads/2024/01/logo-tokeniza-branco.png" alt="Tokeniza" style="height: 50px; margin-bottom: 10px;" />
+      <p style="color: #84cc16; font-size: 14px; margin: 0; font-weight: bold;">Plataforma Líder em Tokenização de Ativos</p>
+    </div>
     <h1 style="margin: 0; border: none; padding: 0; color: #84cc16; font-size: 36px;">Relatório de Custos de Captação</h1>
     <p style="color: #64748b; margin-top: 5px; font-size: 14px;">${simulation.descricaoOferta || 'Simulação de Captação'}</p>
     <p style="color: #84cc16; font-weight: bold; font-size: 12px; margin-top: 10px; background: #f7fee7; display: inline-block; padding: 5px 15px; border-radius: 20px;">MODO CAPTADOR</p>
@@ -320,8 +342,18 @@ export default function SimulationView() {
   </table>
 
   <div class="footer">
+    <div style="background: #f7fee7; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 2px solid #84cc16;">
+      <h3 style="color: #84cc16; margin-top: 0; text-align: center;">Quer captar recursos com a Tokeniza?</h3>
+      <p style="text-align: center; color: #333; margin: 10px 0;">
+        <strong>Autorização CVM</strong> • <strong>+130 Projetos</strong> • <strong>Blockchain</strong>
+      </p>
+      <p style="text-align: center; color: #333; font-size: 14px;">
+        Acesse: <strong style="color: #84cc16;">tokeniza.com.br/tokeniza-captadores</strong>
+      </p>
+    </div>
     <p>Relatório gerado em ${new Date().toLocaleString("pt-BR")}</p>
     <p>Sistema de Simulação de Investimentos Tokenizados - Tokeniza</p>
+    <p style="font-size: 10px; margin-top: 10px;">www.tokeniza.com.br | plataforma.tokeniza.com.br</p>
   </div>
 </body>
 </html>
@@ -807,6 +839,40 @@ export default function SimulationView() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal para Captador */}
+      <Dialog open={showCaptadorModal} onOpenChange={setShowCaptadorModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">🎉 Simulação Criada!</DialogTitle>
+            <DialogDescription className="text-base pt-4">
+              Sua simulação de captação foi criada com sucesso!
+              <br /><br />
+              <strong>Deseja captar recursos através da Tokeniza?</strong>
+              <br /><br />
+              A Tokeniza é a plataforma líder em tokenização de ativos no Brasil, com autorização CVM e mais de 130 projetos realizados.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowCaptadorModal(false)}
+              className="w-full sm:w-auto"
+            >
+              Não, apenas simular
+            </Button>
+            <Button
+              onClick={() => {
+                window.open('https://tokeniza.com.br/tokeniza-captadores/', '_blank');
+                setShowCaptadorModal(false);
+              }}
+              className="w-full sm:w-auto bg-lime-500 hover:bg-lime-600 text-white"
+            >
+              Sim, quero captar com a Tokeniza!
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

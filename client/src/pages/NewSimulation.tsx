@@ -31,7 +31,36 @@ export default function NewSimulation() {
   const { user } = useAuth();
   const [modo, setModo] = useState<'investidor' | 'captador'>('investidor');
 
+  // Função para calcular taxa de estruturação baseada no valor da oferta
+  const calcularTaxaEstruturacao = (valorOferta: number): number => {
+    if (valorOferta <= 100000) return 5000;
+    if (valorOferta <= 200000) return 7500;
+    if (valorOferta <= 350000) return 10000;
+    if (valorOferta <= 500000) return 13500;
+    if (valorOferta <= 750000) return 16500;
+    if (valorOferta <= 1000000) return 20000;
+    if (valorOferta <= 3000000) return 27000;
+    if (valorOferta <= 5000000) return 35000;
+    if (valorOferta <= 7500000) return 43000;
+    if (valorOferta <= 10000000) return 52000;
+    if (valorOferta <= 15000000) return 60000;
+    return 0; // Acima de 15M precisa consultar
+  };
+
+  // Função para validar WhatsApp brasileiro
+  const validarWhatsApp = (whatsapp: string): boolean => {
+    // Remove caracteres não numéricos
+    const numeros = whatsapp.replace(/\D/g, '');
+    // Valida formato brasileiro: (DD) 9XXXX-XXXX ou (DD) XXXX-XXXX
+    // 11 dígitos (com 9) ou 10 dígitos (sem 9)
+    return numeros.length === 11 || numeros.length === 10;
+  };
+
   const [formData, setFormData] = useState({
+    // Dados de contato
+    nomeCompleto: "",
+    whatsapp: "",
+    
     // Dados da oferta
     descricaoOferta: "",
     valorTotalOferta: "",
@@ -51,8 +80,8 @@ export default function NewSimulation() {
     amortizacaoMetodo: "linear" as const,
 
     // Custos do captador (apenas modo captador)
-    taxaEstruturacao: "", // Taxa fixa paga à Tokeniza
-    feePercentualCaptacao: "", // % sobre valor captado pago à Tokeniza
+    taxaEstruturacao: "", // Taxa fixa paga à Tokeniza (calculada automaticamente)
+    feePercentualCaptacao: "5", // % sobre valor captado pago à Tokeniza (padrão 5%)
     outrosCustos: "",
     outrosCustosTipo: "valor" as 'valor' | 'percentual',
   });
@@ -69,6 +98,12 @@ export default function NewSimulation() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Valida WhatsApp
+    if (!validarWhatsApp(formData.whatsapp)) {
+      toast.error('WhatsApp inválido. Use formato: (DD) 9XXXX-XXXX');
+      return;
+    }
 
     // Converte valores de string para número (em centavos)
     // No modo captador, valorInvestido = valorTotalOferta (simula o custo total)
@@ -156,6 +191,48 @@ export default function NewSimulation() {
               <CardDescription>Informações básicas sobre a oferta de investimento</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Campos de Contato */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="nomeCompleto">Nome Completo</Label>
+                    <HelpTooltip content="Seu nome completo para identificação" />
+                  </div>
+                  <Input
+                    id="nomeCompleto"
+                    type="text"
+                    required
+                    value={formData.nomeCompleto}
+                    onChange={(e) => setFormData({ ...formData, nomeCompleto: e.target.value })}
+                    placeholder="João da Silva"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="whatsapp">WhatsApp para receber a simulação</Label>
+                    <HelpTooltip content="Enviaremos o relatório completo da simulação para este WhatsApp. Use formato: (DD) 9XXXX-XXXX" />
+                  </div>
+                  <Input
+                    id="whatsapp"
+                    type="tel"
+                    required
+                    value={formData.whatsapp}
+                    onChange={(e) => {
+                      const valor = e.target.value.replace(/\D/g, '');
+                      setFormData({ ...formData, whatsapp: valor });
+                    }}
+                    onBlur={(e) => {
+                      if (e.target.value && !validarWhatsApp(e.target.value)) {
+                        toast.error('WhatsApp inválido. Use formato: (DD) 9XXXX-XXXX');
+                      }
+                    }}
+                    placeholder="11987654321"
+                    maxLength={11}
+                  />
+                </div>
+              </div>
+
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Label htmlFor="descricaoOferta">Descrição da Oferta (opcional)</Label>
@@ -181,7 +258,15 @@ export default function NewSimulation() {
                     step="0.01"
                     required
                     value={formData.valorTotalOferta}
-                    onChange={(e) => setFormData({ ...formData, valorTotalOferta: e.target.value })}
+                    onChange={(e) => {
+                      const valor = parseFloat(e.target.value) || 0;
+                      const taxaEstruturacao = modo === 'captador' ? calcularTaxaEstruturacao(valor) : 0;
+                      setFormData({ 
+                        ...formData, 
+                        valorTotalOferta: e.target.value,
+                        taxaEstruturacao: taxaEstruturacao > 0 ? (taxaEstruturacao / 100).toString() : formData.taxaEstruturacao
+                      });
+                    }}
                     placeholder="5000000.00"
                   />
                 </div>
