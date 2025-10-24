@@ -261,10 +261,12 @@ export default function Home() {
       {/* Header */}
       <header className="border-b">
         <div className="container py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={theme === 'dark' ? '/tokeniza-logo-light.svg' : '/tokeniza-logo-dark.svg'} alt="Tokeniza" className="h-8" />
-            <h1 className="text-2xl font-bold">{APP_TITLE}</h1>
-          </div>
+          <Link href="/">
+            <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+              <img src={theme === 'dark' ? '/tokeniza-logo-light.svg' : '/tokeniza-logo-dark.svg'} alt="Tokeniza" className="h-8" />
+              <h1 className="text-2xl font-bold">{APP_TITLE}</h1>
+            </div>
+          </Link>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
