@@ -1,0 +1,31 @@
+{
+  "query": "SELECT id, descricaoOferta, valorInvestido, prazoMeses, createdAt FROM simulations ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, descricaoOferta, valorInvestido, prazoMeses, createdAt FROM simulations ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "90001",
+      "descricaoOferta": "Welshman",
+      "valorInvestido": "500000",
+      "prazoMeses": "12",
+      "createdAt": "2025-10-24 14:21:12"
+    },
+    {
+      "id": "60001",
+      "descricaoOferta": "Welshman",
+      "valorInvestido": "500000",
+      "prazoMeses": "12",
+      "createdAt": "2025-10-24 13:23:47"
+    },
+    {
+      "id": "30001",
+      "descricaoOferta": "Welshman",
+      "valorInvestido": "500000",
+      "prazoMeses": "12",
+      "createdAt": "2025-10-23 16:20:46"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tdescricaoOferta\tvalorInvestido\tprazoMeses\tcreatedAt\n90001\tWelshman\t500000\t12\t2025-10-24 14:21:12\n60001\tWelshman\t500000\t12\t2025-10-24 13:23:47\n30001\tWelshman\t500000\t12\t2025-10-23 16:20:46\n",
+  "stderr": "",
+  "execution_time_ms": 48
+}

@@ -153,7 +153,8 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
   const taxaMensalDecimal = taxaMensalCentesimos / 10000;
 
   const cronograma: CronogramaMes[] = [];
-  let saldo = input.valorInvestido;
+  let principal = input.valorInvestido; // Principal devedor (só muda com amortização)
+  let jurosAcumulados = 0; // Juros não pagos acumulados
   const principalInicial = input.valorInvestido; // Para capitalização simples
   
   // Determina número de parcelas para amortização
@@ -173,7 +174,7 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
 
   // Gera cronograma mês a mês
   for (let mes = 1; mes <= input.prazoMeses; mes++) {
-    const saldoInicial = saldo;
+    const saldoInicial = principal; // Saldo inicial = principal devedor
     const dataParcela = adicionarMeses(input.dataEncerramentoOferta, mes);
     
     // Calcula juros do período
@@ -182,8 +183,8 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
       // Capitalização SIMPLES: juros sempre sobre o principal inicial
       juros = arredondar(principalInicial * taxaMensalDecimal);
     } else {
-      // Capitalização COMPOSTA: juros sempre sobre o saldo devedor atual
-      juros = arredondar(saldoInicial * taxaMensalDecimal);
+      // Capitalização COMPOSTA: juros sobre (principal + juros acumulados)
+      juros = arredondar((principal + jurosAcumulados) * taxaMensalDecimal);
     }
     
     let amortizacao = 0;
@@ -193,7 +194,7 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
     const emCarenciaJuros = mes <= input.carenciaJurosMeses;
     if (emCarenciaJuros) {
       if (input.capitalizarJurosEmCarencia) {
-        saldo += juros;
+        jurosAcumulados += juros; // Acumula juros não pagos
         observacoes.push("Carência de juros (capitalizados)");
       } else {
         observacoes.push("Carência de juros (não pagos)");
@@ -210,51 +211,62 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
         observacoes.push("Carência de principal");
       }
     } else {
-      // Primeiro mês após carências: recalcula parâmetros usando saldo atualizado
+      // Primeiro mês após carências: recalcula parâmetros
       if (!priceJaCalculado) {
         const mesesRestantes = input.prazoMeses - mes + 1;
+        const saldoTotal = principal + jurosAcumulados; // Principal + juros capitalizados
         
         if (input.amortizacaoMetodo === "PRICE" && mesesRestantes > 0) {
-          // Recalcula PRICE usando o saldo atual (após capitalização de juros)
+          // Recalcula PRICE usando o saldo total (principal + juros capitalizados)
           parcelaPRICE = calcularParcelaPRICE(
-            saldo,
+            saldoTotal,
             taxaMensalCentesimos,
             mesesRestantes
           );
         } else if (input.amortizacaoMetodo === "SAC" && mesesRestantes > 0) {
-          // Recalcula SAC usando o saldo atual
-          amortizacaoSAC = arredondar(saldo / mesesRestantes);
+          // Recalcula SAC usando o saldo total
+          amortizacaoSAC = arredondar(saldoTotal / mesesRestantes);
         }
         
         priceJaCalculado = true;
       }
       
       // Calcula amortização conforme método
+      const saldoTotal = principal + jurosAcumulados;
+      
       if (input.amortizacaoMetodo === "PRICE") {
         // PRICE: parcela constante = juros + amortização
         amortizacao = parcelaPRICE - juros;
         
         // Ajusta última parcela para zerar saldo (evita erros de arredondamento)
         if (mes === input.prazoMeses) {
-          amortizacao = saldo;
+          amortizacao = saldoTotal;
         }
       } else if (input.amortizacaoMetodo === "SAC") {
         amortizacao = amortizacaoSAC;
         
         // Ajusta última parcela para zerar saldo
         if (mes === input.prazoMeses) {
-          amortizacao = saldo;
+          amortizacao = saldoTotal;
         }
       } else if (input.amortizacaoMetodo === "bullet") {
         if (mes === input.prazoMeses) {
-          amortizacao = saldo;
+          amortizacao = saldoTotal;
           observacoes.push("Amortização bullet (total no vencimento)");
         }
       }
 
       amortizacao = arredondar(amortizacao);
       totalAmortizado += amortizacao;
-      saldo -= amortizacao;
+      
+      // Amortização reduz primeiro os juros acumulados, depois o principal
+      if (amortizacao <= jurosAcumulados) {
+        jurosAcumulados -= amortizacao;
+      } else {
+        const amortPrincipal = amortizacao - jurosAcumulados;
+        jurosAcumulados = 0;
+        principal -= amortPrincipal;
+      }
     }
 
     // Calcula parcela total (juros + amortização que o investidor recebe)
@@ -277,7 +289,7 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
       observacoes.push(`Fee de sucesso (captador): R$ ${(feeSucesso / 100).toFixed(2)}`);
     }
 
-    const saldoFinal = saldo;
+    const saldoFinal = principal + jurosAcumulados; // Saldo final = principal + juros acumulados
 
     cronograma.push({
       mes,
