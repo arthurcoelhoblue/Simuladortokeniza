@@ -22,7 +22,7 @@ const input: SimulationInput = {
   carenciaJurosMeses: 3,
   carenciaPrincipalMeses: 6, // 3 meses de carência de juros + 3 de principal
   capitalizarJurosEmCarencia: true,
-  amortizacaoMetodo: "PRICE",
+  amortizacaoMetodo: "linear",
   taxaSetupFixaBrl: 0,
   feeSucessoPercentSobreCaptacao: 0,
   feeManutencaoMensalBrl: 0,

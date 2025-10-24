@@ -49,7 +49,7 @@ export const simulations = mysqlTable("simulations", {
   carenciaJurosMeses: int("carenciaJurosMeses").notNull().default(0),
   carenciaPrincipalMeses: int("carenciaPrincipalMeses").notNull().default(0),
   capitalizarJurosEmCarencia: int("capitalizarJurosEmCarencia").notNull().default(1), // boolean: 0 ou 1
-  amortizacaoMetodo: varchar("amortizacaoMetodo", { length: 20 }).notNull().default("PRICE"),
+  amortizacaoMetodo: varchar("amortizacaoMetodo", { length: 20 }).notNull().default("linear"),
   pagamentoMinimoValor: int("pagamentoMinimoValor"), // em centavos, nullable
   
   // Custos e taxas

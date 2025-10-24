@@ -76,7 +76,7 @@ export const appRouter = router({
           carenciaJurosMeses: z.number().int().nonnegative().default(0),
           carenciaPrincipalMeses: z.number().int().nonnegative().default(0),
           capitalizarJurosEmCarencia: z.boolean().default(true),
-          amortizacaoMetodo: z.enum(["PRICE", "SAC", "bullet"]).default("PRICE"),
+          amortizacaoMetodo: z.enum(["linear", "bullet"]).default("linear"),
           pagamentoMinimoValor: z.number().optional(),
 
           // Custos e taxas (opcionais)

@@ -19,7 +19,7 @@ export interface SimulationInput {
   carenciaJurosMeses: number;
   carenciaPrincipalMeses: number;
   capitalizarJurosEmCarencia: boolean;
-  amortizacaoMetodo: "PRICE" | "SAC" | "bullet";
+  amortizacaoMetodo: "linear" | "bullet"; // linear = amortização constante, bullet = tudo no fim
   pagamentoMinimoValor?: number; // em centavos
 
   // Custos e taxas
@@ -175,10 +175,8 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
   const mesesComAmortizacao = input.prazoMeses - carenciaPrincipalEfetiva;
   
   // Variáveis para cálculo de amortização
-  // PRICE será recalculado após as carências usando o saldo atualizado
-  let parcelaPRICE = 0;
-  let amortizacaoSAC = 0;
-  let priceJaCalculado = false;
+  let amortizacaoLinear = 0;
+  let amortizacaoCalculada = false;
 
   let totalJurosPagos = 0;
   let totalAmortizado = 0;
@@ -225,45 +223,31 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
         observacoes.push("Carência de principal");
       }
     } else {
-      // Primeiro mês após carências: recalcula parâmetros
-      if (!priceJaCalculado) {
+      // Primeiro mês após carências: calcula amortização linear
+      if (!amortizacaoCalculada && input.amortizacaoMetodo === "linear") {
         const mesesRestantes = input.prazoMeses - mes + 1;
         const saldoTotal = principal + jurosAcumulados; // Principal + juros capitalizados
         
-        if (input.amortizacaoMetodo === "PRICE" && mesesRestantes > 0) {
-          // Recalcula PRICE usando o saldo total (principal + juros capitalizados)
-          parcelaPRICE = calcularParcelaPRICE(
-            saldoTotal,
-            taxaMensalCentesimos,
-            mesesRestantes
-          );
-        } else if (input.amortizacaoMetodo === "SAC" && mesesRestantes > 0) {
-          // Recalcula SAC usando o saldo total
-          amortizacaoSAC = arredondar(saldoTotal / mesesRestantes);
+        if (mesesRestantes > 0) {
+          amortizacaoLinear = arredondar(saldoTotal / mesesRestantes);
         }
         
-        priceJaCalculado = true;
+        amortizacaoCalculada = true;
       }
       
       // Calcula amortização conforme método
       const saldoTotal = principal + jurosAcumulados;
       
-      if (input.amortizacaoMetodo === "PRICE") {
-        // PRICE: parcela constante = juros + amortização
-        amortizacao = parcelaPRICE - juros;
+      if (input.amortizacaoMetodo === "linear") {
+        // Linear: amortização constante por mês
+        amortizacao = amortizacaoLinear;
         
         // Ajusta última parcela para zerar saldo (evita erros de arredondamento)
         if (mes === input.prazoMeses) {
           amortizacao = saldoTotal;
         }
-      } else if (input.amortizacaoMetodo === "SAC") {
-        amortizacao = amortizacaoSAC;
-        
-        // Ajusta última parcela para zerar saldo
-        if (mes === input.prazoMeses) {
-          amortizacao = saldoTotal;
-        }
       } else if (input.amortizacaoMetodo === "bullet") {
+        // Bullet: paga tudo no último mês
         if (mes === input.prazoMeses) {
           amortizacao = saldoTotal;
           observacoes.push("Amortização bullet (total no vencimento)");

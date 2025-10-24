@@ -32,7 +32,7 @@ export default function NewSimulation() {
     carenciaJurosMeses: "0",
     carenciaPrincipalMeses: "0",
     capitalizarJurosEmCarencia: true,
-    amortizacaoMetodo: "PRICE" as const,
+    amortizacaoMetodo: "linear" as const,
 
     // Custos e taxas (opcionais)
     taxaSetupFixaBrl: "",
@@ -215,8 +215,7 @@ export default function NewSimulation() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="PRICE">PRICE (Parcela Constante)</SelectItem>
-                      <SelectItem value="SAC">SAC (Amortização Constante)</SelectItem>
+                      <SelectItem value="linear">Linear (Amortização Constante)</SelectItem>
                       <SelectItem value="bullet">Bullet (Pagamento no Fim)</SelectItem>
                     </SelectContent>
                   </Select>

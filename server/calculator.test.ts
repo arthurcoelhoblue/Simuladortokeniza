@@ -16,7 +16,7 @@ describe("Motor de Cálculo Financeiro", () => {
       carenciaJurosMeses: 0,
       carenciaPrincipalMeses: 0,
       capitalizarJurosEmCarencia: true,
-      amortizacaoMetodo: "PRICE",
+      amortizacaoMetodo: "linear",
       taxaSetupFixaBrl: 500000, // R$ 5.000
       feeSucessoPercentSobreCaptacao: 500, // 5%
       feeManutencaoMensalBrl: 300000, // R$ 3.000
@@ -57,7 +57,7 @@ describe("Motor de Cálculo Financeiro", () => {
       carenciaJurosMeses: 0,
       carenciaPrincipalMeses: 0,
       capitalizarJurosEmCarencia: true,
-      amortizacaoMetodo: "SAC",
+      amortizacaoMetodo: "linear",
       taxaSetupFixaBrl: 0,
       feeSucessoPercentSobreCaptacao: 0,
       feeManutencaoMensalBrl: 0,
@@ -130,7 +130,7 @@ describe("Motor de Cálculo Financeiro", () => {
       carenciaJurosMeses: 3,
       carenciaPrincipalMeses: 0,
       capitalizarJurosEmCarencia: true,
-      amortizacaoMetodo: "PRICE",
+      amortizacaoMetodo: "linear",
       taxaSetupFixaBrl: 0,
       feeSucessoPercentSobreCaptacao: 0,
       feeManutencaoMensalBrl: 0,
@@ -173,7 +173,7 @@ describe("Motor de Cálculo Financeiro", () => {
       carenciaJurosMeses: 0,
       carenciaPrincipalMeses: 3,
       capitalizarJurosEmCarencia: true,
-      amortizacaoMetodo: "SAC",
+      amortizacaoMetodo: "linear",
       taxaSetupFixaBrl: 0,
       feeSucessoPercentSobreCaptacao: 0,
       feeManutencaoMensalBrl: 0,
@@ -209,7 +209,7 @@ describe("Motor de Cálculo Financeiro", () => {
       carenciaJurosMeses: 0,
       carenciaPrincipalMeses: 0,
       capitalizarJurosEmCarencia: true,
-      amortizacaoMetodo: "PRICE",
+      amortizacaoMetodo: "linear",
       taxaSetupFixaBrl: 500000, // R$ 5.000
       feeSucessoPercentSobreCaptacao: 500, // 5%
       feeManutencaoMensalBrl: 300000, // R$ 3.000
@@ -250,7 +250,7 @@ describe("Motor de Cálculo Financeiro", () => {
       carenciaJurosMeses: 0,
       carenciaPrincipalMeses: 0,
       capitalizarJurosEmCarencia: true,
-      amortizacaoMetodo: "PRICE",
+      amortizacaoMetodo: "linear",
       taxaSetupFixaBrl: 0,
       feeSucessoPercentSobreCaptacao: 0,
       feeManutencaoMensalBrl: 0,
@@ -285,7 +285,7 @@ describe("Motor de Cálculo Financeiro", () => {
       carenciaJurosMeses: 0,
       carenciaPrincipalMeses: 0,
       capitalizarJurosEmCarencia: true,
-      amortizacaoMetodo: "PRICE",
+      amortizacaoMetodo: "linear",
       taxaSetupFixaBrl: 500000, // R$ 5.000
       feeSucessoPercentSobreCaptacao: 500, // 5%
       feeManutencaoMensalBrl: 300000, // R$ 3.000
