@@ -306,16 +306,25 @@ export default function Home() {
                     <CardTitle className="flex items-center gap-2">
                       <FileText className="h-5 w-5" />
                       Simulação #{sim.id}
+                      {sim.modo === 'captador' && (
+                        <span className="text-xs bg-lime-500 text-black px-2 py-0.5 rounded-full font-medium">
+                          Captador
+                        </span>
+                      )}
                     </CardTitle>
                     <CardDescription>
-                      {sim.descricaoOferta || "Sem descrição"}
+                      {sim.descricaoOferta || (sim.modo === 'captador' ? 'Simulação de Captação' : 'Sem descrição')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Investido:</span>
-                        <span className="font-medium">{formatCurrency(sim.valorInvestido)}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {sim.modo === 'captador' ? 'Valor a Captar:' : 'Investido:'}
+                        </span>
+                        <span className="font-medium">
+                          {sim.modo === 'captador' ? formatCurrency(sim.valorTotalOferta) : formatCurrency(sim.valorInvestido)}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-muted-foreground">Método:</span>
@@ -329,14 +338,26 @@ export default function Home() {
                         <span className="text-sm text-muted-foreground">Início:</span>
                         <span className="font-medium">{formatDate(sim.dataEncerramentoOferta)}</span>
                       </div>
-                      {sim.tirAnual && (
+                      {sim.modo === 'captador' ? (
+                        <div className="flex justify-between pt-2 border-t">
+                          <span className="text-sm text-muted-foreground">Custo Total:</span>
+                          <span className="font-bold text-lime-600">
+                            {formatCurrency(
+                              sim.totalJurosPagos + 
+                              sim.valorInvestido + 
+                              sim.taxaSetupFixaBrl + 
+                              (sim.valorTotalOferta * sim.feeSucessoPercentSobreCaptacao / 10000)
+                            )}
+                          </span>
+                        </div>
+                      ) : sim.tirAnual ? (
                         <div className="flex justify-between pt-2 border-t">
                           <span className="text-sm text-muted-foreground">TIR a.a.:</span>
                           <span className="font-bold text-primary">
                             {(sim.tirAnual / 100).toFixed(2)}%
                           </span>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </CardContent>
                 </Card>
