@@ -38,7 +38,7 @@ export default function Home() {
                   alt="Tokeniza" 
                   className="h-20 mx-auto mb-6" 
                 />
-                <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-lime-500 to-emerald-500 bg-clip-text text-transparent">
                   Simule Investimentos Tokenizados com Precisão Profissional
                 </h1>
                 <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -59,20 +59,25 @@ export default function Home() {
                     Conheça a Tokeniza
                   </a>
                 </Button>
+                <Button size="lg" variant="default" className="text-lg px-8 bg-lime-500 hover:bg-lime-600 text-black" asChild>
+                  <a href="https://plataforma.tokeniza.com.br" target="_blank" rel="noopener noreferrer">
+                    Conheça Nossas Ofertas
+                  </a>
+                </Button>
               </div>
 
               {/* Trust Indicators */}
               <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-blue-500" />
+                  <Shield className="h-4 w-4 text-lime-500" />
                   <span>100% Seguro</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-blue-500" />
+                  <Zap className="h-4 w-4 text-lime-500" />
                   <span>Cálculos Instantâneos</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4 text-blue-500" />
+                  <BarChart3 className="h-4 w-4 text-lime-500" />
                   <span>Relatórios Profissionais</span>
                 </div>
               </div>
@@ -93,7 +98,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
               <Card>
                 <CardHeader>
-                  <TrendingUp className="h-8 w-8 text-blue-500 mb-2" />
+                  <TrendingUp className="h-8 w-8 text-lime-500 mb-2" />
                   <CardTitle className="text-lg">Cálculo de TIR</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -106,7 +111,7 @@ export default function Home() {
 
               <Card>
                 <CardHeader>
-                  <Calculator className="h-8 w-8 text-blue-500 mb-2" />
+                  <Calculator className="h-8 w-8 text-lime-500 mb-2" />
                   <CardTitle className="text-lg">Métodos Flexíveis</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -119,7 +124,7 @@ export default function Home() {
 
               <Card>
                 <CardHeader>
-                  <FileText className="h-8 w-8 text-blue-500 mb-2" />
+                  <FileText className="h-8 w-8 text-lime-500 mb-2" />
                   <CardTitle className="text-lg">Cronograma Completo</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -132,7 +137,7 @@ export default function Home() {
 
               <Card>
                 <CardHeader>
-                  <Shield className="h-8 w-8 text-blue-500 mb-2" />
+                  <Shield className="h-8 w-8 text-lime-500 mb-2" />
                   <CardTitle className="text-lg">Carências Configuráveis</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -145,10 +150,10 @@ export default function Home() {
             </div>
 
             {/* Tokeniza Institutional */}
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
+            <Card className="bg-gradient-to-br from-lime-50 to-emerald-100 dark:from-lime-950 dark:to-emerald-900 border-lime-200 dark:border-lime-800">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                  <Shield className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  <Shield className="h-6 w-6 text-lime-600 dark:text-lime-400" />
                   Por que escolher a Tokeniza?
                 </CardTitle>
               </CardHeader>
@@ -158,36 +163,36 @@ export default function Home() {
                   para operar com tokenização de ativos, garantindo segurança jurídica e regulatória para seus investimentos.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-lime-200 dark:border-lime-800">
                     <p className="text-sm font-semibold mb-2 flex items-center gap-2">
-                      <Shield className="h-4 w-4 text-blue-600" />
+                      <Shield className="h-4 w-4 text-lime-600" />
                       Autorização CVM
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Primeira e única plataforma brasileira com autorização da Comissão de Valores Mobiliários.
                     </p>
                   </div>
-                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-lime-200 dark:border-lime-800">
                     <p className="text-sm font-semibold mb-2 flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-blue-600" />
+                      <Zap className="h-4 w-4 text-lime-600" />
                       100% Tokenizado
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Sistema completamente baseado em blockchain, garantindo transparência e rastreabilidade.
                     </p>
                   </div>
-                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-lime-200 dark:border-lime-800">
                     <p className="text-sm font-semibold mb-2 flex items-center gap-2">
-                      <BarChart3 className="h-4 w-4 text-blue-600" />
+                      <BarChart3 className="h-4 w-4 text-lime-600" />
                       +130 Projetos
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Mais de 130 projetos tokenizados no Brasil, democratizando o acesso a investimentos alternativos.
                     </p>
                   </div>
-                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-lime-200 dark:border-lime-800">
                     <p className="text-sm font-semibold mb-2 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-blue-600" />
+                      <TrendingUp className="h-4 w-4 text-lime-600" />
                       Distribuição Global
                     </p>
                     <p className="text-sm text-muted-foreground">
