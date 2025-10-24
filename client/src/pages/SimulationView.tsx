@@ -192,7 +192,11 @@ export default function SimulationView() {
   </style>
 </head>
 <body>
-  <h1>Simula\u00e7\u00e3o de Investimento Tokenizado</h1>
+  <div style="text-align: center; margin-bottom: 30px;">
+    <img src="/tokeniza-logo.svg" alt="Tokeniza" style="height: 60px; margin-bottom: 10px;" />
+    <h1 style="margin: 0; border: none; padding: 0;">Tokeniza</h1>
+    <p style="color: #64748b; margin-top: 5px;">Simula\u00e7\u00e3o de Investimento Tokenizado</p>
+  </div>
   
   ${simulation.descricaoOferta ? `<p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">${simulation.descricaoOferta}</p>` : ""}
   
