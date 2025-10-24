@@ -15,6 +15,13 @@
       "when": 1761224899307,
       "tag": "0001_lowly_hercules",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1761344236502,
+      "tag": "0002_typical_marvex",
+      "breakpoints": true
     }
   ]
 }

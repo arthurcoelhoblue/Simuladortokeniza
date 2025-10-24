@@ -60,6 +60,7 @@ export const simulations = mysqlTable("simulations", {
   aliquotaImpostoRendaPercent: int("aliquotaImpostoRendaPercent").notNull().default(0), // em centésimos de %
   
   // Outros
+  modo: varchar("modo", { length: 20 }).notNull().default("investidor"), // 'investidor' ou 'captador'
   identificadorInvestidor: varchar("identificadorInvestidor", { length: 100 }),
   moedaReferencia: varchar("moedaReferencia", { length: 10 }).notNull().default("BRL"),
   

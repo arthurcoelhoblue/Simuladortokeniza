@@ -364,43 +364,113 @@ export default function SimulationView() {
         </div>
 
         {/* Resumo Executivo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Valor Investido</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{formatCurrency(simulation.valorInvestido)}</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                {formatPercent(simulation.valorInvestido * 10000 / simulation.valorTotalOferta)} da oferta
-              </p>
-            </CardContent>
-          </Card>
+        {simulation.modo === 'captador' ? (
+          // Visualização para Captador
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Valor Captado</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold">{formatCurrency(simulation.valorTotalOferta)}</p>
+                <p className="text-sm text-muted-foreground mt-1">Total da oferta</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total de Juros</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{formatCurrency(simulation.totalJurosPagos)}</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Taxa: {formatPercent(simulation.taxaJurosAa)} a.a.
-              </p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Custos Investidores</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-orange-600">{formatCurrency(simulation.totalJurosPagos + simulation.valorInvestido)}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {formatPercent((simulation.totalJurosPagos + simulation.valorInvestido) * 10000 / simulation.valorTotalOferta)} do captado
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Recebido</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{formatCurrency(simulation.totalRecebido)}</p>
-              {simulation.tirAnual && (
-                <p className="text-sm text-muted-foreground mt-1">TIR: {formatPercent(simulation.tirAnual)} a.a.</p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Custos Tokeniza</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-red-600">
+                  {formatCurrency(
+                    simulation.taxaSetupFixaBrl + 
+                    (simulation.valorTotalOferta * simulation.feeSucessoPercentSobreCaptacao / 10000)
+                  )}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {formatPercent(
+                    (simulation.taxaSetupFixaBrl + 
+                    (simulation.valorTotalOferta * simulation.feeSucessoPercentSobreCaptacao / 10000)) * 10000 / simulation.valorTotalOferta
+                  )} do captado
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Custo Total</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-lime-600">
+                  {formatCurrency(
+                    simulation.totalJurosPagos + 
+                    simulation.valorInvestido + 
+                    simulation.taxaSetupFixaBrl + 
+                    (simulation.valorTotalOferta * simulation.feeSucessoPercentSobreCaptacao / 10000)
+                  )}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Custo médio: {formatCurrency(
+                    (simulation.totalJurosPagos + simulation.valorInvestido + simulation.taxaSetupFixaBrl + 
+                    (simulation.valorTotalOferta * simulation.feeSucessoPercentSobreCaptacao / 10000)) / simulation.prazoMeses
+                  )}/mês
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          // Visualização para Investidor
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Valor Investido</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold">{formatCurrency(simulation.valorInvestido)}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {formatPercent(simulation.valorInvestido * 10000 / simulation.valorTotalOferta)} da oferta
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total de Juros</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold">{formatCurrency(simulation.totalJurosPagos)}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Taxa: {formatPercent(simulation.taxaJurosAa)} a.a.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total Recebido</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold">{formatCurrency(simulation.totalRecebido)}</p>
+                {simulation.tirAnual && (
+                  <p className="text-sm text-muted-foreground mt-1">TIR: {formatPercent(simulation.tirAnual)} a.a.</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Detalhes da Simulação */}
         <Card className="mb-6">

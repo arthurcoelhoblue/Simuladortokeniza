@@ -87,6 +87,7 @@ export const appRouter = router({
           aliquotaImpostoRendaPercent: z.number().nonnegative().optional(),
 
           // Outros
+          modo: z.enum(["investidor", "captador"]).default("investidor"),
           identificadorInvestidor: z.string().optional(),
           moedaReferencia: z.string().default("BRL"),
         })
@@ -156,6 +157,7 @@ export const appRouter = router({
           feeManutencaoMensalBrl: input.feeManutencaoMensalBrl || 0,
           taxaTransacaoPercent: input.taxaTransacaoPercent || 0,
           aliquotaImpostoRendaPercent: input.aliquotaImpostoRendaPercent || 0,
+          modo: input.modo,
           identificadorInvestidor: input.identificadorInvestidor || null,
           moedaReferencia: input.moedaReferencia,
           totalJurosPagos: resultado.resumo.totalJurosPagos,

@@ -71,10 +71,13 @@ export default function NewSimulation() {
     e.preventDefault();
 
     // Converte valores de string para número (em centavos)
+    // No modo captador, valorInvestido = valorTotalOferta (simula o custo total)
     createMutation.mutate({
       descricaoOferta: formData.descricaoOferta || undefined,
       valorTotalOferta: parseFloat(formData.valorTotalOferta) * 100,
-      valorInvestido: parseFloat(formData.valorInvestido) * 100,
+      valorInvestido: modo === 'captador' 
+        ? parseFloat(formData.valorTotalOferta) * 100 
+        : parseFloat(formData.valorInvestido) * 100,
       dataEncerramentoOferta: formData.dataEncerramentoOferta,
       prazoMeses: parseInt(formData.prazoMeses),
       taxaJurosAa: parseInt(formData.taxaJurosAa),
@@ -86,6 +89,7 @@ export default function NewSimulation() {
       carenciaPrincipalMeses: parseInt(formData.carenciaPrincipalMeses) || 0,
       capitalizarJurosEmCarencia: formData.capitalizarJurosEmCarencia,
       amortizacaoMetodo: formData.amortizacaoMetodo,
+      modo: modo, // Salva o modo da simulação
       // Custos são calculados apenas no modo captador
       taxaSetupFixaBrl: modo === 'captador' && formData.taxaEstruturacao ? parseFloat(formData.taxaEstruturacao) * 100 : undefined,
       feeSucessoPercentSobreCaptacao: modo === 'captador' && formData.feePercentualCaptacao ? parseFloat(formData.feePercentualCaptacao) * 100 : undefined,
@@ -165,7 +169,7 @@ export default function NewSimulation() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className={modo === 'investidor' ? 'grid grid-cols-2 gap-4' : ''}>
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <Label htmlFor="valorTotalOferta">Valor Total da Oferta (R$)</Label>
@@ -182,37 +186,41 @@ export default function NewSimulation() {
                   />
                 </div>
 
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Label htmlFor="valorInvestido">Valor Investido (R$)</Label>
-                    <HelpTooltip content="Valor que você pretende investir nesta oferta" />
+                {modo === 'investidor' && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Label htmlFor="valorInvestido">Valor Investido (R$)</Label>
+                      <HelpTooltip content="Valor que você pretende investir nesta oferta" />
+                    </div>
+                    <Input
+                      id="valorInvestido"
+                      type="number"
+                      step="0.01"
+                      required
+                      value={formData.valorInvestido}
+                      onChange={(e) => setFormData({ ...formData, valorInvestido: e.target.value })}
+                      placeholder="100000.00"
+                    />
                   </div>
-                  <Input
-                    id="valorInvestido"
-                    type="number"
-                    step="0.01"
-                    required
-                    value={formData.valorInvestido}
-                    onChange={(e) => setFormData({ ...formData, valorInvestido: e.target.value })}
-                    placeholder="100000.00"
-                  />
-                </div>
+                )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Label htmlFor="dataEncerramentoOferta">Data de Encerramento da Oferta</Label>
-                    <HelpTooltip content="Data em que a oferta será encerrada. Os pagamentos começam 30 dias após esta data" />
+              <div className={modo === 'investidor' ? 'grid grid-cols-2 gap-4' : ''}>
+                {modo === 'investidor' && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Label htmlFor="dataEncerramentoOferta">Data de Encerramento da Oferta</Label>
+                      <HelpTooltip content="Data em que a oferta será encerrada. Os pagamentos começam 30 dias após esta data" />
+                    </div>
+                    <Input
+                      id="dataEncerramentoOferta"
+                      type="date"
+                      required
+                      value={formData.dataEncerramentoOferta}
+                      onChange={(e) => setFormData({ ...formData, dataEncerramentoOferta: e.target.value })}
+                    />
                   </div>
-                  <Input
-                    id="dataEncerramentoOferta"
-                    type="date"
-                    required
-                    value={formData.dataEncerramentoOferta}
-                    onChange={(e) => setFormData({ ...formData, dataEncerramentoOferta: e.target.value })}
-                  />
-                </div>
+                )}
 
                 <div>
                   <div className="flex items-center gap-2 mb-2">

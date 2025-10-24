@@ -42,8 +42,8 @@ export default function Home() {
                   Simule Investimentos Tokenizados com Precisão Profissional
                 </h1>
                 <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Calcule retornos, analise cronogramas e tome decisões informadas com a plataforma 
-                  de simulação mais completa do mercado de tokenização.
+                  <strong>Investidores:</strong> calcule retornos e analise cronogramas. <strong>Captadores:</strong> simule custos de captação. 
+                  A plataforma mais completa do mercado de tokenização.
                 </p>
               </div>
 
