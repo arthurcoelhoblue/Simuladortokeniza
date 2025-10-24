@@ -158,20 +158,11 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
   // Determina número de parcelas para amortização
   const mesesComAmortizacao = input.prazoMeses - input.carenciaPrincipalMeses;
   
-  // Calcula parcela PRICE se aplicável
+  // Variáveis para cálculo de amortização
+  // PRICE será recalculado após as carências usando o saldo atualizado
   let parcelaPRICE = 0;
-  if (input.amortizacaoMetodo === "PRICE" && mesesComAmortizacao > 0) {
-    parcelaPRICE = calcularParcelaPRICE(
-      input.valorInvestido,
-      taxaMensalCentesimos,
-      mesesComAmortizacao
-    );
-  }
-
-  // Calcula amortização SAC se aplicável
-  const amortizacaoSAC = input.amortizacaoMetodo === "SAC" && mesesComAmortizacao > 0
-    ? arredondar(input.valorInvestido / mesesComAmortizacao)
-    : 0;
+  let amortizacaoSAC = 0;
+  let priceJaCalculado = false;
 
   let totalJurosPagos = 0;
   let totalAmortizado = 0;
@@ -211,12 +202,31 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
         observacoes.push("Carência de principal");
       }
     } else {
+      // Primeiro mês após carências: recalcula parâmetros usando saldo atualizado
+      if (!priceJaCalculado) {
+        const mesesRestantes = input.prazoMeses - mes + 1;
+        
+        if (input.amortizacaoMetodo === "PRICE" && mesesRestantes > 0) {
+          // Recalcula PRICE usando o saldo atual (após capitalização de juros)
+          parcelaPRICE = calcularParcelaPRICE(
+            saldo,
+            taxaMensalCentesimos,
+            mesesRestantes
+          );
+        } else if (input.amortizacaoMetodo === "SAC" && mesesRestantes > 0) {
+          // Recalcula SAC usando o saldo atual
+          amortizacaoSAC = arredondar(saldo / mesesRestantes);
+        }
+        
+        priceJaCalculado = true;
+      }
+      
       // Calcula amortização conforme método
       if (input.amortizacaoMetodo === "PRICE") {
-        const jurosPagos = emCarenciaJuros ? 0 : juros;
-        amortizacao = parcelaPRICE - jurosPagos;
+        // PRICE: parcela constante = juros + amortização
+        amortizacao = parcelaPRICE - juros;
         
-        // Ajusta última parcela para zerar saldo
+        // Ajusta última parcela para zerar saldo (evita erros de arredondamento)
         if (mes === input.prazoMeses) {
           amortizacao = saldo;
         }
