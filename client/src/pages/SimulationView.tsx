@@ -57,6 +57,29 @@ export default function SimulationView() {
     }
   };
 
+  const handleExportPDF = async () => {
+    try {
+      // Chama a API diretamente via fetch
+      const response = await fetch(`/api/trpc/simulations.exportPDF?input=${encodeURIComponent(JSON.stringify({ simulationId }))}`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+      
+      if (data.result?.data?.html) {
+        const printWindow = window.open("", "_blank");
+        if (printWindow) {
+          printWindow.document.write(data.result.data.html);
+          printWindow.document.close();
+          setTimeout(() => {
+            printWindow.print();
+          }, 250);
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao exportar PDF:", error);
+    }
+  };
+
   const handleExportCSV = () => {
     if (!cronograma) return;
 
@@ -110,9 +133,13 @@ export default function SimulationView() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleExportCSV}>
-              <Download className="mr-2 h-4 w-4" />
-              Exportar CSV
-            </Button>
+            <Download className="w-4 h-4 mr-2" />
+            Exportar CSV
+          </Button>
+          <Button variant="outline" onClick={handleExportPDF}>
+            <Download className="w-4 h-4 mr-2" />
+            Exportar PDF
+          </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isPending}>
               <Trash2 className="mr-2 h-4 w-4" />
               Deletar

@@ -152,13 +152,27 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
   );
   const taxaMensalDecimal = taxaMensalCentesimos / 10000;
 
+  // Ajusta carências automaticamente baseado na periodicidade
+  let carenciaJurosEfetiva = input.carenciaJurosMeses;
+  let carenciaPrincipalEfetiva = input.carenciaPrincipalMeses;
+  
+  // Se juros são pagos no fim, aplica carência de juros por todo o prazo
+  if (input.periodicidadeJuros === "no_fim") {
+    carenciaJurosEfetiva = input.prazoMeses - 1; // Todos os meses exceto o último
+  }
+  
+  // Se amortização é no fim (bullet), aplica carência de principal por todo o prazo
+  if (input.periodicidadeAmortizacao === "no_fim" || input.amortizacaoMetodo === "bullet") {
+    carenciaPrincipalEfetiva = input.prazoMeses - 1;
+  }
+
   const cronograma: CronogramaMes[] = [];
   let principal = input.valorInvestido; // Principal devedor (só muda com amortização)
   let jurosAcumulados = 0; // Juros não pagos acumulados
   const principalInicial = input.valorInvestido; // Para capitalização simples
   
   // Determina número de parcelas para amortização
-  const mesesComAmortizacao = input.prazoMeses - input.carenciaPrincipalMeses;
+  const mesesComAmortizacao = input.prazoMeses - carenciaPrincipalEfetiva;
   
   // Variáveis para cálculo de amortização
   // PRICE será recalculado após as carências usando o saldo atualizado
@@ -191,7 +205,7 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
     let observacoes: string[] = [];
 
     // Verifica carência de juros
-    const emCarenciaJuros = mes <= input.carenciaJurosMeses;
+    const emCarenciaJuros = mes <= carenciaJurosEfetiva;
     if (emCarenciaJuros) {
       if (input.capitalizarJurosEmCarencia) {
         jurosAcumulados += juros; // Acumula juros não pagos
@@ -204,7 +218,7 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
     }
 
     // Verifica carência de principal
-    const emCarenciaPrincipal = mes <= input.carenciaPrincipalMeses;
+    const emCarenciaPrincipal = mes <= carenciaPrincipalEfetiva;
     if (emCarenciaPrincipal) {
       amortizacao = 0;
       if (!emCarenciaJuros) {

@@ -6,6 +6,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { calcularSimulacao, SimulationInput } from "./calculator";
 import * as db from "./db";
+import { generatePDFHTML } from "./pdfExport";
 
 export const appRouter = router({
   system: systemRouter,
@@ -201,7 +202,26 @@ export const appRouter = router({
         await db.deleteSimulation(input.id);
         return { success: true };
       }),
+
+    // Exportar simulação como HTML para PDF
+    exportPDF: protectedProcedure
+      .input(z.object({ simulationId: z.number() }))
+      .query(async ({ input, ctx }) => {
+        const simulation = await db.getSimulationById(input.simulationId);
+        if (!simulation) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Simulação não encontrada" });
+        }
+        if (simulation.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+        }
+
+        const cronograma = await db.getCronogramasBySimulationId(input.simulationId);
+        const html = generatePDFHTML(simulation, cronograma);
+        
+        return { html };
+      }),
   }),
 });
+
 
 export type AppRouter = typeof appRouter;
