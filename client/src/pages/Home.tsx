@@ -144,31 +144,56 @@ export default function Home() {
               </Card>
             </div>
 
-            {/* TIR Explanation */}
+            {/* Tokeniza Institutional */}
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                  <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                  O que é TIR?
+                  <Shield className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  Por que escolher a Tokeniza?
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-base">
-                  A <strong>Taxa Interna de Retorno (TIR)</strong> é a métrica mais importante para avaliar 
-                  a rentabilidade real de um investimento tokenizado.
+                  A <strong>Tokeniza</strong> é a <strong>primeira plataforma do Brasil autorizada pela CVM</strong> 
+                  para operar com tokenização de ativos, garantindo segurança jurídica e regulatória para seus investimentos.
                 </p>
-                <p className="text-base">
-                  Diferente da taxa de juros nominal, a TIR considera <strong>todos os fluxos de caixa</strong> 
-                  (investimento inicial, juros recebidos, amortizações, custos e taxas) para calcular o 
-                  rendimento efetivo anual do seu investimento.
-                </p>
-                <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                  <p className="text-sm font-semibold mb-2">Exemplo prático:</p>
-                  <p className="text-sm text-muted-foreground">
-                    Um investimento com taxa de juros de 12% a.a. pode ter uma TIR de 10,5% a.a. 
-                    após considerar custos de setup, fee de sucesso e período de carência. 
-                    A TIR mostra o retorno <strong>real</strong> que você receberá.
-                  </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-blue-600" />
+                      Autorização CVM
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Primeira e única plataforma brasileira com autorização da Comissão de Valores Mobiliários.
+                    </p>
+                  </div>
+                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-blue-600" />
+                      100% Tokenizado
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Sistema completamente baseado em blockchain, garantindo transparência e rastreabilidade.
+                    </p>
+                  </div>
+                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4 text-blue-600" />
+                      +130 Projetos
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Mais de 130 projetos tokenizados no Brasil, democratizando o acesso a investimentos alternativos.
+                    </p>
+                  </div>
+                  <div className="bg-white dark:bg-slate-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-blue-600" />
+                      Distribuição Global
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Conectamos investidores brasileiros e internacionais a oportunidades únicas de investimento.
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
