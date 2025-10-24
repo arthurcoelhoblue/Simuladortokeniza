@@ -154,6 +154,7 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
 
   const cronograma: CronogramaMes[] = [];
   let saldo = input.valorInvestido;
+  const principalInicial = input.valorInvestido; // Juros sempre calculados sobre este valor
   
   // Determina número de parcelas para amortização
   const mesesComAmortizacao = input.prazoMeses - input.carenciaPrincipalMeses;
@@ -175,8 +176,8 @@ export function calcularSimulacao(input: SimulationInput): SimulationResult {
     const saldoInicial = saldo;
     const dataParcela = adicionarMeses(input.dataInicio, mes);
     
-    // Calcula juros do período
-    let juros = arredondar(saldoInicial * taxaMensalDecimal);
+    // Calcula juros do período - SEMPRE sobre o principal inicial
+    let juros = arredondar(principalInicial * taxaMensalDecimal);
     
     let amortizacao = 0;
     let observacoes: string[] = [];
