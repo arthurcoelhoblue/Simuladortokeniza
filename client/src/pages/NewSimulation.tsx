@@ -5,30 +5,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { trpc } from "@/lib/trpc";
 import { ArrowLeft, Calculator, HelpCircle } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 
-// Componente auxiliar para tooltip de ajuda que funciona em mobile e desktop
+// Componente auxiliar para ajuda que funciona em mobile e desktop
 const HelpTooltip = ({ content }: { content: string | React.ReactNode }) => (
-  <Tooltip delayDuration={0}>
-    <TooltipTrigger asChild>
+  <Popover>
+    <PopoverTrigger asChild>
       <button type="button" className="inline-flex items-center justify-center" aria-label="Ajuda">
-        <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors cursor-help" />
+        <HelpCircle className="h-4 w-4 text-lime-500 hover:text-lime-600 transition-colors cursor-help" />
       </button>
-    </TooltipTrigger>
-    <TooltipContent className="max-w-xs">
+    </PopoverTrigger>
+    <PopoverContent className="max-w-xs text-sm" side="top">
       {typeof content === 'string' ? <p>{content}</p> : content}
-    </TooltipContent>
-  </Tooltip>
+    </PopoverContent>
+  </Popover>
 );
 
 export default function NewSimulation() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
+  const [modo, setModo] = useState<'investidor' | 'captador'>('investidor');
 
   const [formData, setFormData] = useState({
     // Dados da oferta
@@ -49,10 +50,11 @@ export default function NewSimulation() {
     capitalizarJurosEmCarencia: true,
     amortizacaoMetodo: "linear" as const,
 
-    // Custos e taxas (opcionais)
-    taxaSetupFixaBrl: "",
-    feeSucessoPercentSobreCaptacao: "",
-    feeManutencaoMensalBrl: "",
+    // Custos do captador (apenas modo captador)
+    taxaEstruturacao: "", // Taxa fixa paga à Tokeniza
+    feePercentualCaptacao: "", // % sobre valor captado pago à Tokeniza
+    outrosCustos: "",
+    outrosCustosTipo: "valor" as 'valor' | 'percentual',
   });
 
   const createMutation = trpc.simulations.create.useMutation({
@@ -84,9 +86,10 @@ export default function NewSimulation() {
       carenciaPrincipalMeses: parseInt(formData.carenciaPrincipalMeses) || 0,
       capitalizarJurosEmCarencia: formData.capitalizarJurosEmCarencia,
       amortizacaoMetodo: formData.amortizacaoMetodo,
-      taxaSetupFixaBrl: formData.taxaSetupFixaBrl ? parseInt(formData.taxaSetupFixaBrl) : undefined,
-      feeSucessoPercentSobreCaptacao: formData.feeSucessoPercentSobreCaptacao ? parseInt(formData.feeSucessoPercentSobreCaptacao) : undefined,
-      feeManutencaoMensalBrl: formData.feeManutencaoMensalBrl ? parseInt(formData.feeManutencaoMensalBrl) : undefined,
+      // Custos são calculados apenas no modo captador
+      taxaSetupFixaBrl: modo === 'captador' && formData.taxaEstruturacao ? parseFloat(formData.taxaEstruturacao) * 100 : undefined,
+      feeSucessoPercentSobreCaptacao: modo === 'captador' && formData.feePercentualCaptacao ? parseFloat(formData.feePercentualCaptacao) * 100 : undefined,
+      feeManutencaoMensalBrl: undefined,
       taxaTransacaoPercent: undefined,
       aliquotaImpostoRendaPercent: undefined,
     });
@@ -105,6 +108,41 @@ export default function NewSimulation() {
             Configure os parâmetros da simulação de investimento tokenizado
           </p>
         </div>
+
+        {/* Toggle Modo Investidor / Captador */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => setModo('investidor')}
+                className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                  modo === 'investidor'
+                    ? 'bg-lime-500 text-white shadow-lg'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+              >
+                💰 Modo Investidor
+              </button>
+              <button
+                type="button"
+                onClick={() => setModo('captador')}
+                className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                  modo === 'captador'
+                    ? 'bg-lime-500 text-white shadow-lg'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+              >
+                🏢 Modo Captador
+              </button>
+            </div>
+            <p className="text-center text-sm text-muted-foreground mt-4">
+              {modo === 'investidor'
+                ? 'Simule o retorno do seu investimento'
+                : 'Simule os custos da sua captação'}
+            </p>
+          </CardContent>
+        </Card>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Dados da Oferta */}
@@ -330,73 +368,128 @@ export default function NewSimulation() {
             </CardContent>
           </Card>
 
-          {/* Custos e Taxas */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Custos e Taxas (Opcional)</CardTitle>
-              <CardDescription>Custos do captador - deixe em branco se não aplicável</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Label htmlFor="taxaSetup">Taxa de Setup (R$)</Label>
-                    <HelpTooltip content="Custo inicial pago pelo captador para estruturar a oferta. Não afeta o fluxo do investidor" />
+          {/* Painel de Custos do Captador */}
+          {modo === 'captador' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Custos da Captação</CardTitle>
+                <CardDescription>Simule os custos totais para captar recursos via Tokeniza</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Label htmlFor="taxaEstruturacao">Taxa de Estruturação (R$)</Label>
+                      <HelpTooltip content="Taxa fixa paga à Tokeniza para estruturar e publicar a oferta" />
+                    </div>
+                    <Input
+                      id="taxaEstruturacao"
+                      type="number"
+                      step="0.01"
+                      value={formData.taxaEstruturacao}
+                      onChange={(e) => setFormData({ ...formData, taxaEstruturacao: e.target.value })}
+                      placeholder="0.00"
+                    />
                   </div>
-                  <Input
-                    id="taxaSetup"
-                    type="number"
-                    step="0.01"
-                    value={formData.taxaSetupFixaBrl ? (parseInt(formData.taxaSetupFixaBrl) / 100).toFixed(2) : ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, taxaSetupFixaBrl: e.target.value ? (parseFloat(e.target.value) * 100).toString() : "" })
-                    }
-                    placeholder="0.00"
-                  />
+
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Label htmlFor="feePercentualCaptacao">Fee sobre Captação (%)</Label>
+                      <HelpTooltip content="Percentual sobre o valor total captado pago à Tokeniza" />
+                    </div>
+                    <Input
+                      id="feePercentualCaptacao"
+                      type="number"
+                      step="0.01"
+                      value={formData.feePercentualCaptacao}
+                      onChange={(e) => setFormData({ ...formData, feePercentualCaptacao: e.target.value })}
+                      placeholder="0.00"
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <Label htmlFor="feeSucesso">Fee de Sucesso (%)</Label>
-                    <HelpTooltip content="Percentual sobre o valor captado pago pelo captador ao finalizar a oferta. Não afeta o investidor" />
+                    <Label htmlFor="outrosCustos">Outros Custos</Label>
+                    <HelpTooltip content="Custos adicionais (assessoria jurídica, marketing, etc.)" />
                   </div>
-                  <Input
-                    id="feeSucesso"
-                    type="number"
-                    step="0.01"
-                    value={formData.feeSucessoPercentSobreCaptacao ? (parseInt(formData.feeSucessoPercentSobreCaptacao) / 100).toFixed(2) : ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        feeSucessoPercentSobreCaptacao: e.target.value ? (parseFloat(e.target.value) * 100).toString() : "",
-                      })
-                    }
-                    placeholder="0.00"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="outrosCustos"
+                      type="number"
+                      step="0.01"
+                      value={formData.outrosCustos}
+                      onChange={(e) => setFormData({ ...formData, outrosCustos: e.target.value })}
+                      placeholder="0.00"
+                      className="flex-1"
+                    />
+                    <Select
+                      value={formData.outrosCustosTipo}
+                      onValueChange={(value: 'valor' | 'percentual') => setFormData({ ...formData, outrosCustosTipo: value })}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="valor">R$</SelectItem>
+                        <SelectItem value="percentual">%</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Label htmlFor="feeManutencao">Fee Manutenção Mensal (R$)</Label>
-                    <HelpTooltip content="Custo mensal pago pelo captador para manutenção da oferta na plataforma. Não afeta o investidor" />
+                {/* Resumo de Custos */}
+                {(formData.taxaEstruturacao || formData.feePercentualCaptacao || formData.outrosCustos) && (
+                  <div className="mt-6 p-4 bg-muted rounded-lg">
+                    <h4 className="font-semibold mb-3">Resumo de Custos</h4>
+                    <div className="space-y-2 text-sm">
+                      {formData.taxaEstruturacao && (
+                        <div className="flex justify-between">
+                          <span>Taxa de Estruturação:</span>
+                          <span className="font-medium">R$ {parseFloat(formData.taxaEstruturacao).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                      )}
+                      {formData.feePercentualCaptacao && formData.valorTotalOferta && (
+                        <div className="flex justify-between">
+                          <span>Fee sobre Captação ({formData.feePercentualCaptacao}%):</span>
+                          <span className="font-medium">R$ {(parseFloat(formData.valorTotalOferta) * parseFloat(formData.feePercentualCaptacao) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                      )}
+                      {formData.outrosCustos && (
+                        <div className="flex justify-between">
+                          <span>Outros Custos:</span>
+                          <span className="font-medium">
+                            {formData.outrosCustosTipo === 'valor'
+                              ? `R$ ${parseFloat(formData.outrosCustos).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                              : formData.valorTotalOferta
+                              ? `R$ ${(parseFloat(formData.valorTotalOferta) * parseFloat(formData.outrosCustos) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${formData.outrosCustos}%)`
+                              : `${formData.outrosCustos}%`
+                            }
+                          </span>
+                        </div>
+                      )}
+                      <div className="border-t pt-2 mt-2 flex justify-between font-bold text-base text-lime-600">
+                        <span>Custo Total:</span>
+                        <span>
+                          R$ {(
+                            (parseFloat(formData.taxaEstruturacao) || 0) +
+                            (formData.feePercentualCaptacao && formData.valorTotalOferta ? parseFloat(formData.valorTotalOferta) * parseFloat(formData.feePercentualCaptacao) / 100 : 0) +
+                            (formData.outrosCustos
+                              ? formData.outrosCustosTipo === 'valor'
+                                ? parseFloat(formData.outrosCustos)
+                                : formData.valorTotalOferta
+                                ? parseFloat(formData.valorTotalOferta) * parseFloat(formData.outrosCustos) / 100
+                                : 0
+                              : 0)
+                          ).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <Input
-                    id="feeManutencao"
-                    type="number"
-                    step="0.01"
-                    value={formData.feeManutencaoMensalBrl ? (parseInt(formData.feeManutencaoMensalBrl) / 100).toFixed(2) : ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        feeManutencaoMensalBrl: e.target.value ? (parseFloat(e.target.value) * 100).toString() : "",
-                      })
-                    }
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <div className="flex gap-4">
             <Button type="submit" size="lg" disabled={createMutation.isPending} className="flex-1">
