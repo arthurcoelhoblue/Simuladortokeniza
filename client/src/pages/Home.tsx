@@ -31,7 +31,7 @@ export default function Home() {
         <div className="container py-16">
           <div className="max-w-3xl mx-auto text-center">
             <div className="mb-8">
-              <img src={APP_LOGO} alt="Tokeniza" className="h-16 mx-auto mb-4 text-foreground" style={{filter: theme === 'dark' ? 'invert(1)' : 'none'}} />
+              <img src={theme === 'dark' ? '/tokeniza-logo-light.svg' : APP_LOGO} alt="Tokeniza" className="h-16 mx-auto mb-4" />
               <h1 className="text-4xl font-bold mb-4">{APP_TITLE}</h1>
               <p className="text-xl text-muted-foreground">
                 Simule investimentos tokenizados com cálculos precisos de cronograma mensal,
@@ -100,7 +100,7 @@ export default function Home() {
       <header className="border-b">
         <div className="container py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={APP_LOGO} alt="Tokeniza" className="h-8" style={{filter: theme === 'dark' ? 'invert(1)' : 'none'}} />
+            <img src={theme === 'dark' ? '/tokeniza-logo-light.svg' : APP_LOGO} alt="Tokeniza" className="h-8" />
             <h1 className="text-2xl font-bold">{APP_TITLE}</h1>
           </div>
           <div className="flex items-center gap-2">
