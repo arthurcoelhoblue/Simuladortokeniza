@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Calculator } from "lucide-react";
+import { ArrowLeft, Calculator, HelpCircle } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -100,7 +101,17 @@ export default function NewSimulation() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="descricaoOferta">Descrição da Oferta (opcional)</Label>
+                <div className="flex items-center gap-2 mb-2">
+                  <Label htmlFor="descricaoOferta">Descrição da Oferta (opcional)</Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p>Nome ou descrição breve da oferta de investimento para identificação</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
                 <Textarea
                   id="descricaoOferta"
                   value={formData.descricaoOferta}
@@ -111,7 +122,17 @@ export default function NewSimulation() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="valorTotalOferta">Valor Total da Oferta (R$)</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="valorTotalOferta">Valor Total da Oferta (R$)</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Valor total que está sendo captado na oferta tokenizada</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="valorTotalOferta"
                     type="number"
@@ -124,7 +145,17 @@ export default function NewSimulation() {
                 </div>
 
                 <div>
-                  <Label htmlFor="valorInvestido">Valor Investido (R$)</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="valorInvestido">Valor Investido (R$)</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Valor que você pretende investir nesta oferta</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="valorInvestido"
                     type="number"
@@ -139,7 +170,17 @@ export default function NewSimulation() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="dataEncerramentoOferta">Data de Encerramento da Oferta</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="dataEncerramentoOferta">Data de Encerramento da Oferta</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Data em que a oferta será encerrada. Os pagamentos começam 30 dias após esta data</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="dataEncerramentoOferta"
                     type="date"
@@ -150,7 +191,17 @@ export default function NewSimulation() {
                 </div>
 
                 <div>
-                  <Label htmlFor="prazoMeses">Prazo (meses)</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="prazoMeses">Prazo (meses)</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Duração total do investimento em meses</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="prazoMeses"
                     type="number"
@@ -164,7 +215,17 @@ export default function NewSimulation() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="taxaJurosAa">Taxa de Juros (% a.a.)</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="taxaJurosAa">Taxa de Juros (% a.a.)</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Taxa de juros anual prometida pela oferta (ex: 24% ao ano)</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="taxaJurosAa"
                     type="number"
@@ -179,7 +240,17 @@ export default function NewSimulation() {
                 </div>
 
                 <div>
-                  <Label htmlFor="tipoCapitalizacao">Tipo de Capitalização</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="tipoCapitalizacao">Tipo de Capitalização</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p><strong>Simples:</strong> juros sempre sobre o valor inicial. <strong>Composta:</strong> juros sobre o saldo devedor atual (efeito composto)</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Select
                     value={formData.tipoCapitalizacao}
                     onValueChange={(value: any) => setFormData({ ...formData, tipoCapitalizacao: value })}
@@ -206,7 +277,17 @@ export default function NewSimulation() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="amortizacaoMetodo">Método de Amortização</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="amortizacaoMetodo">Método de Amortização</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p><strong>Linear:</strong> amortização constante a cada período. <strong>Bullet:</strong> principal pago apenas no final</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Select
                     value={formData.amortizacaoMetodo}
                     onValueChange={(value: any) => setFormData({ ...formData, amortizacaoMetodo: value })}
@@ -222,7 +303,17 @@ export default function NewSimulation() {
                 </div>
 
                 <div>
-                  <Label htmlFor="periodicidadeJuros">Periodicidade de Juros</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="periodicidadeJuros">Periodicidade de Juros</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Frequência com que os juros serão pagos. "No Fim" significa que todos os juros são pagos apenas no último mês</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Select
                     value={formData.periodicidadeJuros}
                     onValueChange={(value: any) => setFormData({ ...formData, periodicidadeJuros: value })}
@@ -242,7 +333,17 @@ export default function NewSimulation() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="carenciaJurosMeses">Carência de Juros (meses)</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="carenciaJurosMeses">Carência de Juros (meses)</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Período inicial em que os juros não são pagos. Podem ser capitalizados (acumulados) ou pagos depois</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="carenciaJurosMeses"
                     type="number"
@@ -253,7 +354,17 @@ export default function NewSimulation() {
                 </div>
 
                 <div>
-                  <Label htmlFor="carenciaPrincipalMeses">Carência de Principal (meses)</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="carenciaPrincipalMeses">Carência de Principal (meses)</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Período inicial em que o principal (valor investido) não é amortizado. A amortização começa após este período</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="carenciaPrincipalMeses"
                     type="number"
@@ -277,6 +388,14 @@ export default function NewSimulation() {
                 <Label htmlFor="capitalizarJuros" className="cursor-pointer">
                   Capitalizar juros durante carência
                 </Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p>Se marcado, os juros durante a carência são acumulados ao saldo devedor. Se desmarcado, são pagos normalmente</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </CardContent>
           </Card>
@@ -290,7 +409,17 @@ export default function NewSimulation() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="taxaSetup">Taxa de Setup (R$)</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="taxaSetup">Taxa de Setup (R$)</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Custo inicial pago pelo captador para estruturar a oferta. Não afeta o fluxo do investidor</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="taxaSetup"
                     type="number"
@@ -304,7 +433,17 @@ export default function NewSimulation() {
                 </div>
 
                 <div>
-                  <Label htmlFor="feeSucesso">Fee de Sucesso (%)</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="feeSucesso">Fee de Sucesso (%)</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Percentual sobre o valor captado pago pelo captador ao finalizar a oferta. Não afeta o investidor</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="feeSucesso"
                     type="number"
@@ -321,7 +460,17 @@ export default function NewSimulation() {
                 </div>
 
                 <div>
-                  <Label htmlFor="feeManutencao">Fee Manutenção Mensal (R$)</Label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="feeManutencao">Fee Manutenção Mensal (R$)</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Custo mensal pago pelo captador para manutenção da oferta na plataforma. Não afeta o investidor</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <Input
                     id="feeManutencao"
                     type="number"
