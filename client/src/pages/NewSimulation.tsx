@@ -31,20 +31,20 @@ export default function NewSimulation() {
   const { user } = useAuth();
   const [modo, setModo] = useState<'investidor' | 'captador'>('investidor');
 
-  // Função para calcular taxa de estruturação baseada no valor da oferta
+  // Função para calcular taxa de estruturação baseada no valor da oferta (em R$)
   const calcularTaxaEstruturacao = (valorOferta: number): number => {
-    if (valorOferta <= 100000) return 5000;
-    if (valorOferta <= 200000) return 7500;
-    if (valorOferta <= 350000) return 10000;
-    if (valorOferta <= 500000) return 13500;
-    if (valorOferta <= 750000) return 16500;
-    if (valorOferta <= 1000000) return 20000;
-    if (valorOferta <= 3000000) return 27000;
-    if (valorOferta <= 5000000) return 35000;
-    if (valorOferta <= 7500000) return 43000;
-    if (valorOferta <= 10000000) return 52000;
-    if (valorOferta <= 15000000) return 60000;
-    return 0; // Acima de 15M precisa consultar
+    if (valorOferta <= 100000) return 5000;      // Até 100 mil = 5 mil
+    if (valorOferta <= 200000) return 7500;      // Até 200 mil = 7,5 mil
+    if (valorOferta <= 350000) return 10000;     // Até 350 mil = 10 mil
+    if (valorOferta <= 500000) return 13500;     // Até 500 mil = 13,5 mil
+    if (valorOferta <= 750000) return 16500;     // Até 750 mil = 16,5 mil
+    if (valorOferta <= 1000000) return 20000;    // Até 1 milhão = 20 mil
+    if (valorOferta <= 3000000) return 27000;    // Até 3 milhões = 27 mil
+    if (valorOferta <= 5000000) return 35000;    // Até 5 milhões = 35 mil
+    if (valorOferta <= 7500000) return 43000;    // Até 7,5 milhões = 43 mil
+    if (valorOferta <= 10000000) return 52000;   // Até 10 milhões = 52 mil
+    if (valorOferta <= 15000000) return 60000;   // Até 15 milhões = 60 mil
+    return 0; // Acima de 15 milhões precisa consultar (personalizado)
   };
 
   // Função para validar WhatsApp brasileiro
