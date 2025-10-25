@@ -264,7 +264,7 @@ export default function NewSimulation() {
                       setFormData({ 
                         ...formData, 
                         valorTotalOferta: e.target.value,
-                        taxaEstruturacao: taxaEstruturacao > 0 ? (taxaEstruturacao / 100).toString() : formData.taxaEstruturacao
+                        taxaEstruturacao: taxaEstruturacao > 0 ? taxaEstruturacao.toString() : formData.taxaEstruturacao
                       });
                     }}
                     placeholder="5000000.00"
