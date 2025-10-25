@@ -77,7 +77,7 @@ export default function SimulationView() {
     }
   };
 
-  const handleExportPDF = async () => {
+  const exportPDF = () => {
     if (!simulation || !cronograma) return;
 
     try {
@@ -231,10 +231,8 @@ export default function SimulationView() {
 </head>
 <body>
   <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #84cc16; padding-bottom: 20px;">
-    <div style="background: #1a1a1a; padding: 20px; margin-bottom: 20px; border-radius: 8px;">
-      <div style="margin-bottom: 10px;">
-        <img src="/logo-tokeniza-branco.png" alt="TOKENIZA" style="max-height: 50px; max-width: 200px;" />
-      </div>
+    <div style="padding: 20px 0; margin-bottom: 20px;">
+      <img src="/logo-tokeniza-preto.png" alt="TOKENIZA" style="max-height: 60px; max-width: 250px; margin-bottom: 10px;" />
       <p style="color: #84cc16; font-size: 14px; margin: 0; font-weight: bold;">Plataforma Líder em Tokenização de Ativos</p>
     </div>
     <h1 style="margin: 0; border: none; padding: 0; color: #84cc16; font-size: 36px;">Relatório de Custos de Captação</h1>
@@ -637,7 +635,7 @@ export default function SimulationView() {
             <Download className="w-4 h-4 mr-2" />
             Exportar CSV
           </Button>
-          <Button variant="outline" onClick={handleExportPDF}>
+          <Button variant="outline" onClick={exportPDF}>
             <Download className="w-4 h-4 mr-2" />
             Exportar PDF
           </Button>
