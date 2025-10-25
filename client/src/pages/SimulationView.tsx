@@ -232,7 +232,7 @@ export default function SimulationView() {
 <body>
   <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #84cc16; padding-bottom: 20px;">
     <div style="background: #1a1a1a; padding: 20px; margin-bottom: 20px; border-radius: 8px;">
-      <img src="https://tokeniza.com.br/wp-content/uploads/2024/01/logo-tokeniza-branco.png" alt="Tokeniza" style="height: 50px; margin-bottom: 10px;" />
+      <img src="${import.meta.env.VITE_APP_LOGO}" alt="Tokeniza" style="height: 50px; margin-bottom: 10px;" />
       <p style="color: #84cc16; font-size: 14px; margin: 0; font-weight: bold;">Plataforma Líder em Tokenização de Ativos</p>
     </div>
     <h1 style="margin: 0; border: none; padding: 0; color: #84cc16; font-size: 36px;">Relatório de Custos de Captação</h1>
