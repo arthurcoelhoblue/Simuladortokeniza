@@ -290,7 +290,7 @@ export default function NewSimulation() {
                 )}
               </div>
 
-              <div className={modo === 'investidor' ? 'grid grid-cols-2 gap-4' : ''}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {modo === 'investidor' && (
                   <div>
                     <div className="flex items-center gap-2 mb-2">
