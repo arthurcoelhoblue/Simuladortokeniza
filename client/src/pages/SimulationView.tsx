@@ -24,13 +24,15 @@ export default function SimulationView() {
   const { data: simulation, isLoading } = trpc.simulations.getById.useQuery({ id: simulationId });
   const { data: cronograma } = trpc.simulations.getCronograma.useQuery({ simulationId });
 
-  // Mostra modal para captador após carregar a simulação
-  useEffect(() => {
-    if (simulation && simulation.modo === 'captador' && !sessionStorage.getItem(`modal-shown-${simulationId}`)) {
+  // Função para mostrar modal quando captador tentar sair
+  const handleBackClick = () => {
+    if (simulation?.modo === 'captador' && !sessionStorage.getItem(`modal-shown-${simulationId}`)) {
       setShowCaptadorModal(true);
       sessionStorage.setItem(`modal-shown-${simulationId}`, 'true');
+    } else {
+      setLocation("/");
     }
-  }, [simulation, simulationId]);
+  };
 
   const deleteMutation = trpc.simulations.delete.useMutation({
     onSuccess: () => {
@@ -619,7 +621,7 @@ export default function SimulationView() {
       <div className="container py-8 max-w-7xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Button variant="ghost" onClick={() => setLocation("/")} className="mb-4">
+            <Button variant="ghost" onClick={handleBackClick} className="mb-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Voltar
             </Button>
@@ -647,6 +649,7 @@ export default function SimulationView() {
         {/* Resumo Executivo */}
         {simulation.modo === 'captador' ? (
           // Visualização para Captador
+          <>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <Card>
               <CardHeader className="pb-3">
@@ -712,6 +715,30 @@ export default function SimulationView() {
               </CardContent>
             </Card>
           </div>
+          
+          {/* CTA para Captar com Tokeniza */}
+          <Card className="mb-6 bg-gradient-to-r from-lime-500 to-lime-600 border-lime-600">
+            <CardContent className="py-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="text-center md:text-left">
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    🚀 Torne esse plano realidade!
+                  </h3>
+                  <p className="text-lime-50 text-lg">
+                    Capte recursos com a plataforma líder em tokenização de ativos no Brasil
+                  </p>
+                </div>
+                <Button
+                  size="lg"
+                  onClick={() => window.open('https://tokeniza.com.br/tokeniza-captadores/', '_blank')}
+                  className="bg-white text-lime-600 hover:bg-lime-50 font-bold text-lg px-8 py-6 shadow-xl"
+                >
+                  Captar com a Tokeniza →
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          </>
         ) : (
           // Visualização para Investidor
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -841,7 +868,12 @@ export default function SimulationView() {
       </div>
 
       {/* Modal para Captador */}
-      <Dialog open={showCaptadorModal} onOpenChange={setShowCaptadorModal}>
+      <Dialog open={showCaptadorModal} onOpenChange={(open) => {
+        setShowCaptadorModal(open);
+        if (!open && simulation?.modo === 'captador') {
+          setLocation("/");
+        }
+      }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader className="space-y-4">
             <DialogTitle className="text-2xl font-bold text-center">
