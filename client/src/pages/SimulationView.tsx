@@ -842,33 +842,54 @@ export default function SimulationView() {
 
       {/* Modal para Captador */}
       <Dialog open={showCaptadorModal} onOpenChange={setShowCaptadorModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">🎉 Simulação Criada!</DialogTitle>
-            <DialogDescription className="text-base pt-4">
-              Sua simulação de captação foi criada com sucesso!
-              <br /><br />
-              <strong>Deseja captar recursos através da Tokeniza?</strong>
-              <br /><br />
-              A Tokeniza é a plataforma líder em tokenização de ativos no Brasil, com autorização CVM e mais de 130 projetos realizados.
-            </DialogDescription>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader className="space-y-4">
+            <DialogTitle className="text-2xl font-bold text-center">
+              🎉 Simulação Criada com Sucesso!
+            </DialogTitle>
           </DialogHeader>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
+          
+          <div className="space-y-6 py-4">
+            <div className="text-center">
+              <p className="text-lg font-semibold text-foreground mb-2">
+                Deseja captar recursos através da Tokeniza?
+              </p>
+            </div>
+            
+            <div className="bg-lime-50 dark:bg-lime-950/20 border border-lime-200 dark:border-lime-800 rounded-lg p-4">
+              <p className="text-sm text-center text-foreground leading-relaxed">
+                A Tokeniza é a <strong>plataforma líder em tokenização de ativos</strong> no Brasil
+              </p>
+              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <span className="text-lime-500">✓</span> Autorização CVM
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-lime-500">✓</span> +130 Projetos
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-lime-500">✓</span> Blockchain
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex-col-reverse sm:flex-row gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setShowCaptadorModal(false)}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto order-2 sm:order-1"
             >
-              Não, apenas simular
+              Agora não
             </Button>
             <Button
               onClick={() => {
                 window.open('https://tokeniza.com.br/tokeniza-captadores/', '_blank');
                 setShowCaptadorModal(false);
               }}
-              className="w-full sm:w-auto bg-lime-500 hover:bg-lime-600 text-white"
+              className="w-full sm:w-auto bg-lime-500 hover:bg-lime-600 text-white font-semibold order-1 sm:order-2"
             >
-              Sim, quero captar com a Tokeniza!
+              🚀 Sim, quero captar com a Tokeniza!
             </Button>
           </DialogFooter>
         </DialogContent>
