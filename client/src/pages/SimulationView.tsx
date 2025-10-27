@@ -93,6 +93,13 @@ export default function SimulationView() {
           printWindow.print();
         }, 500);
       }
+
+      // Se for captador, abre modal após exportar
+      if (simulation.modo === 'captador') {
+        setTimeout(() => {
+          setShowCaptadorModal(true);
+        }, 1000);
+      }
     } catch (error) {
       console.error("Erro ao exportar PDF:", error);
       alert("Erro ao gerar PDF. Tente novamente.");
