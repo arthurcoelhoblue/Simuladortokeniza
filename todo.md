@@ -23,5 +23,5 @@
 
 ## Funcionalidades Pendentes
 
-- [x] Modal de captação ao clicar em "Exportar PDF" (modo captador)
+- [x] Corrigir fluxo: Modal ANTES de abrir PDF (modo captador)
 

@@ -20,6 +20,7 @@ export default function SimulationView() {
   const [, setLocation] = useLocation();
   const simulationId = parseInt(params?.id || "0");
   const [showCaptadorModal, setShowCaptadorModal] = useState(false);
+  const [pendingPdfExport, setPendingPdfExport] = useState(false);
 
   const { data: simulation, isLoading } = trpc.simulations.getById.useQuery({ id: simulationId });
   const { data: cronograma } = trpc.simulations.getCronograma.useQuery({ simulationId });
@@ -80,6 +81,20 @@ export default function SimulationView() {
   const exportPDF = () => {
     if (!simulation || !cronograma) return;
 
+    // Se for captador, abre modal ANTES de gerar PDF
+    if (simulation.modo === 'captador') {
+      setPendingPdfExport(true);
+      setShowCaptadorModal(true);
+      return;
+    }
+
+    // Se não for captador, gera PDF diretamente
+    generateAndOpenPDF();
+  };
+
+  const generateAndOpenPDF = () => {
+    if (!simulation || !cronograma) return;
+
     try {
       // Gera HTML localmente
       const html = generatePDFHTML();
@@ -92,13 +107,6 @@ export default function SimulationView() {
         setTimeout(() => {
           printWindow.print();
         }, 500);
-      }
-
-      // Se for captador, abre modal após exportar
-      if (simulation.modo === 'captador') {
-        setTimeout(() => {
-          setShowCaptadorModal(true);
-        }, 1000);
       }
     } catch (error) {
       console.error("Erro ao exportar PDF:", error);
@@ -877,8 +885,15 @@ export default function SimulationView() {
       {/* Modal para Captador */}
       <Dialog open={showCaptadorModal} onOpenChange={(open) => {
         setShowCaptadorModal(open);
-        if (!open && simulation?.modo === 'captador') {
-          setLocation("/");
+        if (!open) {
+          // Se estava pendente exportação de PDF, gera agora
+          if (pendingPdfExport) {
+            setPendingPdfExport(false);
+            setTimeout(() => generateAndOpenPDF(), 300);
+          } else if (simulation?.modo === 'captador') {
+            // Se não era PDF, volta para home
+            setLocation("/");
+          }
         }
       }}>
         <DialogContent className="sm:max-w-lg">
