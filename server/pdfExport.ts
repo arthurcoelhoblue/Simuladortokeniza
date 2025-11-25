@@ -8,12 +8,13 @@ interface SimulationData {
   id: number;
   descricaoOferta: string | null;
   valorTotalOferta: number;
-  valorInvestido: number;
+  valorAporte: number; // Renomeado de valorInvestido
+  valorDesejado: number; // Novo campo
   dataEncerramentoOferta: string;
   prazoMeses: number;
   taxaJurosAa: number;
   tipoCapitalizacao: string;
-  amortizacaoMetodo: string;
+  sistemaAmortizacao: string; // Renomeado de amortizacaoMetodo
   carenciaJurosMeses: number;
   carenciaPrincipalMeses: number;
   totalJurosPagos: number;
@@ -148,7 +149,7 @@ export function generatePDFHTML(simulation: SimulationData, cronograma: Array<Om
     </div>
     <div class="info-item">
       <div class="info-label">Valor Investido</div>
-      <div class="info-value">${formatCurrency(simulation.valorInvestido)}</div>
+      <div class="info-value">${formatCurrency(simulation.valorAporte)}</div>
     </div>
     <div class="info-item">
       <div class="info-label">Data de Encerramento</div>
@@ -164,7 +165,7 @@ export function generatePDFHTML(simulation: SimulationData, cronograma: Array<Om
     </div>
     <div class="info-item">
       <div class="info-label">Método de Amortização</div>
-      <div class="info-value">${simulation.amortizacaoMetodo.toUpperCase()}</div>
+      <div class="info-value">${simulation.sistemaAmortizacao}</div>
     </div>
     <div class="info-item">
       <div class="info-label">Tipo de Capitalização</div>

@@ -133,7 +133,7 @@ export default function SimulationView() {
       return (centesimos / 100).toFixed(2) + "%";
     };
 
-    const custosInvestidores = simulation.totalJurosPagos + simulation.valorInvestido;
+    const custosInvestidores = simulation.totalJurosPagos + simulation.valorAporte;
     const custosTokeniza = simulation.taxaSetupFixaBrl + (simulation.valorTotalOferta * simulation.feeSucessoPercentSobreCaptacao / 10000);
     const custoTotal = custosInvestidores + custosTokeniza;
     const custoMedioMensal = custoTotal / simulation.prazoMeses;
@@ -283,7 +283,7 @@ export default function SimulationView() {
     <div class="info-grid">
       <div class="info-item">
         <div class="info-label">Principal a Devolver</div>
-        <div class="info-value">${formatCurrency(simulation.valorInvestido)}</div>
+        <div class="info-value">${formatCurrency(simulation.valorAporte)}</div>
       </div>
       <div class="info-item">
         <div class="info-label">Juros Totais</div>
@@ -334,7 +334,7 @@ export default function SimulationView() {
     </div>
     <div class="info-item">
       <div class="info-label">Método de Amortização</div>
-      <div class="info-value">${simulation.amortizacaoMetodo.toUpperCase()}</div>
+      <div class="info-value">${simulation.sistemaAmortizacao}</div>
     </div>
     <div class="info-item">
       <div class="info-label">Tipo de Capitalização</div>
@@ -506,7 +506,7 @@ export default function SimulationView() {
     </div>
     <div class="info-item">
       <div class="info-label">Valor Investido</div>
-      <div class="info-value">${formatCurrency(simulation.valorInvestido)}</div>
+      <div class="info-value">${formatCurrency(simulation.valorAporte)}</div>
     </div>
     <div class="info-item">
       <div class="info-label">Data de Encerramento</div>
@@ -522,7 +522,7 @@ export default function SimulationView() {
     </div>
     <div class="info-item">
       <div class="info-label">M\u00e9todo de Amortiza\u00e7\u00e3o</div>
-      <div class="info-value">${simulation.amortizacaoMetodo.toUpperCase()}</div>
+      <div class="info-value">${simulation.sistemaAmortizacao}</div>
     </div>
     <div class="info-item">
       <div class="info-label">Tipo de Capitaliza\u00e7\u00e3o</div>
@@ -681,9 +681,9 @@ export default function SimulationView() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Custos Investidores</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold text-orange-600">{formatCurrency(simulation.totalJurosPagos + simulation.valorInvestido)}</p>
+                <p className="text-2xl font-bold text-orange-600">{formatCurrency(simulation.totalJurosPagos + simulation.valorAporte)}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {formatPercent((simulation.totalJurosPagos + simulation.valorInvestido) * 10000 / simulation.valorTotalOferta)} do captado
+                  {formatPercent((simulation.totalJurosPagos + simulation.valorAporte) * 10000 / simulation.valorTotalOferta)} do captado
                 </p>
               </CardContent>
             </Card>
@@ -716,14 +716,14 @@ export default function SimulationView() {
                 <p className="text-2xl font-bold text-lime-600">
                   {formatCurrency(
                     simulation.totalJurosPagos + 
-                    simulation.valorInvestido + 
+                    simulation.valorAporte + 
                     simulation.taxaSetupFixaBrl + 
                     (simulation.valorTotalOferta * simulation.feeSucessoPercentSobreCaptacao / 10000)
                   )}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
                   Custo médio: {formatCurrency(
-                    (simulation.totalJurosPagos + simulation.valorInvestido + simulation.taxaSetupFixaBrl + 
+                    (simulation.totalJurosPagos + simulation.valorAporte + simulation.taxaSetupFixaBrl + 
                     (simulation.valorTotalOferta * simulation.feeSucessoPercentSobreCaptacao / 10000)) / simulation.prazoMeses
                   )}/mês
                 </p>
@@ -762,9 +762,9 @@ export default function SimulationView() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Valor Investido</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{formatCurrency(simulation.valorInvestido)}</p>
+                <p className="text-2xl font-bold">{formatCurrency(simulation.valorAporte)}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {formatPercent(simulation.valorInvestido * 10000 / simulation.valorTotalOferta)} da oferta
+                  {formatPercent(simulation.valorAporte * 10000 / simulation.valorTotalOferta)} da oferta
                 </p>
               </CardContent>
             </Card>
@@ -813,7 +813,7 @@ export default function SimulationView() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Método</p>
-                <p className="font-medium">{simulation.amortizacaoMetodo}</p>
+                <p className="font-medium">{simulation.sistemaAmortizacao}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Capitalização</p>

@@ -48,30 +48,50 @@ export type InsertLead = typeof leads.$inferInsert;
 
 /**
  * Tabela de simulações de investimento
- * Armazena os parâmetros e resultados de cada simulação
+ * Armazena APENAS parâmetros técnicos e referências (dados de lead estão na tabela leads)
  */
 export const simulations = mysqlTable("simulations", {
+  // Identificação e referências
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
-  leadId: int("leadId").notNull(), // Referência ao lead que criou a simulação
+  leadId: int("leadId").notNull(), // FK → leads.id
   
-  // Dados da oferta
+  // Tipo e modalidade
+  tipoSimulacao: mysqlEnum("tipoSimulacao", ["investimento", "financiamento"]).notNull().default("investimento"),
+  modalidade: varchar("modalidade", { length: 50 }), // Ex: "capital_giro", "expansao", "imovel"
   descricaoOferta: text("descricaoOferta"),
-  valorTotalOferta: int("valorTotalOferta").notNull(), // em centavos
-  valorInvestido: int("valorInvestido").notNull(), // em centavos
-  dataEncerramentoOferta: varchar("dataEncerramentoOferta", { length: 10 }).notNull(), // Data de encerramento da captação // YYYY-MM-DD
+  
+  // Valores (em centavos)
+  valorDesejado: int("valorDesejado").notNull(), // Valor total da operação
+  valorAporte: int("valorAporte").notNull(), // Valor que o investidor aporta / financiado recebe
+  valorTotalOferta: int("valorTotalOferta").notNull(), // Valor total da oferta
+  
+  // Prazos e datas
   prazoMeses: int("prazoMeses").notNull(),
+  dataEncerramentoOferta: varchar("dataEncerramentoOferta", { length: 10 }).notNull(), // YYYY-MM-DD
+  
+  // Taxas e juros
+  taxaMensal: int("taxaMensal").notNull(), // em centésimos de % (ex: 200 = 2%)
   taxaJurosAa: int("taxaJurosAa").notNull(), // em centésimos de % (ex: 2400 = 24%)
   convencaoCalendario: varchar("convencaoCalendario", { length: 20 }).notNull().default("civil/365"),
   tipoCapitalizacao: varchar("tipoCapitalizacao", { length: 20 }).notNull().default("composta"),
   
-  // Regras de pagamento
-  periodicidadeJuros: varchar("periodicidadeJuros", { length: 20 }).notNull().default("mensal"),
-  periodicidadeAmortizacao: varchar("periodicidadeAmortizacao", { length: 20 }).notNull().default("mensal"),
+  // Sistema de amortização
+  sistemaAmortizacao: mysqlEnum("sistemaAmortizacao", ["PRICE", "SAC", "BULLET", "JUROS_MENSAL", "LINEAR"]).notNull().default("LINEAR"),
+  
+  // Carência
+  possuiCarencia: int("possuiCarencia").notNull().default(0), // boolean: 0 ou 1
+  mesesCarencia: int("mesesCarencia").notNull().default(0),
   carenciaJurosMeses: int("carenciaJurosMeses").notNull().default(0),
   carenciaPrincipalMeses: int("carenciaPrincipalMeses").notNull().default(0),
   capitalizarJurosEmCarencia: int("capitalizarJurosEmCarencia").notNull().default(1), // boolean: 0 ou 1
-  amortizacaoMetodo: varchar("amortizacaoMetodo", { length: 20 }).notNull().default("linear"),
+  
+  // Garantias
+  tipoGarantia: mysqlEnum("tipoGarantia", ["recebiveis_cartao", "duplicatas", "imovel", "veiculo", "sem_garantia"]).default("sem_garantia"),
+  
+  // Periodicidade
+  periodicidadeJuros: varchar("periodicidadeJuros", { length: 20 }).notNull().default("mensal"),
+  periodicidadeAmortizacao: varchar("periodicidadeAmortizacao", { length: 20 }).notNull().default("mensal"),
   pagamentoMinimoValor: int("pagamentoMinimoValor"), // em centavos, nullable
   
   // Custos e taxas
@@ -81,7 +101,7 @@ export const simulations = mysqlTable("simulations", {
   taxaTransacaoPercent: int("taxaTransacaoPercent").notNull().default(0), // em centésimos de %
   aliquotaImpostoRendaPercent: int("aliquotaImpostoRendaPercent").notNull().default(0), // em centésimos de %
   
-  // Outros
+  // Modo (mantido para compatibilidade, mas tipoSimulacao é o campo oficial)
   modo: varchar("modo", { length: 20 }).notNull().default("investidor"), // 'investidor' ou 'captador'
   identificadorInvestidor: varchar("identificadorInvestidor", { length: 100 }),
   moedaReferencia: varchar("moedaReferencia", { length: 10 }).notNull().default("BRL"),

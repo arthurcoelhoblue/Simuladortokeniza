@@ -1,0 +1,9 @@
+{
+  "query": "-- 1. Adicionar novos campos enum\nALTER TABLE `simulations` ADD `tipoSimulacao` ENUM('investimento', 'financiamento') NOT NULL DEFAULT 'investimento';\nALTER TABLE `simulations` ADD `sistemaAmortizacao` ENUM('PRICE', 'SAC', 'BULLET', 'JUROS_MENSAL', 'LINEAR') NOT NULL DEFAULT 'LINEAR';\nALTER TABLE `simulations` ADD `tipoGarantia` ENUM('recebiveis_cartao', 'duplicatas', 'imovel', 'veiculo', 'sem_garantia') DEFAULT 'sem_garantia';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute -- 1. Adicionar novos campos enum\nALTER TABLE `simulations` ADD `tipoSimulacao` ENUM('investimento', 'financiamento') NOT NULL DEFAULT 'investimento';\nALTER TABLE `simulations` ADD `sistemaAmortizacao` ENUM('PRICE', 'SAC', 'BULLET', 'JUROS_MENSAL', 'LINEAR') NOT NULL DEFAULT 'LINEAR';\nALTER TABLE `simulations` ADD `tipoGarantia` ENUM('recebiveis_cartao', 'duplicatas', 'imovel', 'veiculo', 'sem_garantia') DEFAULT 'sem_garantia';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1511
+}

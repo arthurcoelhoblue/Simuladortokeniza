@@ -1,0 +1,346 @@
+{
+  "query": "DESCRIBE simulations",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute DESCRIBE simulations",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "userId",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "descricaoOferta",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valorTotalOferta",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valorInvestido",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dataEncerramentoOferta",
+      "Type": "varchar(10)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "prazoMeses",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "taxaJurosAa",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "convencaoCalendario",
+      "Type": "varchar(20)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "civil/365",
+      "Extra": ""
+    },
+    {
+      "Field": "tipoCapitalizacao",
+      "Type": "varchar(20)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "composta",
+      "Extra": ""
+    },
+    {
+      "Field": "periodicidadeJuros",
+      "Type": "varchar(20)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "mensal",
+      "Extra": ""
+    },
+    {
+      "Field": "periodicidadeAmortizacao",
+      "Type": "varchar(20)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "mensal",
+      "Extra": ""
+    },
+    {
+      "Field": "carenciaJurosMeses",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "carenciaPrincipalMeses",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "capitalizarJurosEmCarencia",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "amortizacaoMetodo",
+      "Type": "varchar(20)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "linear",
+      "Extra": ""
+    },
+    {
+      "Field": "pagamentoMinimoValor",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "taxaSetupFixaBrl",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "feeSucessoPercentSobreCaptacao",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "feeManutencaoMensalBrl",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "taxaTransacaoPercent",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "aliquotaImpostoRendaPercent",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "identificadorInvestidor",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "moedaReferencia",
+      "Type": "varchar(10)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "BRL",
+      "Extra": ""
+    },
+    {
+      "Field": "totalJurosPagos",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "totalAmortizado",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "totalRecebido",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "tirMensal",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "tirAnual",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "modo",
+      "Type": "varchar(20)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "investidor",
+      "Extra": ""
+    },
+    {
+      "Field": "leadId",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "tipoSimulacao",
+      "Type": "enum('investimento','financiamento')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "investimento",
+      "Extra": ""
+    },
+    {
+      "Field": "sistemaAmortizacao",
+      "Type": "enum('PRICE','SAC','BULLET','JUROS_MENSAL','LINEAR')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "LINEAR",
+      "Extra": ""
+    },
+    {
+      "Field": "tipoGarantia",
+      "Type": "enum('recebiveis_cartao','duplicatas','imovel','veiculo','sem_garantia')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "sem_garantia",
+      "Extra": ""
+    },
+    {
+      "Field": "valorDesejado",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "valorAporte",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "possuiCarencia",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "mesesCarencia",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "modalidade",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "taxaMensal",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\nuserId\tint(11)\tNO\t\tNULL\t\ndescricaoOferta\ttext\tYES\t\tNULL\t\nvalorTotalOferta\tint(11)\tNO\t\tNULL\t\nvalorInvestido\tint(11)\tNO\t\tNULL\t\ndataEncerramentoOferta\tvarchar(10)\tNO\t\tNULL\t\nprazoMeses\tint(11)\tNO\t\tNULL\t\ntaxaJurosAa\tint(11)\tNO\t\tNULL\t\nconvencaoCalendario\tvarchar(20)\tNO\t\tcivil/365\t\ntipoCapitalizacao\tvarchar(20)\tNO\t\tcomposta\t\nperiodicidadeJuros\tvarchar(20)\tNO\t\tmensal\t\nperiodicidadeAmortizacao\tvarchar(20)\tNO\t\tmensal\t\ncarenciaJurosMeses\tint(11)\tNO\t\t0\t\ncarenciaPrincipalMeses\tint(11)\tNO\t\t0\t\ncapitalizarJurosEmCarencia\tint(11)\tNO\t\t1\t\namortizacaoMetodo\tvarchar(20)\tNO\t\tlinear\t\npagamentoMinimoValor\tint(11)\tYES\t\tNULL\t\ntaxaSetupFixaBrl\tint(11)\tNO\t\t0\t\nfeeSucessoPercentSobreCaptacao\tint(11)\tNO\t\t0\t\nfeeManutencaoMensalBrl\tint(11)\tNO\t\t0\t\ntaxaTransacaoPercent\tint(11)\tNO\t\t0\t\naliquotaImpostoRendaPercent\tint(11)\tNO\t\t0\t\nidentificadorInvestidor\tvarchar(100)\tYES\t\tNULL\t\nmoedaReferencia\tvarchar(10)\tNO\t\tBRL\t\ntotalJurosPagos\tint(11)\tNO\t\t0\t\ntotalAmortizado\tint(11)\tNO\t\t0\t\ntotalRecebido\tint(11)\tNO\t\t0\t\ntirMensal\tint(11)\tYES\t\tNULL\t\ntirAnual\tint(11)\tYES\t\tNULL\t\ncreatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nmodo\tvarchar(20)\tNO\t\tinvestidor\t\nleadId\tint(11)\tYES\t\tNULL\t\ntipoSimulacao\tenum('investimento','financiamento')\tNO\t\tinvestimento\t\nsistemaAmortizacao\tenum('PRICE','SAC','BULLET','JUROS_MENSAL','LINEAR')\tNO\t\tLINEAR\t\ntipoGarantia\tenum('recebiveis_cartao','duplicatas','imovel','veiculo','sem_garantia')\tYES\t\tsem_garantia\t\nvalorDesejado\tint(11)\tNO\t\t0\t\nvalorAporte\tint(11)\tNO\t\t0\t\npossuiCarencia\tint(11)\tNO\t\t0\t\nmesesCarencia\tint(11)\tNO\t\t0\t\nmodalidade\tvarchar(50)\tYES\t\tNULL\t\ntaxaMensal\tint(11)\tNO\t\t0\t\n",
+  "stderr": "",
+  "execution_time_ms": 185
+}

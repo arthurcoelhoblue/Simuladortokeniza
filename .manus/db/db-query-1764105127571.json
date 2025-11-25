@@ -1,0 +1,22 @@
+{
+  "query": "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'simulations' AND COLUMN_NAME IN ('valorInvestido', 'amortizacaoMetodo', 'valorAporte', 'sistemaAmortizacao')",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'simulations' AND COLUMN_NAME IN ('valorInvestido', 'amortizacaoMetodo', 'valorAporte', 'sistemaAmortizacao')",
+  "rows": [
+    {
+      "COLUMN_NAME": "valorInvestido"
+    },
+    {
+      "COLUMN_NAME": "amortizacaoMetodo"
+    },
+    {
+      "COLUMN_NAME": "sistemaAmortizacao"
+    },
+    {
+      "COLUMN_NAME": "valorAporte"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\nvalorInvestido\namortizacaoMetodo\nsistemaAmortizacao\nvalorAporte\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

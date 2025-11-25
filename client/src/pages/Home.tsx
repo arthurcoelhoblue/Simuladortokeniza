@@ -323,12 +323,12 @@ export default function Home() {
                           {sim.modo === 'captador' ? 'Valor a Captar:' : 'Investido:'}
                         </span>
                         <span className="font-medium">
-                          {sim.modo === 'captador' ? formatCurrency(sim.valorTotalOferta) : formatCurrency(sim.valorInvestido)}
+                          {sim.modo === 'captador' ? formatCurrency(sim.valorTotalOferta) : formatCurrency(sim.valorAporte)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-muted-foreground">Método:</span>
-                        <span className="font-medium">{sim.amortizacaoMetodo}</span>
+                        <span className="font-medium">{sim.sistemaAmortizacao}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-muted-foreground">Prazo:</span>
@@ -344,7 +344,7 @@ export default function Home() {
                           <span className="font-bold text-lime-600">
                             {formatCurrency(
                               sim.totalJurosPagos + 
-                              sim.valorInvestido + 
+                              sim.valorAporte + 
                               sim.taxaSetupFixaBrl + 
                               (sim.valorTotalOferta * sim.feeSucessoPercentSobreCaptacao / 10000)
                             )}

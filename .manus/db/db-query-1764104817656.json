@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE `simulations` SET `valorAporte` = `valorInvestido`, `valorDesejado` = `valorTotalOferta`;\nUPDATE `simulations` SET `taxaMensal` = ROUND(`taxaJurosAa` / 12);\nUPDATE `simulations` SET `sistemaAmortizacao` = 'LINEAR' WHERE `amortizacaoMetodo` = 'linear';\nUPDATE `simulations` SET `sistemaAmortizacao` = 'BULLET' WHERE `amortizacaoMetodo` = 'bullet';\nUPDATE `simulations` SET `tipoSimulacao` = 'investimento';\nUPDATE `simulations` SET `possuiCarencia` = 1 WHERE `carenciaJurosMeses` > 0 OR `carenciaPrincipalMeses` > 0;\nUPDATE `simulations` SET `mesesCarencia` = GREATEST(`carenciaJurosMeses`, `carenciaPrincipalMeses`) WHERE `possuiCarencia` = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute UPDATE `simulations` SET `valorAporte` = `valorInvestido`, `valorDesejado` = `valorTotalOferta`;\nUPDATE `simulations` SET `taxaMensal` = ROUND(`taxaJurosAa` / 12);\nUPDATE `simulations` SET `sistemaAmortizacao` = 'LINEAR' WHERE `amortizacaoMetodo` = 'linear';\nUPDATE `simulations` SET `sistemaAmortizacao` = 'BULLET' WHERE `amortizacaoMetodo` = 'bullet';\nUPDATE `simulations` SET `tipoSimulacao` = 'investimento';\nUPDATE `simulations` SET `possuiCarencia` = 1 WHERE `carenciaJurosMeses` > 0 OR `carenciaPrincipalMeses` > 0;\nUPDATE `simulations` SET `mesesCarencia` = GREATEST(`carenciaJurosMeses`, `carenciaPrincipalMeses`) WHERE `possuiCarencia` = 1;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 120
+}

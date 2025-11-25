@@ -28,12 +28,13 @@ const simulationData = {
   id: 1,
   descricaoOferta: "Teste de exportação PDF",
   valorTotalOferta: input.valorTotalOferta,
-  valorInvestido: input.valorInvestido,
+  valorAporte: input.valorInvestido, // Renomeado
+  valorDesejado: input.valorTotalOferta, // Novo campo
   dataEncerramentoOferta: input.dataEncerramentoOferta,
   prazoMeses: input.prazoMeses,
   taxaJurosAa: input.taxaJurosAa,
   tipoCapitalizacao: input.tipoCapitalizacao,
-  amortizacaoMetodo: input.amortizacaoMetodo,
+  sistemaAmortizacao: input.amortizacaoMetodo === 'linear' ? 'LINEAR' : 'BULLET', // Renomeado
   carenciaJurosMeses: input.carenciaJurosMeses,
   carenciaPrincipalMeses: input.carenciaPrincipalMeses,
   totalJurosPagos: resultado.resumo.totalJurosPagos,
