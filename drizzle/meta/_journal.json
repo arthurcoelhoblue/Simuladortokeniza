@@ -22,6 +22,20 @@
       "when": 1761344236502,
       "tag": "0002_typical_marvex",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1764103323275,
+      "tag": "0003_fixed_rockslide",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1764103735940,
+      "tag": "0004_even_alex_wilder",
+      "breakpoints": true
     }
   ]
 }

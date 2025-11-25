@@ -1,0 +1,23 @@
+{
+  "query": "SELECT * FROM leads WHERE whatsapp = '11999887766' LIMIT 1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT * FROM leads WHERE whatsapp = '11999887766' LIMIT 1",
+  "rows": [
+    {
+      "id": "19",
+      "nomeCompleto": "João Silva Teste",
+      "email": "NULL",
+      "telefone": "11999887766",
+      "cidade": "NULL",
+      "estado": "NULL",
+      "cpf": "NULL",
+      "canalOrigem": "simulador_web",
+      "createdAt": "2025-11-25 20:51:40",
+      "updatedAt": "2025-11-25 20:51:40",
+      "whatsapp": "11999887766"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnomeCompleto\temail\ttelefone\tcidade\testado\tcpf\tcanalOrigem\tcreatedAt\tupdatedAt\twhatsapp\n19\tJoão Silva Teste\tNULL\t11999887766\tNULL\tNULL\tNULL\tsimulador_web\t2025-11-25 20:51:40\t2025-11-25 20:51:40\t11999887766\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

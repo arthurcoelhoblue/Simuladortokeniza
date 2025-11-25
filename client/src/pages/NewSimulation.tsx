@@ -108,6 +108,11 @@ export default function NewSimulation() {
     // Converte valores de string para número (em centavos)
     // No modo captador, valorInvestido = valorTotalOferta (simula o custo total)
     createMutation.mutate({
+      // Dados do lead
+      nomeCompleto: formData.nomeCompleto,
+      whatsapp: formData.whatsapp,
+      email: undefined, // Email não está sendo capturado no formulário atual
+      // Dados da oferta
       descricaoOferta: formData.descricaoOferta || undefined,
       valorTotalOferta: parseFloat(formData.valorTotalOferta) * 100,
       valorInvestido: modo === 'captador' 

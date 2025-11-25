@@ -1,0 +1,16 @@
+{
+  "query": "SELECT s.id, s.leadId, l.nomeCompleto, l.whatsapp FROM simulations s JOIN leads l ON s.leadId = l.id WHERE s.id = 660004",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT s.id, s.leadId, l.nomeCompleto, l.whatsapp FROM simulations s JOIN leads l ON s.leadId = l.id WHERE s.id = 660004",
+  "rows": [
+    {
+      "id": "660004",
+      "leadId": "19",
+      "nomeCompleto": "João Silva Teste",
+      "whatsapp": "11999887766"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tleadId\tnomeCompleto\twhatsapp\n660004\t19\tJoão Silva Teste\t11999887766\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

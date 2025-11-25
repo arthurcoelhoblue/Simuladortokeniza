@@ -1,27 +1,13 @@
 # Project TODO
 
-## Funcionalidades Implementadas
+## Refatoração: Separação de Leads
 
-- [x] Motor de cálculo financeiro completo (capitalização simples/composta)
-- [x] Amortização Linear e Bullet
-- [x] Carências configuráveis
-- [x] Cronograma mensal detalhado
-- [x] Cálculo correto de TIR
-- [x] Exportação em CSV e PDF
-- [x] Landing page comercial com identidade visual verde limão
-- [x] Logo branco da Tokeniza aplicado corretamente no tema escuro
-- [x] Modo Investidor e Modo Captador
-- [x] Captura de leads (nome + WhatsApp obrigatórios)
-- [x] Validação de formato de WhatsApp brasileiro
-- [x] Tooltips mobile funcionando com Popover
-- [x] Cálculo automático de taxa de estruturação por faixa de valor
-- [x] Fee padrão 5% editável
-- [x] Modal ao clicar em Voltar (modo captador)
-- [x] CTA destacado "Torne esse plano realidade"
-- [x] Relatórios PDF diferenciados por modo
-- [x] Cards diferenciados para captador na lista
-
-## Funcionalidades Pendentes
-
-- [x] Corrigir fluxo: Modal ANTES de abrir PDF (modo captador)
-
+- [x] Analisar schema atual de simulações
+- [x] Criar tabela leads com campos de identificação
+- [x] Atualizar schema de simulações adicionando leadId
+- [x] Criar script de migração com deduplicação por email
+- [x] Atualizar routers tRPC para trabalhar com leads
+- [ ] Atualizar frontend (formulário e visualizações)
+- [ ] Executar migração e validar dados
+- [ ] Testar endpoints de simulação
+- [ ] Gerar relatório final

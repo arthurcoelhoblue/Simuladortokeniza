@@ -26,12 +26,34 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
+ * Tabela de leads
+ * Armazena informações de contato de investidores e captadores
+ */
+export const leads = mysqlTable("leads", {
+  id: int("id").autoincrement().primaryKey(),
+  nomeCompleto: varchar("nomeCompleto", { length: 255 }).notNull(),
+  whatsapp: varchar("whatsapp", { length: 20 }).notNull(), // Campo obrigatório para contato
+  email: varchar("email", { length: 320 }),
+  telefone: varchar("telefone", { length: 20 }),
+  cidade: varchar("cidade", { length: 100 }),
+  estado: varchar("estado", { length: 2 }),
+  cpf: varchar("cpf", { length: 14 }),
+  canalOrigem: varchar("canalOrigem", { length: 100 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Lead = typeof leads.$inferSelect;
+export type InsertLead = typeof leads.$inferInsert;
+
+/**
  * Tabela de simulações de investimento
  * Armazena os parâmetros e resultados de cada simulação
  */
 export const simulations = mysqlTable("simulations", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
+  leadId: int("leadId").notNull(), // Referência ao lead que criou a simulação
   
   // Dados da oferta
   descricaoOferta: text("descricaoOferta"),

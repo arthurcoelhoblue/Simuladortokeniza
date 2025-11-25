@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { cronogramas, InsertCronograma, InsertSimulation, InsertUser, simulations, users } from "../drizzle/schema";
+import { cronogramas, InsertCronograma, InsertLead, InsertSimulation, InsertUser, leads, simulations, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -151,4 +151,29 @@ export async function deleteCronogramasBySimulationId(simulationId: number) {
   if (!db) throw new Error("Database not available");
 
   await db.delete(cronogramas).where(eq(cronogramas.simulationId, simulationId));
+}
+
+// Leads
+export async function createLead(lead: InsertLead) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(leads).values(lead);
+  return result[0].insertId;
+}
+
+export async function getLeadByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(leads).where(eq(leads.email, email)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getLeadById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
 }

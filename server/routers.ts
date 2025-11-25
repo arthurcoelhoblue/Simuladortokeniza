@@ -60,6 +60,11 @@ export const appRouter = router({
     create: protectedProcedure
       .input(
         z.object({
+          // Dados do lead
+          nomeCompleto: z.string().min(1, "Nome completo é obrigatório"),
+          whatsapp: z.string().min(1, "WhatsApp é obrigatório"),
+          email: z.string().email().optional(),
+          
           // Dados da oferta
           descricaoOferta: z.string().optional(),
           valorTotalOferta: z.number().positive(),
@@ -108,6 +113,41 @@ export const appRouter = router({
           });
         }
 
+        // Criar ou buscar lead
+        let leadId: number;
+        
+        if (input.email) {
+          // Tentar buscar lead existente por email
+          const existingLead = await db.getLeadByEmail(input.email);
+          if (existingLead) {
+            leadId = existingLead.id;
+          } else {
+            // Criar novo lead
+            leadId = await db.createLead({
+              nomeCompleto: input.nomeCompleto,
+              whatsapp: input.whatsapp,
+              email: input.email,
+              telefone: input.whatsapp,
+              cidade: null,
+              estado: null,
+              cpf: null,
+              canalOrigem: 'simulador_web',
+            });
+          }
+        } else {
+          // Criar lead sem email
+          leadId = await db.createLead({
+            nomeCompleto: input.nomeCompleto,
+            whatsapp: input.whatsapp,
+            email: null,
+            telefone: input.whatsapp,
+            cidade: null,
+            estado: null,
+            cpf: null,
+            canalOrigem: 'simulador_web',
+          });
+        }
+
         // Prepara input para cálculo
         const calculoInput: SimulationInput = {
           valorTotalOferta: input.valorTotalOferta,
@@ -137,6 +177,7 @@ export const appRouter = router({
         // Salva simulação no banco
         const simulationId = await db.createSimulation({
           userId: ctx.user.id,
+          leadId: leadId,
           descricaoOferta: input.descricaoOferta || null,
           valorTotalOferta: input.valorTotalOferta,
           valorInvestido: input.valorInvestido,
