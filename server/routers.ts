@@ -68,7 +68,19 @@ export const appRouter = router({
           // Dados da oferta
           descricaoOferta: z.string().optional(),
           valorTotalOferta: z.number().positive(),
-          valorInvestido: z.number().positive(),
+          
+          // NOVOS CAMPOS PADRONIZADOS
+          tipoSimulacao: z.enum(["investimento", "financiamento"]).default("investimento"),
+          valorAporte: z.number().positive().optional(), // Obrigatório se tipoSimulacao = investimento
+          valorDesejado: z.number().positive().optional(), // Obrigatório se tipoSimulacao = financiamento
+          sistemaAmortizacao: z.enum(["PRICE", "SAC", "BULLET", "JUROS_MENSAL", "LINEAR"]).default("LINEAR"),
+          tipoGarantia: z.enum(["recebiveis_cartao", "duplicatas", "imovel", "veiculo", "sem_garantia"]).default("sem_garantia"),
+          
+          // CAMPOS LEGADOS (mantidos para compatibilidade com frontend antigo)
+          valorInvestido: z.number().positive().optional(),
+          amortizacaoMetodo: z.enum(["linear", "bullet"]).optional(),
+          modo: z.enum(["investidor", "captador"]).optional(),
+          
           dataEncerramentoOferta: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
           prazoMeses: z.number().int().positive(),
           taxaJurosAa: z.number().nonnegative(),
@@ -81,7 +93,6 @@ export const appRouter = router({
           carenciaJurosMeses: z.number().int().nonnegative().default(0),
           carenciaPrincipalMeses: z.number().int().nonnegative().default(0),
           capitalizarJurosEmCarencia: z.boolean().default(true),
-          amortizacaoMetodo: z.enum(["linear", "bullet"]).default("linear"),
           pagamentoMinimoValor: z.number().optional(),
 
           // Custos e taxas (opcionais)
@@ -92,66 +103,98 @@ export const appRouter = router({
           aliquotaImpostoRendaPercent: z.number().nonnegative().optional(),
 
           // Outros
-          modo: z.enum(["investidor", "captador"]).default("investidor"),
           identificadorInvestidor: z.string().optional(),
           moedaReferencia: z.string().default("BRL"),
         })
       )
       .mutation(async ({ input, ctx }) => {
-        // Validações
-        if (input.valorInvestido > input.valorTotalOferta) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Valor investido não pode ser maior que o valor total da oferta",
-          });
-        }
+        console.log("📥 Recebendo criação de simulação:", {
+          nomeCompleto: input.nomeCompleto,
+          whatsapp: input.whatsapp,
+          email: input.email,
+          tipoSimulacao: input.tipoSimulacao,
+          valorAporte: input.valorAporte,
+          valorDesejado: input.valorDesejado,
+          valorInvestido: input.valorInvestido,
+          sistemaAmortizacao: input.sistemaAmortizacao,
+        });
 
-        if (input.periodicidadeAmortizacao === "no_fim" && input.amortizacaoMetodo !== "bullet") {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Quando periodicidade de amortização é 'no_fim', o método deve ser 'bullet'",
-          });
-        }
+        try {
+          // VALIDAÇÃO CONTEXTUAL: investimento vs financiamento
+          const tipoSimulacao = input.tipoSimulacao || (input.modo === 'captador' ? 'financiamento' : 'investimento');
+          const valorAporte = input.valorAporte || input.valorInvestido;
+          const valorDesejado = input.valorDesejado || input.valorTotalOferta;
+          const sistemaAmortizacao = input.sistemaAmortizacao || (input.amortizacaoMetodo === 'bullet' ? 'BULLET' : 'LINEAR');
 
-        // Criar ou buscar lead
-        let leadId: number;
-        
-        if (input.email) {
-          // Tentar buscar lead existente por email
-          const existingLead = await db.getLeadByEmail(input.email);
+          if (tipoSimulacao === 'investimento' && !valorAporte) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "valorAporte é obrigatório para simulações de investimento",
+            });
+          }
+
+          if (tipoSimulacao === 'financiamento' && !valorDesejado) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "valorDesejado é obrigatório para simulações de financiamento",
+            });
+          }
+
+          // Validações
+          if (valorAporte && valorAporte > input.valorTotalOferta) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Valor investido não pode ser maior que o valor total da oferta",
+            });
+          }
+
+          if (input.periodicidadeAmortizacao === "no_fim" && sistemaAmortizacao !== "BULLET") {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Quando periodicidade de amortização é 'no_fim', o método deve ser 'BULLET'",
+            });
+          }
+
+          // DEDUPLICAÇÃO DE LEADS: email → whatsapp → criar novo
+          let leadId: number;
+          let existingLead = null;
+
+          if (input.email) {
+            // 1. Tentar buscar por email
+            existingLead = await db.getLeadByEmail(input.email);
+            console.log("🔍 Busca por email:", input.email, "→", existingLead ? `Lead #${existingLead.id}` : "não encontrado");
+          }
+
+          if (!existingLead && input.whatsapp) {
+            // 2. Tentar buscar por whatsapp
+            existingLead = await db.getLeadByWhatsapp(input.whatsapp);
+            console.log("🔍 Busca por whatsapp:", input.whatsapp, "→", existingLead ? `Lead #${existingLead.id}` : "não encontrado");
+          }
+
           if (existingLead) {
             leadId = existingLead.id;
+            console.log("♻️ Reutilizando lead existente #", leadId);
           } else {
-            // Criar novo lead
+            // 3. Criar novo lead
             leadId = await db.createLead({
               nomeCompleto: input.nomeCompleto,
               whatsapp: input.whatsapp,
-              email: input.email,
+              email: input.email || null,
               telefone: input.whatsapp,
               cidade: null,
               estado: null,
               cpf: null,
               canalOrigem: 'simulador_web',
             });
+            console.log("✨ Novo lead criado #", leadId);
           }
-        } else {
-          // Criar lead sem email
-          leadId = await db.createLead({
-            nomeCompleto: input.nomeCompleto,
-            whatsapp: input.whatsapp,
-            email: null,
-            telefone: input.whatsapp,
-            cidade: null,
-            estado: null,
-            cpf: null,
-            canalOrigem: 'simulador_web',
-          });
-        }
 
-        // Prepara input para cálculo
-        const calculoInput: SimulationInput = {
-          valorTotalOferta: input.valorTotalOferta,
-          valorInvestido: input.valorInvestido,
+          console.log("👤 Lead associado:", leadId);
+
+          // Prepara input para cálculo
+          const calculoInput: SimulationInput = {
+            valorTotalOferta: input.valorTotalOferta,
+            valorInvestido: valorAporte!,
           dataEncerramentoOferta: input.dataEncerramentoOferta,
           prazoMeses: input.prazoMeses,
           taxaJurosAa: input.taxaJurosAa,
@@ -162,7 +205,7 @@ export const appRouter = router({
           carenciaJurosMeses: input.carenciaJurosMeses,
           carenciaPrincipalMeses: input.carenciaPrincipalMeses,
           capitalizarJurosEmCarencia: input.capitalizarJurosEmCarencia,
-          amortizacaoMetodo: input.amortizacaoMetodo as any,
+          amortizacaoMetodo: (sistemaAmortizacao === 'BULLET' ? 'bullet' : 'linear') as any,
           pagamentoMinimoValor: input.pagamentoMinimoValor,
           taxaSetupFixaBrl: input.taxaSetupFixaBrl || 0,
           feeSucessoPercentSobreCaptacao: input.feeSucessoPercentSobreCaptacao || 0,
@@ -171,50 +214,83 @@ export const appRouter = router({
           aliquotaImpostoRendaPercent: input.aliquotaImpostoRendaPercent || 0,
         };
 
-        // Calcula simulação
-        const resultado = calcularSimulacao(calculoInput);
+          // Calcula simulação
+          console.log("🧮 Calculando simulação com input:", {
+            valorTotalOferta: calculoInput.valorTotalOferta,
+            valorInvestido: calculoInput.valorInvestido,
+            prazoMeses: calculoInput.prazoMeses,
+            taxaJurosAa: calculoInput.taxaJurosAa,
+          });
+          const resultado = calcularSimulacao(calculoInput);
+          console.log("✅ Cálculo concluído:", {
+            totalJurosPagos: resultado.resumo.totalJurosPagos,
+            totalRecebido: resultado.resumo.totalRecebido,
+            tirAnual: resultado.resumo.tirAnual,
+          });
 
-        // Salva simulação no banco
-        const simulationId = await db.createSimulation({
-          userId: ctx.user.id,
-          leadId: leadId,
-          // Novos campos padronizados
-          tipoSimulacao: input.modo === 'captador' ? 'financiamento' : 'investimento',
-          modalidade: null,
-          descricaoOferta: input.descricaoOferta || null,
-          valorDesejado: input.valorTotalOferta,
-          valorAporte: input.valorInvestido,
-          valorTotalOferta: input.valorTotalOferta,
-          prazoMeses: input.prazoMeses,
-          dataEncerramentoOferta: input.dataEncerramentoOferta,
-          taxaMensal: Math.round(input.taxaJurosAa / 12),
-          taxaJurosAa: input.taxaJurosAa,
-          convencaoCalendario: input.convencaoCalendario,
-          tipoCapitalizacao: input.tipoCapitalizacao,
-          sistemaAmortizacao: input.amortizacaoMetodo === 'linear' ? 'LINEAR' : 'BULLET',
-          possuiCarencia: (input.carenciaJurosMeses > 0 || input.carenciaPrincipalMeses > 0) ? 1 : 0,
-          mesesCarencia: Math.max(input.carenciaJurosMeses, input.carenciaPrincipalMeses),
-          carenciaJurosMeses: input.carenciaJurosMeses,
-          carenciaPrincipalMeses: input.carenciaPrincipalMeses,
-          capitalizarJurosEmCarencia: input.capitalizarJurosEmCarencia ? 1 : 0,
-          tipoGarantia: 'sem_garantia',
-          periodicidadeJuros: input.periodicidadeJuros,
-          periodicidadeAmortizacao: input.periodicidadeAmortizacao,
-          pagamentoMinimoValor: input.pagamentoMinimoValor || null,
-          taxaSetupFixaBrl: input.taxaSetupFixaBrl || 0,
-          feeSucessoPercentSobreCaptacao: input.feeSucessoPercentSobreCaptacao || 0,
-          feeManutencaoMensalBrl: input.feeManutencaoMensalBrl || 0,
-          taxaTransacaoPercent: input.taxaTransacaoPercent || 0,
-          aliquotaImpostoRendaPercent: input.aliquotaImpostoRendaPercent || 0,
-          modo: input.modo,
-          identificadorInvestidor: input.identificadorInvestidor || null,
-          moedaReferencia: input.moedaReferencia,
-          totalJurosPagos: resultado.resumo.totalJurosPagos,
-          totalAmortizado: resultado.resumo.totalAmortizado,
-          totalRecebido: resultado.resumo.totalRecebido,
-          tirMensal: resultado.resumo.tirMensal || null,
-          tirAnual: resultado.resumo.tirAnual || null,
-        });
+          // Calcula taxaMensal
+          const taxaMensal = Math.round((input.taxaJurosAa / 12) * 100); // Converte para centavos de %
+          if (isNaN(taxaMensal)) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "taxaMensal inválida - verifique taxaJurosAa",
+            });
+          }
+
+          // Prepara payload para salvar no banco
+          const simulationPayload = {
+            userId: ctx.user.id,
+            leadId: leadId,
+            // Novos campos padronizados
+            tipoSimulacao: tipoSimulacao,
+            modalidade: null,
+            descricaoOferta: input.descricaoOferta || null,
+            valorDesejado: valorDesejado!,
+            valorAporte: valorAporte!,
+            valorTotalOferta: input.valorTotalOferta,
+            prazoMeses: input.prazoMeses,
+            dataEncerramentoOferta: input.dataEncerramentoOferta,
+            taxaMensal: taxaMensal,
+            taxaJurosAa: input.taxaJurosAa,
+            convencaoCalendario: input.convencaoCalendario,
+            tipoCapitalizacao: input.tipoCapitalizacao,
+            sistemaAmortizacao: sistemaAmortizacao,
+            possuiCarencia: (input.carenciaJurosMeses > 0 || input.carenciaPrincipalMeses > 0) ? 1 : 0,
+            mesesCarencia: Math.max(input.carenciaJurosMeses, input.carenciaPrincipalMeses),
+            carenciaJurosMeses: input.carenciaJurosMeses,
+            carenciaPrincipalMeses: input.carenciaPrincipalMeses,
+            capitalizarJurosEmCarencia: input.capitalizarJurosEmCarencia ? 1 : 0,
+            tipoGarantia: input.tipoGarantia,
+            periodicidadeJuros: input.periodicidadeJuros,
+            periodicidadeAmortizacao: input.periodicidadeAmortizacao,
+            pagamentoMinimoValor: input.pagamentoMinimoValor || null,
+            taxaSetupFixaBrl: input.taxaSetupFixaBrl || 0,
+            feeSucessoPercentSobreCaptacao: input.feeSucessoPercentSobreCaptacao || 0,
+            feeManutencaoMensalBrl: input.feeManutencaoMensalBrl || 0,
+            taxaTransacaoPercent: input.taxaTransacaoPercent || 0,
+            aliquotaImpostoRendaPercent: input.aliquotaImpostoRendaPercent || 0,
+            modo: tipoSimulacao === 'financiamento' ? 'captador' : 'investidor',
+            identificadorInvestidor: input.identificadorInvestidor || null,
+            moedaReferencia: input.moedaReferencia,
+            totalJurosPagos: resultado.resumo.totalJurosPagos,
+            totalAmortizado: resultado.resumo.totalAmortizado,
+            totalRecebido: resultado.resumo.totalRecebido,
+            tirMensal: resultado.resumo.tirMensal || null,
+            tirAnual: resultado.resumo.tirAnual || null,
+          };
+
+          console.log("💾 Dados finais para criar simulação:", {
+            tipoSimulacao: simulationPayload.tipoSimulacao,
+            valorAporte: simulationPayload.valorAporte,
+            valorDesejado: simulationPayload.valorDesejado,
+            sistemaAmortizacao: simulationPayload.sistemaAmortizacao,
+            tipoGarantia: simulationPayload.tipoGarantia,
+            taxaMensal: simulationPayload.taxaMensal,
+          });
+
+          // Salva simulação no banco
+          const simulationId = await db.createSimulation(simulationPayload);
+          console.log("✅ Simulação criada com ID:", simulationId);
 
         // Salva cronograma
         const cronogramaItems = resultado.cronograma.map((mes) => ({
@@ -230,12 +306,17 @@ export const appRouter = router({
           observacoes: mes.observacoes || null,
         }));
 
-        await db.createCronogramas(cronogramaItems);
+          await db.createCronogramas(cronogramaItems);
+          console.log("✅ Cronograma salvo com", cronogramaItems.length, "parcelas");
 
-        return {
-          simulationId,
-          resumo: resultado.resumo,
-        };
+          return {
+            simulationId,
+            resumo: resultado.resumo,
+          };
+        } catch (err: any) {
+          console.error("❌ Erro ao criar simulação:", err);
+          throw err;
+        }
       }),
 
     // Deletar simulação

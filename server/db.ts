@@ -170,6 +170,14 @@ export async function getLeadByEmail(email: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function getLeadByWhatsapp(whatsapp: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(leads).where(eq(leads.whatsapp, whatsapp)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function getLeadById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
