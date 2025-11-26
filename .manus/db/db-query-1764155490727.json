@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, externalId, nome, dataEncerramento, ativo\nFROM offers\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, externalId, nome, dataEncerramento, ativo\nFROM offers\nLIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "externalId": "TOK-001",
+      "nome": "Loteamento Sunset Gardens",
+      "dataEncerramento": "NULL",
+      "ativo": "1"
+    },
+    {
+      "id": "2",
+      "externalId": "TOK-002",
+      "nome": "Recebíveis Cartão - Varejo",
+      "dataEncerramento": "NULL",
+      "ativo": "1"
+    },
+    {
+      "id": "3",
+      "externalId": "TOK-003",
+      "nome": "Duplicatas Indústria",
+      "dataEncerramento": "NULL",
+      "ativo": "1"
+    },
+    {
+      "id": "4",
+      "externalId": "TOK-004",
+      "nome": "Capital de Giro - Construção",
+      "dataEncerramento": "NULL",
+      "ativo": "1"
+    },
+    {
+      "id": "5",
+      "externalId": "TOK-005",
+      "nome": "Veículos Comerciais",
+      "dataEncerramento": "NULL",
+      "ativo": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\texternalId\tnome\tdataEncerramento\tativo\n1\tTOK-001\tLoteamento Sunset Gardens\tNULL\t1\n2\tTOK-002\tRecebíveis Cartão - Varejo\tNULL\t1\n3\tTOK-003\tDuplicatas Indústria\tNULL\t1\n4\tTOK-004\tCapital de Giro - Construção\tNULL\t1\n5\tTOK-005\tVeículos Comerciais\tNULL\t1\n",
+  "stderr": "",
+  "execution_time_ms": 154
+}

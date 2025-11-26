@@ -188,17 +188,36 @@ export async function createPipedriveDealForOpportunity(params: {
     const tipoSimulacaoFormatado = simulation.tipoSimulacao === "investimento" ? "Investimento" : "Financiamento";
     const title = `${tipoSimulacaoFormatado} ${ticketFormatado} - ${lead.nomeCompleto}`;
 
+    // Campos customizados do Pipedrive (configurados via ENV)
+    const PIPEDRIVE_FIELD_TOKENIZA_SCORE = process.env.PIPEDRIVE_FIELD_TOKENIZA_SCORE || "";
+    const PIPEDRIVE_FIELD_ORIGEM_SIMULACAO = process.env.PIPEDRIVE_FIELD_ORIGEM_SIMULACAO || "";
+    const PIPEDRIVE_FIELD_TICKET_REAIS = process.env.PIPEDRIVE_FIELD_TICKET_REAIS || "";
+
     // Payload do deal
-    const payload = {
+    const payload: any = {
       title,
       value: ticketEmReais,
       currency: "BRL",
       person_id: personId,
       pipeline_id,
       stage_id,
-      // Campos customizados podem ser adicionados aqui
-      // Ex: prazo_meses: simulation.prazoMeses
     };
+
+    // Adicionar campos customizados se configurados
+    if (PIPEDRIVE_FIELD_TOKENIZA_SCORE) {
+      payload[PIPEDRIVE_FIELD_TOKENIZA_SCORE] = opportunity.tokenizaScore;
+      console.log(`🏆 Enviando tokenizaScore=${opportunity.tokenizaScore} para Pipedrive (campo: ${PIPEDRIVE_FIELD_TOKENIZA_SCORE})`);
+    }
+
+    if (PIPEDRIVE_FIELD_ORIGEM_SIMULACAO) {
+      payload[PIPEDRIVE_FIELD_ORIGEM_SIMULACAO] = simulation.origemSimulacao;
+      console.log(`📍 Enviando origemSimulacao=${simulation.origemSimulacao} para Pipedrive (campo: ${PIPEDRIVE_FIELD_ORIGEM_SIMULACAO})`);
+    }
+
+    if (PIPEDRIVE_FIELD_TICKET_REAIS) {
+      payload[PIPEDRIVE_FIELD_TICKET_REAIS] = ticketEmReais;
+      console.log(`💵 Enviando ticket=${ticketFormatado} para Pipedrive (campo: ${PIPEDRIVE_FIELD_TICKET_REAIS})`);
+    }
 
     const response = await fetch(`${PIPEDRIVE_BASE_URL}/deals?api_token=${PIPEDRIVE_API_TOKEN}`, {
       method: "POST",

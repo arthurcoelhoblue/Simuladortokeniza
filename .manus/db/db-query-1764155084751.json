@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE simulations\nADD COLUMN origemSimulacao ENUM('manual', 'oferta_tokeniza') NOT NULL DEFAULT 'manual',\nADD COLUMN engajouComOferta TINYINT(1) NOT NULL DEFAULT 0,\nADD COLUMN offerId INT NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute ALTER TABLE simulations\nADD COLUMN origemSimulacao ENUM('manual', 'oferta_tokeniza') NOT NULL DEFAULT 'manual',\nADD COLUMN engajouComOferta TINYINT(1) NOT NULL DEFAULT 0,\nADD COLUMN offerId INT NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1025
+}

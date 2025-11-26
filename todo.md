@@ -147,3 +147,78 @@
 - [x] Testar ordenação por scoreCompatibilidade (melhor match: score 100)
 - [x] Executar SQL de verificação obrigatória (5 ofertas retornadas)
 - [x] Gerar relatório final obrigatório
+
+## Sistema de Scoring - Intenção como Fator Dominante
+
+### 1. Schema e Banco de Dados
+
+- [x] Adicionar campo origemSimulacao ENUM('manual', 'oferta_tokeniza') na tabela simulations
+- [x] Adicionar campo engajouComOferta BOOLEAN DEFAULT 0 na tabela simulations
+- [x] Adicionar campo offerId INT NULL na tabela simulations
+- [x] Adicionar campo dataEncerramento DATETIME NULL na tabela offers
+- [x] Adicionar campo tokenizaScore INT DEFAULT 0 na tabela opportunities
+- [x] Adicionar campo scoreValor INT DEFAULT 0 na tabela opportunities
+- [x] Adicionar campo scoreIntencao INT DEFAULT 0 na tabela opportunities
+- [x] Adicionar campo scoreEngajamento INT DEFAULT 0 na tabela opportunities
+- [x] Adicionar campo scoreUrgencia INT DEFAULT 0 na tabela opportunities
+- [x] Atualizar schema Drizzle com todos os novos campos
+- [x] Executar migração do banco de dados
+
+### 2. Score Engine
+
+- [x] Criar arquivo server/scoreEngine.ts
+- [x] Implementar tipo ScoreComponents
+- [x] Implementar função calcularScoreValor (até 50 pts)
+- [x] Implementar função calcularScoreIntencao (até 40 pts - fator dominante)
+- [x] Implementar função calcularScoreEngajamento (até 20 pts)
+- [x] Implementar função calcularScoreUrgencia (até 10 pts)
+- [x] Implementar função calcularScoreParaOpportunity (combinação final)
+- [x] Criar função countRelatedSimulations no db.ts
+
+### 3. Frontend - Captura de Intenção
+
+- [ ] Adicionar pergunta "Como você quer simular?" no formulário
+- [ ] Criar opção "Simulação livre (sem oferta específica)"
+- [ ] Criar opção "Simular a partir de uma oferta Tokeniza"
+- [ ] Implementar modal/dropdown de seleção de ofertas ativas
+- [ ] Atualizar payload de simulations.create com origemSimulacao
+- [ ] Atualizar payload de simulations.create com engajouComOferta
+- [ ] Atualizar payload de simulations.create com offerId
+
+### 4. Integração com Qualificação
+
+- [x] Atualizar opportunities.create para usar scoreEngine
+- [x] Buscar offer relacionada se simulation.offerId existir
+- [x] Calcular versoesRelacionadas para scoreEngajamento
+- [x] Salvar scoreValor, scoreIntencao, scoreEngajamento, scoreUrgencia
+- [x] Salvar tokenizaScore consolidado
+- [ ] Ajustar fitNivel baseado em tokenizaScore (>=75 → prioritário, >=50 → quente) - Pendente: fitNivel não existe ainda
+
+### 5. Integração Pipedrive
+
+- [x] Adicionar variáveis de ambiente para campos customizados (PIPEDRIVE_FIELD_TOKENIZA_SCORE, etc)
+- [x] Atualizar createPipedriveDealForOpportunity para enviar tokenizaScore
+- [x] Enviar origemSimulacao para Pipedrive
+- [x] Enviar valorAporte em reais para Pipedrive
+
+### 6. Endpoints e Requalificação
+
+- [ ] Atualizar opportunities.create para calcular score inicial
+- [ ] Criar/atualizar opportunities.requalify para recalcular scores
+- [ ] Criar endpoint opportunities.getScoreOverview (opcional)
+
+### 7. Testes Automatizados
+
+- [x] Teste: Simulação manual, valor baixo, sem oferta (scoreIntencao=0)
+- [x] Teste: Simulação iniciada por oferta, valor médio (scoreIntencao>=25)
+- [x] Teste: Simulação alta intenção + alto ticket + urgência (tokenizaScore 80-100)
+- [x] Teste: Lead com 3+ versões (scoreEngajamento>0)
+- [x] Criar arquivo server/scoring.test.ts (21/21 testes passando)
+- [ ] Teste: Integração Pipedrive com tokeniza_score preenchido (requer credenciais reais)
+
+### 8. Validação e Relatório
+
+- [x] Executar SQL de verificação (simulations com origemSimulacao/engajouComOferta) - 5 registros retornados
+- [x] Executar SQL de verificação (opportunities com scores) - 5 registros retornados
+- [x] Executar SQL de verificação (offers com dataEncerramento) - 5 registros retornados
+- [x] Gerar relatório final obrigatório com logs de validação (RELATORIO_SISTEMA_SCORING.md)

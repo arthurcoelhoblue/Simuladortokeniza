@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, origemSimulacao, engajouComOferta, offerId, tipoSimulacao, valorAporte\nFROM simulations\nORDER BY createdAt DESC\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, origemSimulacao, engajouComOferta, offerId, tipoSimulacao, valorAporte\nFROM simulations\nORDER BY createdAt DESC\nLIMIT 5;",
+  "rows": [
+    {
+      "id": "870019",
+      "origemSimulacao": "manual",
+      "engajouComOferta": "0",
+      "offerId": "NULL",
+      "tipoSimulacao": "financiamento",
+      "valorAporte": "5000000"
+    },
+    {
+      "id": "870016",
+      "origemSimulacao": "manual",
+      "engajouComOferta": "0",
+      "offerId": "NULL",
+      "tipoSimulacao": "investimento",
+      "valorAporte": "3000000"
+    },
+    {
+      "id": "870017",
+      "origemSimulacao": "manual",
+      "engajouComOferta": "0",
+      "offerId": "NULL",
+      "tipoSimulacao": "investimento",
+      "valorAporte": "10000000"
+    },
+    {
+      "id": "870018",
+      "origemSimulacao": "manual",
+      "engajouComOferta": "0",
+      "offerId": "NULL",
+      "tipoSimulacao": "investimento",
+      "valorAporte": "10000000"
+    },
+    {
+      "id": "870014",
+      "origemSimulacao": "manual",
+      "engajouComOferta": "0",
+      "offerId": "NULL",
+      "tipoSimulacao": "investimento",
+      "valorAporte": "10000000"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torigemSimulacao\tengajouComOferta\tofferId\ttipoSimulacao\tvalorAporte\n870019\tmanual\t0\tNULL\tfinanciamento\t5000000\n870016\tmanual\t0\tNULL\tinvestimento\t3000000\n870017\tmanual\t0\tNULL\tinvestimento\t10000000\n870018\tmanual\t0\tNULL\tinvestimento\t10000000\n870014\tmanual\t0\tNULL\tinvestimento\t10000000\n",
+  "stderr": "",
+  "execution_time_ms": 101
+}

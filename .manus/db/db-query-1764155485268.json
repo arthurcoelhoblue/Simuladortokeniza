@@ -1,0 +1,60 @@
+{
+  "query": "SELECT id, tokenizaScore, scoreValor, scoreIntencao, scoreEngajamento, scoreUrgencia, tipoOportunidade, ticketEstimado\nFROM opportunities\nORDER BY createdAt DESC\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, tokenizaScore, scoreValor, scoreIntencao, scoreEngajamento, scoreUrgencia, tipoOportunidade, ticketEstimado\nFROM opportunities\nORDER BY createdAt DESC\nLIMIT 5;",
+  "rows": [
+    {
+      "id": "60002",
+      "tokenizaScore": "0",
+      "scoreValor": "0",
+      "scoreIntencao": "0",
+      "scoreEngajamento": "0",
+      "scoreUrgencia": "0",
+      "tipoOportunidade": "emissor",
+      "ticketEstimado": "20000000"
+    },
+    {
+      "id": "60001",
+      "tokenizaScore": "0",
+      "scoreValor": "0",
+      "scoreIntencao": "0",
+      "scoreEngajamento": "0",
+      "scoreUrgencia": "0",
+      "tipoOportunidade": "investidor",
+      "ticketEstimado": "10000000"
+    },
+    {
+      "id": "30003",
+      "tokenizaScore": "0",
+      "scoreValor": "0",
+      "scoreIntencao": "0",
+      "scoreEngajamento": "0",
+      "scoreUrgencia": "0",
+      "tipoOportunidade": "investidor",
+      "ticketEstimado": "50000000"
+    },
+    {
+      "id": "30004",
+      "tokenizaScore": "0",
+      "scoreValor": "0",
+      "scoreIntencao": "0",
+      "scoreEngajamento": "0",
+      "scoreUrgencia": "0",
+      "tipoOportunidade": "emissor",
+      "ticketEstimado": "30000000"
+    },
+    {
+      "id": "30002",
+      "tokenizaScore": "0",
+      "scoreValor": "0",
+      "scoreIntencao": "0",
+      "scoreEngajamento": "0",
+      "scoreUrgencia": "0",
+      "tipoOportunidade": "emissor",
+      "ticketEstimado": "20000000"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttokenizaScore\tscoreValor\tscoreIntencao\tscoreEngajamento\tscoreUrgencia\ttipoOportunidade\tticketEstimado\n60002\t0\t0\t0\t0\t0\temissor\t20000000\n60001\t0\t0\t0\t0\t0\tinvestidor\t10000000\n30003\t0\t0\t0\t0\t0\tinvestidor\t50000000\n30004\t0\t0\t0\t0\t0\temissor\t30000000\n30002\t0\t0\t0\t0\t0\temissor\t20000000\n",
+  "stderr": "",
+  "execution_time_ms": 73
+}

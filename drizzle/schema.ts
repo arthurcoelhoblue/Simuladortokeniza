@@ -118,6 +118,11 @@ export const simulations = mysqlTable("simulations", {
   version: int("version").notNull().default(1),
   parentSimulationId: int("parentSimulationId"),
   
+  // Sistema de scoring - origem e engajamento
+  origemSimulacao: mysqlEnum("origemSimulacao", ["manual", "oferta_tokeniza"]).notNull().default("manual"),
+  engajouComOferta: int("engajouComOferta").notNull().default(0), // boolean: 0 ou 1
+  offerId: int("offerId"), // FK → offers.id (nullable)
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -209,6 +214,13 @@ export const opportunities = mysqlTable("opportunities", {
   pipedriveDealId: varchar("pipedriveDealId", { length: 50 }),
   pipedriveOrgId: varchar("pipedriveOrgId", { length: 50 }),
   
+  // Sistema de scoring Tokeniza
+  tokenizaScore: int("tokenizaScore").notNull().default(0), // Score consolidado (0-100)
+  scoreValor: int("scoreValor").notNull().default(0), // Componente: ticket (até 50 pts)
+  scoreIntencao: int("scoreIntencao").notNull().default(0), // Componente: intenção (até 40 pts)
+  scoreEngajamento: int("scoreEngajamento").notNull().default(0), // Componente: engajamento (até 20 pts)
+  scoreUrgencia: int("scoreUrgencia").notNull().default(0), // Componente: urgência (até 10 pts)
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({
@@ -245,6 +257,9 @@ export const offers = mysqlTable("offers", {
   
   // Status
   ativo: int("ativo").notNull().default(1), // 1 = ativo, 0 = inativo
+  
+  // Urgência da oferta
+  dataEncerramento: timestamp("dataEncerramento"),
   
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),

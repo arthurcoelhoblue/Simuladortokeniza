@@ -424,7 +424,52 @@ export const appRouter = router({
 
         console.log("✅ Oportunidade criada com ID:", opportunityId, "ticketEstimado:", ticketEstimado);
 
-        // 5. Integração com Pipedrive
+        // 5. Calcular score Tokeniza
+        try {
+          const { calcularScoreParaOpportunity } = await import("./scoreEngine");
+          
+          // Buscar oportunidade recém-criada
+          const opportunity = await db.getOpportunityById(opportunityId);
+          if (!opportunity) {
+            throw new Error("Oportunidade não encontrada");
+          }
+
+          // Buscar oferta relacionada se existir
+          let offer = null;
+          if (simulation.offerId) {
+            offer = await db.getOfferById(simulation.offerId);
+          }
+
+          // Contar versões relacionadas para scoreEngajamento
+          const versoesRelacionadas = await db.countRelatedSimulations(
+            leadId,
+            simulation.tipoSimulacao
+          );
+
+          // Calcular componentes de score
+          const scoreComponents = calcularScoreParaOpportunity({
+            simulation,
+            opportunity,
+            offer,
+            versoesRelacionadas,
+          });
+
+          // Atualizar oportunidade com scores
+          await db.updateOpportunity(opportunityId, {
+            tokenizaScore: scoreComponents.tokenizaScore,
+            scoreValor: scoreComponents.scoreValor,
+            scoreIntencao: scoreComponents.scoreIntencao,
+            scoreEngajamento: scoreComponents.scoreEngajamento,
+            scoreUrgencia: scoreComponents.scoreUrgencia,
+          });
+
+          console.log("🏆 Score Tokeniza calculado:", scoreComponents.tokenizaScore);
+        } catch (error) {
+          console.error("❌ Erro ao calcular score Tokeniza:", error);
+          // Não falhar a criação da oportunidade se score falhar
+        }
+
+        // 6. Integração com Pipedrive
         try {
           // Buscar lead completo
           const lead = await db.getLeadById(leadId);

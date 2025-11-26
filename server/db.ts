@@ -349,3 +349,28 @@ export async function getOfferById(id: number) {
   const result = await db.select().from(offers).where(eq(offers.id, id)).limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
+
+/**
+ * Conta o número de simulações relacionadas ao mesmo lead
+ * Usado para calcular scoreEngajamento
+ * 
+ * @param leadId - ID do lead
+ * @param tipoSimulacao - Tipo da simulação (investimento/financiamento)
+ * @returns Número de simulações relacionadas
+ */
+export async function countRelatedSimulations(leadId: number, tipoSimulacao: "investimento" | "financiamento"): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const result = await db
+    .select()
+    .from(simulations)
+    .where(
+      and(
+        eq(simulations.leadId, leadId),
+        eq(simulations.tipoSimulacao, tipoSimulacao)
+      )
+    );
+
+  return result.length;
+}
