@@ -1,0 +1,50 @@
+{
+  "query": "SELECT l.id, l.nomeCompleto, o.tokenizaScore\nFROM leads l\nJOIN opportunities o ON o.leadId = l.id\nORDER BY o.tokenizaScore DESC\nLIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT l.id, l.nomeCompleto, o.tokenizaScore\nFROM leads l\nJOIN opportunities o ON o.leadId = l.id\nORDER BY o.tokenizaScore DESC\nLIMIT 10;",
+  "rows": [
+    {
+      "id": "150005",
+      "nomeCompleto": "Lead Teste Opp",
+      "tokenizaScore": "0"
+    },
+    {
+      "id": "150005",
+      "nomeCompleto": "Lead Teste Opp",
+      "tokenizaScore": "0"
+    },
+    {
+      "id": "180012",
+      "nomeCompleto": "Lead Teste Oportunidade",
+      "tokenizaScore": "0"
+    },
+    {
+      "id": "180013",
+      "nomeCompleto": "João Silva Completo",
+      "tokenizaScore": "0"
+    },
+    {
+      "id": "180014",
+      "nomeCompleto": "Investidor Teste",
+      "tokenizaScore": "0"
+    },
+    {
+      "id": "180015",
+      "nomeCompleto": "Captador Teste",
+      "tokenizaScore": "0"
+    },
+    {
+      "id": "210001",
+      "nomeCompleto": "João Investidor",
+      "tokenizaScore": "0"
+    },
+    {
+      "id": "210002",
+      "nomeCompleto": "Maria Emissora",
+      "tokenizaScore": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnomeCompleto\ttokenizaScore\n150005\tLead Teste Opp\t0\n150005\tLead Teste Opp\t0\n180012\tLead Teste Oportunidade\t0\n180013\tJoão Silva Completo\t0\n180014\tInvestidor Teste\t0\n180015\tCaptador Teste\t0\n210001\tJoão Investidor\t0\n210002\tMaria Emissora\t0\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

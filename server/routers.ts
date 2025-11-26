@@ -8,6 +8,29 @@ import { calcularSimulacao, SimulationInput } from "./calculator";
 import * as db from "./db";
 import { generatePDFHTML } from "./pdfExport";
 
+/**
+ * Lista de emails com acesso administrativo
+ * Usado para proteger dashboards e endpoints internos
+ */
+const adminEmails = ["arthur@blueconsult.com.br"];
+
+/**
+ * Procedure administrativo que verifica se o usuário logado
+ * possui email na lista de admins
+ */
+const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  const email = ctx.user?.email;
+
+  if (!email || !adminEmails.includes(email)) {
+    throw new TRPCError({ 
+      code: "FORBIDDEN", 
+      message: "Acesso negado. Esta funcionalidade é restrita a administradores." 
+    });
+  }
+
+  return next({ ctx });
+});
+
 export const appRouter = router({
   system: systemRouter,
 
@@ -555,6 +578,136 @@ export const appRouter = router({
 
         return enriched;
       }),
+  }),
+
+  // Dashboard administrativo (acesso restrito)
+  dashboard: router({
+    getLeadMetrics: adminProcedure.query(async ({ ctx }) => {
+      console.log("📊 Dashboard Leads: métricas carregadas para userId=", ctx.user.id);
+
+      const db = await import("./db").then(m => m);
+      const { getDb } = db;
+      const database = await getDb();
+      if (!database) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+      }
+
+      const { leads, simulations, opportunities } = await import("../drizzle/schema");
+      const { sql, count, eq, and, gte, desc } = await import("drizzle-orm");
+
+      // Períodos de tempo
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      const inicioSemana = new Date(hoje);
+      inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+      const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+
+      // 1. Total de leads
+      const totalLeadsResult = await database.select({ count: count() }).from(leads);
+      const totalLeads = totalLeadsResult[0]?.count || 0;
+
+      // 2. Leads por período
+      const leadsHojeResult = await database.select({ count: count() }).from(leads).where(gte(leads.createdAt, hoje));
+      const leadsHoje = leadsHojeResult[0]?.count || 0;
+
+      const leadsSemanaResult = await database.select({ count: count() }).from(leads).where(gte(leads.createdAt, inicioSemana));
+      const leadsSemana = leadsSemanaResult[0]?.count || 0;
+
+      const leadsMesResult = await database.select({ count: count() }).from(leads).where(gte(leads.createdAt, inicioMes));
+      const leadsMes = leadsMesResult[0]?.count || 0;
+
+      // 3. Leads com/sem simulações
+      const allLeads = await database.select({ id: leads.id }).from(leads);
+      const leadsComSimulacoesSet = new Set();
+      const allSimulations = await database.select({ leadId: simulations.leadId }).from(simulations);
+      allSimulations.forEach(s => { if (s.leadId) leadsComSimulacoesSet.add(s.leadId); });
+      const leadsComSimulacoes = leadsComSimulacoesSet.size;
+      const leadsSemSimulacoes = totalLeads - leadsComSimulacoes;
+
+      // 4. Leads com/sem oportunidades
+      const leadsComOportunidadesSet = new Set();
+      const allOpportunities = await database.select({ leadId: opportunities.leadId }).from(opportunities);
+      allOpportunities.forEach(o => leadsComOportunidadesSet.add(o.leadId));
+      const leadsComOportunidades = leadsComOportunidadesSet.size;
+      const leadsSemOportunidades = totalLeads - leadsComOportunidades;
+
+      // 5. Por origem
+      const porOrigemResult = await database
+        .select({ canalOrigem: leads.canalOrigem, total: count() })
+        .from(leads)
+        .groupBy(leads.canalOrigem);
+      const porOrigem = porOrigemResult.map(r => ({ canalOrigem: r.canalOrigem || "desconhecido", total: r.total }));
+
+      // 6. Por tipo (investidor vs emissor)
+      const simulacoesPorLead = await database.select().from(simulations);
+      const leadsPorTipo = new Map<number, Set<string>>();
+      simulacoesPorLead.forEach(s => {
+        if (!s.leadId) return;
+        if (!leadsPorTipo.has(s.leadId)) leadsPorTipo.set(s.leadId, new Set());
+        leadsPorTipo.get(s.leadId)!.add(s.tipoSimulacao);
+      });
+      let investidorCount = 0;
+      let emissorCount = 0;
+      leadsPorTipo.forEach(tipos => {
+        if (tipos.has("investimento")) investidorCount++;
+        if (tipos.has("financiamento")) emissorCount++;
+      });
+      const porTipo = { investidor: investidorCount, emissor: emissorCount };
+
+      // 7. TOP 10 por intenção (tokenizaScore)
+      const topIntencaoRaw = await database
+        .select({
+          leadId: opportunities.leadId,
+          tokenizaScore: opportunities.tokenizaScore,
+          simulationId: opportunities.simulationId,
+        })
+        .from(opportunities)
+        .orderBy(desc(opportunities.tokenizaScore))
+        .limit(10);
+
+      const topIntencao = await Promise.all(
+        topIntencaoRaw.map(async (opp) => {
+          const lead = await db.getLeadById(opp.leadId);
+          const simulation = await db.getSimulationById(opp.simulationId);
+          return {
+            leadId: opp.leadId,
+            nome: lead?.nomeCompleto || "Desconhecido",
+            whatsapp: lead?.whatsapp || null,
+            email: lead?.email || null,
+            tokenizaScore: opp.tokenizaScore,
+            ultimaSimulacaoId: opp.simulationId,
+            tipoSimulacao: simulation?.tipoSimulacao || "investimento",
+          };
+        })
+      );
+
+      // 8. Dados faltantes
+      const semWhatsappResult = await database.select({ count: count() }).from(leads).where(sql`${leads.whatsapp} IS NULL OR ${leads.whatsapp} = ''`);
+      const semWhatsapp = semWhatsappResult[0]?.count || 0;
+
+      const semEmailResult = await database.select({ count: count() }).from(leads).where(sql`${leads.email} IS NULL OR ${leads.email} = ''`);
+      const semEmail = semEmailResult[0]?.count || 0;
+
+      const semCidadeOuEstadoResult = await database.select({ count: count() }).from(leads).where(sql`${leads.cidade} IS NULL OR ${leads.estado} IS NULL`);
+      const semCidadeOuEstado = semCidadeOuEstadoResult[0]?.count || 0;
+
+      const dadosFaltantes = { semWhatsapp, semEmail, semCidadeOuEstado };
+
+      return {
+        totalLeads,
+        leadsHoje,
+        leadsSemana,
+        leadsMes,
+        leadsComSimulacoes,
+        leadsSemSimulacoes,
+        leadsComOportunidades,
+        leadsSemOportunidades,
+        porOrigem,
+        porTipo,
+        topIntencao,
+        dadosFaltantes,
+      };
+    }),
   }),
 
   // Router de ofertas Tokeniza

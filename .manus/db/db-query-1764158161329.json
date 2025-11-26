@@ -1,0 +1,30 @@
+{
+  "query": "SELECT canalOrigem, COUNT(*) AS total\nFROM leads\nGROUP BY canalOrigem;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT canalOrigem, COUNT(*) AS total\nFROM leads\nGROUP BY canalOrigem;",
+  "rows": [
+    {
+      "canalOrigem": "migração_automática",
+      "total": "6"
+    },
+    {
+      "canalOrigem": "teste",
+      "total": "18"
+    },
+    {
+      "canalOrigem": "simulador_web",
+      "total": "10"
+    },
+    {
+      "canalOrigem": "NULL",
+      "total": "29"
+    },
+    {
+      "canalOrigem": "website",
+      "total": "3"
+    }
+  ],
+  "messages": [],
+  "stdout": "canalOrigem\ttotal\nmigração_automática\t6\nteste\t18\nsimulador_web\t10\nNULL\t29\nwebsite\t3\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

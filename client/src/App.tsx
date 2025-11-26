@@ -4,6 +4,7 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import DashboardLeads from "./pages/DashboardLeads";
 import Home from "./pages/Home";
 import NewSimulation from "./pages/NewSimulation";
 import SimulationView from "./pages/SimulationView";
@@ -15,6 +16,7 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/new"} component={NewSimulation} />
       <Route path="/simulation/:id" component={SimulationView} />
+      <Route path="/dashboard/leads" component={DashboardLeads} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

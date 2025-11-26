@@ -222,3 +222,60 @@
 - [x] Executar SQL de verificação (opportunities com scores) - 5 registros retornados
 - [x] Executar SQL de verificação (offers com dataEncerramento) - 5 registros retornados
 - [x] Gerar relatório final obrigatório com logs de validação (RELATORIO_SISTEMA_SCORING.md)
+
+## Dashboard de Leads (Lead Leader) - Acesso Restrito Arthur
+
+### 1. Backend - Controle de Acesso
+- [x] Criar adminProcedure com middleware de verificação de email
+- [x] Adicionar lista adminEmails = ["arthur@blueconsult.com.br"]
+- [x] Retornar TRPCError FORBIDDEN para emails não autorizados
+
+### 2. Backend - Endpoint dashboard.getLeadMetrics
+- [x] Criar router dashboard no appRouter
+- [x] Implementar consulta totalLeads, leadsHoje, leadsSemana, leadsMes
+- [x] Implementar consulta leadsComSimulacoes, leadsSemSimulacoes
+- [x] Implementar consulta leadsComOportunidades, leadsSemOportunidades
+- [x] Implementar consulta porOrigem (GROUP BY canalOrigem)
+- [x] Implementar consulta porTipo (investidor vs emissor)
+- [x] Implementar consulta topIntencao (TOP 10 por tokenizaScore)
+- [x] Implementar consulta dadosFaltantes (semWhatsapp, semEmail, semCidadeOuEstado)
+- [x] Adicionar log de auditoria ao carregar métricas
+
+### 3. Frontend - Página DashboardLeads.tsx
+- [x] Criar arquivo client/src/pages/DashboardLeads.tsx
+- [x] Adicionar controle de acesso visual (isArthur)
+- [x] Consumir trpc.dashboard.getLeadMetrics.useQuery()
+- [x] Implementar cards de métricas principais (Total, Hoje, Semana, Mês)
+- [x] Implementar seção Engajamento (com/sem simulação, com/sem oportunidade)
+- [x] Implementar seção Origem dos Leads (tabela)
+- [x] Implementar seção Perfil por Tipo (investidor vs emissor)
+- [x] Implementar tabela TOP 10 por Intenção (Score Tokeniza)
+- [x] Implementar seção Dados Faltantes (sem WhatsApp, sem Email, sem Cidade/Estado)
+- [x] Tratar estados de loading, erro e ausência de dados
+
+### 4. Navegação
+- [ ] Adicionar item "Leads" no menu lateral condicionalmente (só para Arthur) - Pendente: não há menu lateral no projeto
+- [x] Registrar rota /dashboard/leads no App.tsx
+
+### 5. Testes
+- [x] Teste: adminProcedure permite acesso para arthur@blueconsult.com.br
+- [x] Teste: adminProcedure retorna FORBIDDEN para outros emails
+- [x] Teste: adminProcedure retorna FORBIDDEN para usuário sem email
+- [x] Teste: adminProcedure retorna FORBIDDEN para usuário não logado
+- [x] Teste: lista de admins contém apenas arthur@blueconsult.com.br
+- [x] Criar arquivo server/adminAccess.test.ts (8/8 testes passando)
+- [ ] Teste: dashboard.getLeadMetrics retorna dados agregados corretos (requer dados no banco)
+- [ ] Teste: item de menu "Leads" aparece só para Arthur (não aplicável - sem menu lateral)
+
+### 6. SQL de Verificação
+- [x] Executar SELECT COUNT(*) AS totalLeads FROM leads (1 registro retornado)
+- [x] Executar SELECT canalOrigem, COUNT(*) FROM leads GROUP BY canalOrigem (5 registros retornados)
+- [x] Executar SELECT TOP 10 por tokenizaScore (8 registros retornados)
+
+### 7. Relatório Final
+- [x] Gerar screenshot da tela /dashboard/leads
+- [x] Documentar estrutura de retorno do endpoint
+- [x] Confirmar acesso restrito ao Arthur
+- [x] Incluir resultados dos testes (8/8 passando)
+- [x] Incluir SQL de verificação executado
+- [x] Criar arquivo RELATORIO_DASHBOARD_LEADS.md
