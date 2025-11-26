@@ -662,6 +662,11 @@
 - [x] Criar script de diagnóstico automatizado (diagnosticoPipedrive.ts)
 - [x] Documentar diagnóstico completo (DIAGNOSTICO_PIPEDRIVE_RESULTADO.md)
 - [x] Criar guia de configuração passo a passo (GUIA_CONFIGURACAO_PIPEDRIVE.md)
-- [ ] Usuário configurar credenciais Pipedrive (PENDENTE)
-- [ ] Executar diagnóstico novamente após configuração (PENDENTE)
+- [x] Usuário forneceu credenciais Pipedrive
+- [x] Executar diagnóstico com credenciais reais
+- [x] Descobrir stage IDs corretos (investidor: 49, emissor: 88)
+- [x] Validar configuração completa (13/14 variáveis OK)
+- [x] Gerar arquivo de configuração completa (CONFIGURACAO_PIPEDRIVE_COMPLETA.md)
+- [ ] Usuário adicionar variáveis no painel Settings → Secrets (PENDENTE)
+- [ ] Reiniciar servidor após configurar (PENDENTE)
 - [ ] Testar criação de deal real (PENDENTE)
