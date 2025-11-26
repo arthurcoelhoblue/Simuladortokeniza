@@ -71,14 +71,15 @@ export async function findOrCreatePerson(lead: any) {
 export function getPipelineConfig(tipoOportunidade: string) {
   if (tipoOportunidade === "emissor") {
     return {
-      pipeline_id: Number(process.env.PIPEDRIVE_EMISSOR_PIPELINE_ID),
-      stage_id: Number(process.env.PIPEDRIVE_EMISSOR_STAGE_ID)
+      pipeline_id: Number(process.env.PIPEDRIVE_EMISSOR_PIPELINE_ID) || 1,
+      stage_id: Number(process.env.PIPEDRIVE_EMISSOR_STAGE_ID) || 88  // "Leads Site"
     };
   }
 
+  // Default: investidor
   return {
-    pipeline_id: Number(process.env.PIPEDRIVE_INVESTOR_PIPELINE_ID),
-    stage_id: Number(process.env.PIPEDRIVE_INVESTOR_STAGE_ID)
+    pipeline_id: Number(process.env.PIPEDRIVE_INVESTOR_PIPELINE_ID) || 9,
+    stage_id: Number(process.env.PIPEDRIVE_INVESTOR_STAGE_ID) || 49  // "Lead"
   };
 }
 

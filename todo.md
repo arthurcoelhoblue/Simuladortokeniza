@@ -628,3 +628,27 @@
 - [x] Adicionar suporte a PIPEDRIVE_DEFAULT_OWNER_ID opcional
 - [x] Testar e validar logs no console
 - [x] Criar guia de referência de logs (GUIA_LOGS_PIPEDRIVE.md)
+
+## Ajuste de Pipelines e Scoring (Passo 1 e 2)
+
+### Passo 1: Calcular Scores ANTES de Criar Oportunidade
+- [x] Mover cálculo de scores para ANTES de createOpportunity
+- [x] Passar scores diretamente no createOpportunity (tokenizaScore, scoreValor, scoreIntencao, scoreEngajamento, scoreUrgencia)
+- [x] Remover updateOpportunity para salvar scores (já vem no create)
+- [x] Manter integração Pipedrive DEPOIS de criar oportunidade
+- [x] Adicionar log de tokenizaScore na criação da oportunidade
+
+### Passo 2: Atualizar Pipelines Corretos
+- [x] Atualizar getPipelineConfig com novos valores:
+  - [x] Investidor: pipeline 9, stage 49 ("Lead")
+  - [x] Emissor: pipeline 1, stage 88 ("Leads Site")
+- [x] Adicionar valores default para fallback
+- [ ] Atualizar documentação com novos pipelines
+- [ ] Testar criação de deal com pipelines corretos (requer credenciais)
+
+### Passo 3: Captura de Intenção no Frontend (PENDENTE)
+- [ ] Adicionar pergunta "Como você quer simular?" no formulário
+- [ ] Implementar opção "Simulação livre" (origemSimulacao=manual)
+- [ ] Implementar opção "A partir de oferta Tokeniza" (origemSimulacao=oferta_tokeniza)
+- [ ] Criar modal de seleção de ofertas (offers.listActive)
+- [ ] Enviar origemSimulacao, engajouComOferta, offerId no payload

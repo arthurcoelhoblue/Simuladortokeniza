@@ -441,31 +441,20 @@ export const appRouter = router({
 
         console.log("🎯 Criando oportunidade tipo=", tipoOportunidade, "para simulação", input.simulationId);
 
-        // 4. Criar oportunidade
-        const opportunityId = await db.createOpportunity({
-          leadId,
-          simulationId: input.simulationId,
-          ownerUserId: input.ownerUserId || null,
-          status: "novo",
-          probabilidade: 0,
-          ticketEstimado,
-          tipoOportunidade,
-          nextAction: input.nextAction || null,
-          nextActionAt: input.nextActionAt ? new Date(input.nextActionAt) : null,
-        });
+        // 4. Calcular scores ANTES de criar oportunidade
+        let scoreComponents = {
+          tokenizaScore: 0,
+          scoreValor: 0,
+          scoreIntencao: 0,
+          scoreEngajamento: 0,
+          scoreUrgencia: 0,
+        };
+        let fitNivel = "frio" as "frio" | "morno" | "quente" | "prioritario";
 
-        console.log("✅ Oportunidade criada com ID:", opportunityId, "ticketEstimado:", ticketEstimado);
-
-        // 5. Calcular score Tokeniza
         try {
           const { calcularScoreParaOpportunity } = await import("./scoreEngine");
+          const { calcularFitNivel } = await import("./fitNivel");
           
-          // Buscar oportunidade recém-criada
-          const opportunity = await db.getOpportunityById(opportunityId);
-          if (!opportunity) {
-            throw new Error("Oportunidade não encontrada");
-          }
-
           // Buscar oferta relacionada se existir
           let offer = null;
           if (simulation.offerId) {
@@ -478,33 +467,48 @@ export const appRouter = router({
             simulation.tipoSimulacao
           );
 
-          // Calcular componentes de score
-          const scoreComponents = calcularScoreParaOpportunity({
+          // Calcular componentes de score (não precisa de opportunity completa)
+          scoreComponents = calcularScoreParaOpportunity({
             simulation,
-            opportunity,
+            opportunity: {
+              tipoOportunidade,
+              ticketEstimado,
+            } as any, // Apenas campos necessários para cálculo
             offer,
             versoesRelacionadas,
           });
           
           // Calcular fitNivel baseado em tokenizaScore
-          const { calcularFitNivel } = await import("./fitNivel");
-          const fitNivel = calcularFitNivel(scoreComponents.tokenizaScore);
+          fitNivel = calcularFitNivel(scoreComponents.tokenizaScore);
 
-          // Atualizar oportunidade com scores e fitNivel
-          await db.updateOpportunity(opportunityId, {
-            tokenizaScore: scoreComponents.tokenizaScore,
-            fitNivel,
-            scoreValor: scoreComponents.scoreValor,
-            scoreIntencao: scoreComponents.scoreIntencao,
-            scoreEngajamento: scoreComponents.scoreEngajamento,
-            scoreUrgencia: scoreComponents.scoreUrgencia,
-          });
-
-          console.log("🏆 Score Tokeniza calculado:", scoreComponents.tokenizaScore);
+          console.log("🏆 Score Tokeniza calculado:", scoreComponents.tokenizaScore, "fitNivel:", fitNivel);
         } catch (error) {
           console.error("❌ Erro ao calcular score Tokeniza:", error);
-          // Não falhar a criação da oportunidade se score falhar
+          // Continua com scores zerados se falhar
         }
+
+        // 5. Criar oportunidade JÁ COM scores calculados
+        const opportunityId = await db.createOpportunity({
+          leadId,
+          simulationId: input.simulationId,
+          ownerUserId: input.ownerUserId || null,
+          status: "novo",
+          probabilidade: 0,
+          ticketEstimado,
+          tipoOportunidade,
+          nextAction: input.nextAction || null,
+          nextActionAt: input.nextActionAt ? new Date(input.nextActionAt) : null,
+          // Scores calculados ANTES
+          tokenizaScore: scoreComponents.tokenizaScore,
+          fitNivel,
+          scoreValor: scoreComponents.scoreValor,
+          scoreIntencao: scoreComponents.scoreIntencao,
+          scoreEngajamento: scoreComponents.scoreEngajamento,
+          scoreUrgencia: scoreComponents.scoreUrgencia,
+        });
+
+        console.log("✅ Oportunidade criada com ID:", opportunityId, "tokenizaScore:", scoreComponents.tokenizaScore);
+
 
         // 6. Integração com Pipedrive (NOVA VERSÃO)
         try {
