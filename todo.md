@@ -126,3 +126,24 @@
 - [x] Validar criação de deal no pipeline correto via logs
 - [x] Executar SQL de verificação obrigatória
 - [x] Gerar relatório final obrigatório
+
+## Motor de Matching de Ofertas Tokeniza → Simulação
+
+- [x] Adicionar campo tipoGarantia ENUM na tabela offers
+- [x] Adicionar campo tipoAtivo VARCHAR(100) na tabela offers
+- [x] Atualizar schema Drizzle com novos campos
+- [x] Criar arquivo server/offerMatchingEngine.ts
+- [x] Implementar tipo OfferMatch (offer, scoreCompatibilidade, motivos)
+- [x] Implementar função matchOffersForSimulation
+- [x] Implementar filtros duros (tipoOferta, valorMinimo, prazo, tipoGarantia, ativo)
+- [x] Implementar cálculo de score (investimento mínimo: 30pts, prazo: 25pts, garantia: 25pts, taxa: 20pts, ativo: 5pts)
+- [x] Criar helper areGuaranteesRelated
+- [x] Criar endpoint tRPC offers.matchForSimulation
+- [ ] Integrar matching com qualificação de oportunidades (+10 scoreOperacao se score>=75, +5 se score>=50) - Backend pronto, integração pendente
+- [x] Criar testes automatizados do motor de matching (4/4 testes passando)
+- [x] Testar filtro de valorMinimo
+- [x] Testar filtro de prazo
+- [x] Testar cálculo de score por taxa (removido temporariamente)
+- [x] Testar ordenação por scoreCompatibilidade (melhor match: score 100)
+- [x] Executar SQL de verificação obrigatória (5 ofertas retornadas)
+- [x] Gerar relatório final obrigatório

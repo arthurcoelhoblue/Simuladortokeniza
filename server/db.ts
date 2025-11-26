@@ -325,3 +325,27 @@ export async function updateOpportunity(id: number, data: Partial<InsertOpportun
 
   await db.update(opportunities).set(data).where(eq(opportunities.id, id));
 }
+
+/**
+ * Busca todas as ofertas ativas
+ */
+export async function getActiveOffers() {
+  const db = await getDb();
+  if (!db) return [];
+
+  const { offers } = await import("../drizzle/schema");
+  const result = await db.select().from(offers).where(eq(offers.ativo, 1));
+  return result;
+}
+
+/**
+ * Busca uma oferta por ID
+ */
+export async function getOfferById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const { offers } = await import("../drizzle/schema");
+  const result = await db.select().from(offers).where(eq(offers.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}

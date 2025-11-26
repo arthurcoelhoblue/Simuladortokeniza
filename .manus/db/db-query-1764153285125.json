@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, externalId, nome, tipoOferta, valorMinimo, valorMaximo, prazoMeses, taxaAnual, tipoGarantia, ativo FROM offers",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, externalId, nome, tipoOferta, valorMinimo, valorMaximo, prazoMeses, taxaAnual, tipoGarantia, ativo FROM offers",
+  "rows": [
+    {
+      "id": "1",
+      "externalId": "TOK-001",
+      "nome": "Loteamento Sunset Gardens",
+      "tipoOferta": "investimento",
+      "valorMinimo": "5000000",
+      "valorMaximo": "50000000",
+      "prazoMeses": "24",
+      "taxaAnual": "2400",
+      "tipoGarantia": "imovel",
+      "ativo": "1"
+    },
+    {
+      "id": "2",
+      "externalId": "TOK-002",
+      "nome": "Recebíveis Cartão - Varejo",
+      "tipoOferta": "investimento",
+      "valorMinimo": "10000000",
+      "valorMaximo": "NULL",
+      "prazoMeses": "12",
+      "taxaAnual": "1800",
+      "tipoGarantia": "recebiveis_cartao",
+      "ativo": "1"
+    },
+    {
+      "id": "3",
+      "externalId": "TOK-003",
+      "nome": "Duplicatas Indústria",
+      "tipoOferta": "investimento",
+      "valorMinimo": "20000000",
+      "valorMaximo": "100000000",
+      "prazoMeses": "18",
+      "taxaAnual": "2000",
+      "tipoGarantia": "duplicatas",
+      "ativo": "1"
+    },
+    {
+      "id": "4",
+      "externalId": "TOK-004",
+      "nome": "Capital de Giro - Construção",
+      "tipoOferta": "financiamento",
+      "valorMinimo": "50000000",
+      "valorMaximo": "NULL",
+      "prazoMeses": "36",
+      "taxaAnual": "2200",
+      "tipoGarantia": "imovel",
+      "ativo": "1"
+    },
+    {
+      "id": "5",
+      "externalId": "TOK-005",
+      "nome": "Veículos Comerciais",
+      "tipoOferta": "financiamento",
+      "valorMinimo": "30000000",
+      "valorMaximo": "150000000",
+      "prazoMeses": "48",
+      "taxaAnual": "1500",
+      "tipoGarantia": "veiculo",
+      "ativo": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\texternalId\tnome\ttipoOferta\tvalorMinimo\tvalorMaximo\tprazoMeses\ttaxaAnual\ttipoGarantia\tativo\n1\tTOK-001\tLoteamento Sunset Gardens\tinvestimento\t5000000\t50000000\t24\t2400\timovel\t1\n2\tTOK-002\tRecebíveis Cartão - Varejo\tinvestimento\t10000000\tNULL\t12\t1800\trecebiveis_cartao\t1\n3\tTOK-003\tDuplicatas Indústria\tinvestimento\t20000000\t100000000\t18\t2000\tduplicatas\t1\n4\tTOK-004\tCapital de Giro - Construção\tfinanciamento\t50000000\tNULL\t36\t2200\timovel\t1\n5\tTOK-005\tVeículos Comerciais\tfinanciamento\t30000000\t150000000\t48\t1500\tveiculo\t1\n",
+  "stderr": "",
+  "execution_time_ms": 87
+}

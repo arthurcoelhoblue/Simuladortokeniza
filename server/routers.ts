@@ -511,6 +511,38 @@ export const appRouter = router({
         return enriched;
       }),
   }),
+
+  // Router de ofertas Tokeniza
+  offers: router({
+    // Buscar ofertas compatíveis para uma simulação
+    matchForSimulation: protectedProcedure
+      .input(
+        z.object({
+          simulationId: z.number().int().positive(),
+          maxResults: z.number().int().positive().max(20).optional(),
+        })
+      )
+      .query(async ({ input, ctx }) => {
+        const simulation = await db.getSimulationById(input.simulationId);
+        if (!simulation) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Simula\u00e7\u00e3o n\u00e3o encontrada",
+          });
+        }
+
+        const activeOffers = await db.getActiveOffers();
+        const { matchOffersForSimulation } = await import("./offerMatchingEngine");
+
+        const matches = matchOffersForSimulation({
+          simulation,
+          offers: activeOffers,
+          maxResults: input.maxResults ?? 5,
+        });
+
+        return matches;
+      }),
+  }),
 });
 
 

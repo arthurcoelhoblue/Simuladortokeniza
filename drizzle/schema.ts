@@ -219,3 +219,40 @@ export const opportunities = mysqlTable("opportunities", {
 
 export type Opportunity = typeof opportunities.$inferSelect;
 export type InsertOpportunity = typeof opportunities.$inferInsert;
+
+/**
+ * Tabela de ofertas Tokeniza para matching com simulações
+ */
+export const offers = mysqlTable("offers", {
+  id: int("id").autoincrement().primaryKey(),
+  externalId: varchar("externalId", { length: 100 }).unique(), // ID externo da Tokeniza
+  nome: varchar("nome", { length: 255 }).notNull(),
+  descricao: text("descricao"),
+  
+  // Tipo e características
+  tipoOferta: mysqlEnum("tipoOferta", ["investimento", "financiamento"]).notNull(),
+  tipoGarantia: mysqlEnum("tipoGarantia", ["recebiveis_cartao", "duplicatas", "imovel", "veiculo", "sem_garantia"]),
+  tipoAtivo: varchar("tipoAtivo", { length: 100 }), // ex: "loteamento", "construcao_civil", "consignado"
+  
+  // Valores
+  valorMinimo: int("valorMinimo"), // em centavos
+  valorMaximo: int("valorMaximo"), // em centavos
+  valorTotalOferta: int("valorTotalOferta").notNull(), // em centavos
+  
+  // Prazo e taxa
+  prazoMeses: int("prazoMeses").notNull(),
+  taxaAnual: int("taxaAnual").notNull(), // em basis points (ex: 2400 = 24%)
+  
+  // Status
+  ativo: int("ativo").notNull().default(1), // 1 = ativo, 0 = inativo
+  
+  // Timestamps
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  tipoOfertaIdx: index("tipo_oferta_idx").on(table.tipoOferta),
+  ativoIdx: index("ativo_idx").on(table.ativo),
+}));
+
+export type Offer = typeof offers.$inferSelect;
+export type InsertOffer = typeof offers.$inferInsert;
