@@ -652,3 +652,16 @@
 - [ ] Implementar opção "A partir de oferta Tokeniza" (origemSimulacao=oferta_tokeniza)
 - [ ] Criar modal de seleção de ofertas (offers.listActive)
 - [ ] Enviar origemSimulacao, engajouComOferta, offerId no payload
+
+## Investigação: Dados não chegando no Pipedrive
+
+- [x] Verificar logs do servidor durante criação de simulação
+- [x] Verificar se integração Pipedrive está sendo chamada
+- [x] Verificar credenciais configuradas (PIPEDRIVE_API_TOKEN, PIPEDRIVE_BASE_URL)
+- [x] PROBLEMA IDENTIFICADO: 0/14 variáveis configuradas
+- [x] Criar script de diagnóstico automatizado (diagnosticoPipedrive.ts)
+- [x] Documentar diagnóstico completo (DIAGNOSTICO_PIPEDRIVE_RESULTADO.md)
+- [x] Criar guia de configuração passo a passo (GUIA_CONFIGURACAO_PIPEDRIVE.md)
+- [ ] Usuário configurar credenciais Pipedrive (PENDENTE)
+- [ ] Executar diagnóstico novamente após configuração (PENDENTE)
+- [ ] Testar criação de deal real (PENDENTE)
