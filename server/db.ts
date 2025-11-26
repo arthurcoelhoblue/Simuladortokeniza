@@ -305,3 +305,23 @@ export async function getOpportunityById(id: number) {
   const result = await db.select().from(opportunities).where(eq(opportunities.id, id)).limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
+
+/**
+ * Atualiza um lead existente
+ */
+export async function updateLead(id: number, data: Partial<InsertLead>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(leads).set(data).where(eq(leads.id, id));
+}
+
+/**
+ * Atualiza uma oportunidade existente
+ */
+export async function updateOpportunity(id: number, data: Partial<InsertOpportunity>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(opportunities).set(data).where(eq(opportunities.id, id));
+}

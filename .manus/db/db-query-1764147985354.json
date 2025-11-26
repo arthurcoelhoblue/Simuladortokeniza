@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, nomeCompleto, whatsapp, email, pipedrivePersonId FROM leads ORDER BY id DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, nomeCompleto, whatsapp, email, pipedrivePersonId FROM leads ORDER BY id DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "180015",
+      "nomeCompleto": "Captador Teste",
+      "whatsapp": "11999888800",
+      "email": "NULL",
+      "pipedrivePersonId": "NULL"
+    },
+    {
+      "id": "180014",
+      "nomeCompleto": "Investidor Teste",
+      "whatsapp": "11999887799",
+      "email": "NULL",
+      "pipedrivePersonId": "NULL"
+    },
+    {
+      "id": "180013",
+      "nomeCompleto": "João Silva Completo",
+      "whatsapp": "11999887788",
+      "email": "joao.completo@example.com",
+      "pipedrivePersonId": "NULL"
+    },
+    {
+      "id": "180012",
+      "nomeCompleto": "Lead Teste Oportunidade",
+      "whatsapp": "11999887777",
+      "email": "lead-opp@example.com",
+      "pipedrivePersonId": "NULL"
+    },
+    {
+      "id": "180011",
+      "nomeCompleto": "Lead Teste Pipedrive",
+      "whatsapp": "11999887766",
+      "email": "lead-pipedrive@example.com",
+      "pipedrivePersonId": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnomeCompleto\twhatsapp\temail\tpipedrivePersonId\n180015\tCaptador Teste\t11999888800\tNULL\tNULL\n180014\tInvestidor Teste\t11999887799\tNULL\tNULL\n180013\tJoão Silva Completo\t11999887788\tjoao.completo@example.com\tNULL\n180012\tLead Teste Oportunidade\t11999887777\tlead-opp@example.com\tNULL\n180011\tLead Teste Pipedrive\t11999887766\tlead-pipedrive@example.com\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

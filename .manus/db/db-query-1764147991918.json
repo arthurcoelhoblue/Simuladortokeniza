@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, leadId, simulationId, status, ticketEstimado, pipedriveDealId, pipedriveOrgId FROM opportunities ORDER BY id DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, leadId, simulationId, status, ticketEstimado, pipedriveDealId, pipedriveOrgId FROM opportunities ORDER BY id DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "30004",
+      "leadId": "180015",
+      "simulationId": "810004",
+      "status": "novo",
+      "ticketEstimado": "30000000",
+      "pipedriveDealId": "NULL",
+      "pipedriveOrgId": "NULL"
+    },
+    {
+      "id": "30003",
+      "leadId": "180014",
+      "simulationId": "810003",
+      "status": "novo",
+      "ticketEstimado": "50000000",
+      "pipedriveDealId": "NULL",
+      "pipedriveOrgId": "NULL"
+    },
+    {
+      "id": "30002",
+      "leadId": "180013",
+      "simulationId": "810002",
+      "status": "novo",
+      "ticketEstimado": "20000000",
+      "pipedriveDealId": "NULL",
+      "pipedriveOrgId": "NULL"
+    },
+    {
+      "id": "30001",
+      "leadId": "180012",
+      "simulationId": "810001",
+      "status": "novo",
+      "ticketEstimado": "10000000",
+      "pipedriveDealId": "NULL",
+      "pipedriveOrgId": "NULL"
+    },
+    {
+      "id": "2",
+      "leadId": "150005",
+      "simulationId": "780001",
+      "status": "em_analise",
+      "ticketEstimado": "20000000",
+      "pipedriveDealId": "NULL",
+      "pipedriveOrgId": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tleadId\tsimulationId\tstatus\tticketEstimado\tpipedriveDealId\tpipedriveOrgId\n30004\t180015\t810004\tnovo\t30000000\tNULL\tNULL\n30003\t180014\t810003\tnovo\t50000000\tNULL\tNULL\n30002\t180013\t810002\tnovo\t20000000\tNULL\tNULL\n30001\t180012\t810001\tnovo\t10000000\tNULL\tNULL\n2\t150005\t780001\tem_analise\t20000000\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 118
+}

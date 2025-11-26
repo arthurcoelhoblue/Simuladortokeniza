@@ -94,3 +94,21 @@
 - [x] Testar filtros de status e ownerUserId
 - [x] Executar SQL de verificação obrigatória
 - [x] Gerar relatório final obrigatório
+
+## Integração com Pipedrive - Criação de Oportunidades
+
+- [x] Adicionar campo pipedrivePersonId VARCHAR(50) NULL na tabela leads
+- [x] Adicionar campos pipedriveDealId e pipedriveOrgId VARCHAR(50) NULL na tabela opportunities
+- [x] Atualizar schema Drizzle com novos campos
+- [x] Criar arquivo server/pipedriveClient.ts
+- [x] Adicionar variáveis de ambiente (PIPEDRIVE_API_TOKEN, PIPEDRIVE_BASE_URL, PIPEDRIVE_STAGE_ID)
+- [x] Implementar função findOrCreatePipedrivePersonForLead
+- [x] Implementar função createPipedriveDealForOpportunity
+- [x] Integrar Pipedrive no endpoint opportunities.create
+- [x] Adicionar tratamento de erros e logs detalhados
+- [x] Criar testes automatizados de integração (5/5 testes passando)
+- [x] Validar criação de pessoa no Pipedrive (lógica implementada)
+- [x] Validar criação de deal no Pipedrive (lógica implementada)
+- [x] Validar salvamento de IDs nas tabelas locais (updateLead e updateOpportunity)
+- [x] Executar SQL de verificação obrigatória
+- [x] Gerar relatório final obrigatório

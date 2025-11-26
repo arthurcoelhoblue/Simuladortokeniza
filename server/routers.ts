@@ -419,6 +419,45 @@ export const appRouter = router({
 
         console.log("✅ Oportunidade criada com ID:", opportunityId, "ticketEstimado:", ticketEstimado);
 
+        // 5. Integração com Pipedrive
+        try {
+          // Buscar lead completo
+          const lead = await db.getLeadById(leadId);
+          if (!lead) {
+            throw new Error("Lead não encontrado");
+          }
+
+          // Buscar oportunidade recém-criada
+          const opportunity = await db.getOpportunityById(opportunityId);
+          if (!opportunity) {
+            throw new Error("Oportunidade não encontrada");
+          }
+
+          // Criar/buscar pessoa no Pipedrive
+          const { findOrCreatePipedrivePersonForLead, createPipedriveDealForOpportunity } = await import("./pipedriveClient");
+          const personId = await findOrCreatePipedrivePersonForLead(lead);
+
+          if (personId) {
+            // Criar deal no Pipedrive
+            const dealId = await createPipedriveDealForOpportunity({
+              lead,
+              simulation,
+              opportunity,
+              personId,
+            });
+
+            if (dealId) {
+              // Atualizar oportunidade com pipedriveDealId
+              await db.updateOpportunity(opportunityId, {
+                pipedriveDealId: dealId.toString(),
+              });
+            }
+          }
+        } catch (error) {
+          console.error("❌ Erro ao integrar com Pipedrive:", error);
+          // Não falhar a criação da oportunidade se Pipedrive falhar
+        }
+
         return { id: opportunityId };
       }),
 

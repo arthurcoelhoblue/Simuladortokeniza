@@ -39,6 +39,7 @@ export const leads = mysqlTable("leads", {
   estado: varchar("estado", { length: 2 }),
   cpf: varchar("cpf", { length: 14 }),
   canalOrigem: varchar("canalOrigem", { length: 100 }),
+  pipedrivePersonId: varchar("pipedrivePersonId", { length: 50 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -200,6 +201,10 @@ export const opportunities = mysqlTable("opportunities", {
   // Próxima ação
   nextAction: varchar("nextAction", { length: 255 }),
   nextActionAt: timestamp("nextActionAt"),
+  
+  // Integração Pipedrive
+  pipedriveDealId: varchar("pipedriveDealId", { length: 50 }),
+  pipedriveOrgId: varchar("pipedriveOrgId", { length: 50 }),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
