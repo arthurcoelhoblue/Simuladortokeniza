@@ -113,6 +113,10 @@ export const simulations = mysqlTable("simulations", {
   tirMensal: int("tirMensal"), // em centésimos de % (nullable)
   tirAnual: int("tirAnual"), // em centésimos de % (nullable)
   
+  // Versionamento
+  version: int("version").notNull().default(1),
+  parentSimulationId: int("parentSimulationId"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

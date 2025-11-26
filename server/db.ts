@@ -130,6 +130,50 @@ export async function deleteSimulation(id: number) {
   await db.delete(simulations).where(eq(simulations.id, id));
 }
 
+/**
+ * Cria uma nova versão de uma simulação existente
+ * @param previousSimulationId ID da simulação anterior
+ * @param overrides Campos a sobrescrever na nova versão
+ * @returns ID da nova simulação criada
+ */
+export async function createSimulationVersion(
+  previousSimulationId: number,
+  overrides: Partial<InsertSimulation>
+): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Buscar simulação anterior
+  const previousSimulation = await getSimulationById(previousSimulationId);
+  if (!previousSimulation) {
+    throw new Error(`Simulação anterior não encontrada: ${previousSimulationId}`);
+  }
+
+  console.log("🧬 Criando nova versão de simulação:", {
+    anterior: previousSimulationId,
+    novaVersao: previousSimulation.version + 1,
+  });
+
+  // Criar novo registro copiando campos da anterior e aplicando overrides
+  const newSimulation: InsertSimulation = {
+    ...previousSimulation,
+    ...overrides,
+    // Campos de versionamento
+    version: previousSimulation.version + 1,
+    parentSimulationId: previousSimulationId,
+    // Remover campos auto-gerados
+    id: undefined as any,
+    createdAt: undefined as any,
+    updatedAt: undefined as any,
+  };
+
+  // Salvar nova simulação
+  const newSimulationId = await createSimulation(newSimulation);
+  console.log("✅ Nova simulação versão", newSimulation.version, "criada com ID:", newSimulationId);
+
+  return newSimulationId;
+}
+
 // Cronogramas
 export async function createCronogramas(items: InsertCronograma[]) {
   const db = await getDb();

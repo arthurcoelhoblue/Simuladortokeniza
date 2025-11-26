@@ -277,6 +277,9 @@ export const appRouter = router({
             totalRecebido: resultado.resumo.totalRecebido,
             tirMensal: resultado.resumo.tirMensal || null,
             tirAnual: resultado.resumo.tirAnual || null,
+            // Versionamento
+            version: 1,
+            parentSimulationId: null,
           };
 
           console.log("💾 Dados finais para criar simulação:", {

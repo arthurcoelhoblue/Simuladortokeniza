@@ -47,3 +47,21 @@
 - [x] Atualizar frontend para exibir tipoSistema (Sistema: LINEAR)
 - [x] Executar testes de compatibilidade (Simulação #720001 criada com sucesso)
 - [x] Gerar relatório final obrigatório
+
+## PROMPT 4 - Versionamento de Simulações
+
+- [x] Adicionar campo `version` INT NOT NULL DEFAULT 1 na tabela simulations
+- [x] Adicionar campo `parentSimulationId` INT NULL na tabela simulations
+- [x] Criar FK opcional (fk_parent_simulation) apontando para simulations.id (Não criada - deixada para futuro)
+- [x] Migrar dados existentes (version=1, parentSimulationId=NULL)
+- [x] Atualizar schema Drizzle com novos campos
+- [x] Ajustar simulations.create para incluir version=1 e parentSimulationId=null
+- [x] Implementar função createSimulationVersion no db.ts
+- [x] Adicionar comentário/TODO no endpoint simulations.list sobre listagem futura (Não necessário - list já traz todas)
+- [x] Criar arquivo de testes server/simulationsVersion.test.ts
+- [x] Teste: Criar simulação simples (version=1, parentSimulationId=null)
+- [x] Teste: Criar nova versão de simulação (version incrementado)
+- [x] Teste: Histórico consistente (ambas acessíveis via getById)
+- [x] Validar criação via browser (Simulação #750006 criada com version=1)
+- [x] Executar SQL de verificação obrigatória
+- [x] Gerar relatório final obrigatório

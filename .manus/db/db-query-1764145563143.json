@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, leadId, version, parentSimulationId, tipoSimulacao, valorAporte, valorDesejado\nFROM simulations\nORDER BY id DESC\nLIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, leadId, version, parentSimulationId, tipoSimulacao, valorAporte, valorDesejado\nFROM simulations\nORDER BY id DESC\nLIMIT 5",
+  "rows": [
+    {
+      "id": "750006",
+      "leadId": "120002",
+      "version": "1",
+      "parentSimulationId": "NULL",
+      "tipoSimulacao": "investimento",
+      "valorAporte": "10000000",
+      "valorDesejado": "500000000"
+    },
+    {
+      "id": "750005",
+      "leadId": "120001",
+      "version": "2",
+      "parentSimulationId": "750004",
+      "tipoSimulacao": "financiamento",
+      "valorAporte": "5000000",
+      "valorDesejado": "20000000"
+    },
+    {
+      "id": "750004",
+      "leadId": "120001",
+      "version": "1",
+      "parentSimulationId": "NULL",
+      "tipoSimulacao": "financiamento",
+      "valorAporte": "5000000",
+      "valorDesejado": "20000000"
+    },
+    {
+      "id": "750003",
+      "leadId": "120001",
+      "version": "2",
+      "parentSimulationId": "750002",
+      "tipoSimulacao": "investimento",
+      "valorAporte": "10000000",
+      "valorDesejado": "10000000"
+    },
+    {
+      "id": "750002",
+      "leadId": "120001",
+      "version": "1",
+      "parentSimulationId": "NULL",
+      "tipoSimulacao": "investimento",
+      "valorAporte": "10000000",
+      "valorDesejado": "10000000"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tleadId\tversion\tparentSimulationId\ttipoSimulacao\tvalorAporte\tvalorDesejado\n750006\t120002\t1\tNULL\tinvestimento\t10000000\t500000000\n750005\t120001\t2\t750004\tfinanciamento\t5000000\t20000000\n750004\t120001\t1\tNULL\tfinanciamento\t5000000\t20000000\n750003\t120001\t2\t750002\tinvestimento\t10000000\t10000000\n750002\t120001\t1\tNULL\tinvestimento\t10000000\t10000000\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}
