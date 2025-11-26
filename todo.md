@@ -356,3 +356,57 @@
 - [x] Incluir exemplo de fitNivel=frio
 - [x] Incluir resultado dos testes (3 arquivos, 33 testes passando - 100%)
 - [x] Criar arquivo RELATORIO_FINAL_SCORING.md
+
+## Tela de Oportunidades / Funil Comercial
+
+### 1. Backend - Endpoints
+- [x] Criar endpoint opportunities.update (status, probabilidade, nextAction, nextActionAt, reasonLost)
+- [x] Validar permissão de acesso (owner ou admin)
+- [x] Criar endpoint opportunities.getById (enriquecido com lead, simulação, owner)
+- [x] Adicionar logs de auditoria nas atualizações (🎯 Oportunidade atualizada)
+- [x] Reutilizar função updateOpportunity existente no db.ts (genérica com Partial<InsertOpportunity>)
+
+### 2. Frontend - Página /opportunities
+- [x] Criar arquivo client/src/pages/Opportunities.tsx
+- [x] Implementar header com título e subtítulo (Target icon + "Oportunidades")
+- [x] Implementar filtros (status, tipoOportunidade) com botão "Limpar Filtros"
+- [x] Criar tabela principal com colunas (Lead, Tipo, Simulação, Status, tokenizaScore, Probabilidade, Próxima Ação, Data, Ações)
+- [x] Implementar cores para tokenizaScore (>=75 vermelho, 50-74 amarelo, 25-49 cinza, <25 cinza claro)
+- [x] Adicionar atalhos (Ver simulação, Abrir no Pipedrive com link externo)
+
+### 3. Edição Inline
+- [x] Implementar dropdown inline para atualizar status (Select com onValueChange)
+- [x] Implementar input numérico inline para probabilidade (Input type=number, 0-100)
+- [x] Implementar input de texto inline para nextAction (Input com onChange)
+- [ ] Implementar date picker para nextActionAt - Pendente: requer componente DatePicker adicional
+- [x] Tratar loading/erro com toast (toast.success/toast.error)
+- [x] Desabilitar campos durante atualização (disabled={updateOpportunity.isPending})
+- [x] Refetch automático após atualização
+
+### 4. Integração Pipedrive
+- [x] Criar link para Pipedrive usando pipedriveDealId (https://tokeniza.pipedrive.com/deal/{id})
+- [x] Adicionar botão/ícone "Ver no Pipedrive" (ExternalLink icon)
+
+### 5. Navegação
+- [x] Registrar rota /opportunities no App.tsx
+- [ ] Adicionar item "Oportunidades" no menu (se existir) - Pendente: não há menu lateral
+
+### 6. Testes
+- [x] Criar server/opportunitiesUpdate.test.ts (14/14 testes passando)
+- [x] Teste: Atualizar status de novo → em_analise
+- [x] Teste: Definir probabilidade de 0 → 60
+- [x] Teste: Definir nextAction e nextActionAt
+- [x] Teste: Definir status = perdido com reasonLost
+- [x] Teste: Garantir que não quebra scoring nem Pipedrive
+- [x] Teste: Validações de permissão (owner, admin, acesso negado)
+- [x] Teste: Validações de dados (status válidos, reasonLost obrigatório)
+- [ ] Criar client/tests/opportunitiesPage.test.tsx - Pendente: requer setup de testes frontend
+
+### 7. Relatório Final
+- [x] Listar arquivos alterados/criados (5 arquivos: 2 novos, 2 modificados, 1 teste)
+- [x] Incluir prints da tela /opportunities (screenshot capturado)
+- [x] Exemplo de atualização de oportunidade (antes/depois com JSON)
+- [x] Resultado dos testes (14/14 passando - 100%)
+- [x] SQL de verificação executado (3 queries: últimas 5, por status, por fitNivel)
+- [x] Confirmar que nada foi quebrado (scoring, Pipedrive, endpoints anteriores)
+- [x] Criar arquivo RELATORIO_TELA_OPORTUNIDADES.md

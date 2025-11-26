@@ -1,0 +1,60 @@
+{
+  "query": "SELECT id, status, probabilidade, nextAction, nextActionAt, tokenizaScore, fitNivel, updatedAt FROM opportunities ORDER BY updatedAt DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, status, probabilidade, nextAction, nextActionAt, tokenizaScore, fitNivel, updatedAt FROM opportunities ORDER BY updatedAt DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "60002",
+      "status": "novo",
+      "probabilidade": "0",
+      "nextAction": "NULL",
+      "nextActionAt": "NULL",
+      "tokenizaScore": "0",
+      "fitNivel": "frio",
+      "updatedAt": "2025-11-26 09:32:47"
+    },
+    {
+      "id": "60001",
+      "status": "novo",
+      "probabilidade": "0",
+      "nextAction": "NULL",
+      "nextActionAt": "NULL",
+      "tokenizaScore": "0",
+      "fitNivel": "frio",
+      "updatedAt": "2025-11-26 09:32:46"
+    },
+    {
+      "id": "30004",
+      "status": "novo",
+      "probabilidade": "0",
+      "nextAction": "NULL",
+      "nextActionAt": "NULL",
+      "tokenizaScore": "0",
+      "fitNivel": "frio",
+      "updatedAt": "2025-11-26 09:28:56"
+    },
+    {
+      "id": "30002",
+      "status": "novo",
+      "probabilidade": "50",
+      "nextAction": "Ligar para cliente",
+      "nextActionAt": "2026-01-15 00:00:00",
+      "tokenizaScore": "0",
+      "fitNivel": "frio",
+      "updatedAt": "2025-11-26 09:28:56"
+    },
+    {
+      "id": "30003",
+      "status": "novo",
+      "probabilidade": "0",
+      "nextAction": "NULL",
+      "nextActionAt": "NULL",
+      "tokenizaScore": "0",
+      "fitNivel": "frio",
+      "updatedAt": "2025-11-26 09:05:56"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tstatus\tprobabilidade\tnextAction\tnextActionAt\ttokenizaScore\tfitNivel\tupdatedAt\n60002\tnovo\t0\tNULL\tNULL\t0\tfrio\t2025-11-26 09:32:47\n60001\tnovo\t0\tNULL\tNULL\t0\tfrio\t2025-11-26 09:32:46\n30004\tnovo\t0\tNULL\tNULL\t0\tfrio\t2025-11-26 09:28:56\n30002\tnovo\t50\tLigar para cliente\t2026-01-15 00:00:00\t0\tfrio\t2025-11-26 09:28:56\n30003\tnovo\t0\tNULL\tNULL\t0\tfrio\t2025-11-26 09:05:56\n",
+  "stderr": "",
+  "execution_time_ms": 260
+}

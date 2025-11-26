@@ -1,0 +1,15 @@
+{
+  "query": "SELECT fitNivel, COUNT(*) as total, AVG(tokenizaScore) as avgScore FROM opportunities GROUP BY fitNivel ORDER BY avgScore DESC",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT fitNivel, COUNT(*) as total, AVG(tokenizaScore) as avgScore FROM opportunities GROUP BY fitNivel ORDER BY avgScore DESC",
+  "rows": [
+    {
+      "fitNivel": "frio",
+      "total": "8",
+      "avgScore": "0.0000"
+    }
+  ],
+  "messages": [],
+  "stdout": "fitNivel\ttotal\tavgScore\nfrio\t8\t0.0000\n",
+  "stderr": "",
+  "execution_time_ms": 165
+}

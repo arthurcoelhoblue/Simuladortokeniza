@@ -657,6 +657,94 @@ export const appRouter = router({
           ...scoreComponents,
         };
       }),
+    
+    // Atualizar oportunidade (status, probabilidade, próximas ações)
+    update: protectedProcedure
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          status: z.enum(['novo', 'em_analise', 'aguardando_cliente', 'em_oferta', 'ganho', 'perdido']).optional(),
+          probabilidade: z.number().min(0).max(100).optional(),
+          nextAction: z.string().max(255).nullable().optional(),
+          nextActionAt: z.string().datetime().nullable().optional(),
+          reasonLost: z.string().max(255).nullable().optional(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        // 1. Buscar oportunidade
+        const opportunity = await db.getOpportunityById(input.id);
+        if (!opportunity) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Oportunidade não encontrada" });
+        }
+        
+        // 2. Validar permissão (owner ou admin)
+        const isOwner = opportunity.ownerUserId === ctx.user.id;
+        const isAdmin = ctx.user.email === "arthur@blueconsult.com.br";
+        
+        if (!isOwner && !isAdmin) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+        }
+        
+        // 3. Se status = perdido, exigir reasonLost
+        if (input.status === 'perdido' && !input.reasonLost && !opportunity.reasonLost) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "reasonLost é obrigatório quando status = perdido" });
+        }
+        
+        // 4. Atualizar apenas campos enviados
+        await db.updateOpportunity(input.id, {
+          status: input.status,
+          probabilidade: input.probabilidade,
+          nextAction: input.nextAction,
+          nextActionAt: input.nextActionAt ? new Date(input.nextActionAt) : undefined,
+          reasonLost: input.reasonLost,
+        });
+        
+        console.log("🎯 Oportunidade atualizada", {
+          id: input.id,
+          status: input.status,
+          probabilidade: input.probabilidade,
+        });
+        
+        // 5. Retornar oportunidade atualizada
+        return await db.getOpportunityById(input.id);
+      }),
+    
+    // Buscar oportunidade por ID (com dados enriquecidos)
+    getById: protectedProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .query(async ({ input, ctx }) => {
+        const opportunity = await db.getOpportunityById(input.id);
+        if (!opportunity) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Oportunidade não encontrada" });
+        }
+        
+        // Enriquecer com lead, simulação e owner
+        const lead = await db.getLeadById(opportunity.leadId);
+        const simulation = await db.getSimulationById(opportunity.simulationId);
+        const owner = opportunity.ownerUserId ? await db.getUserByOpenId(String(opportunity.ownerUserId)) : null;
+        
+        return {
+          ...opportunity,
+          lead: lead
+            ? {
+                id: lead.id,
+                nomeCompleto: lead.nomeCompleto,
+                whatsapp: lead.whatsapp,
+                email: lead.email,
+              }
+            : null,
+          simulation: simulation
+            ? {
+                id: simulation.id,
+                tipoSimulacao: simulation.tipoSimulacao,
+                valorAporte: simulation.valorAporte,
+                valorDesejado: simulation.valorDesejado,
+                prazoMeses: simulation.prazoMeses,
+              }
+            : null,
+          owner: owner ? { id: owner.id, name: owner.name } : null,
+        };
+      }),
   }),
 
   // Dashboard administrativo (acesso restrito)

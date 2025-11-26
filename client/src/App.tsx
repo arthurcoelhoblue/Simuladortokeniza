@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import DashboardLeads from "./pages/DashboardLeads";
 import Home from "./pages/Home";
 import NewSimulation from "./pages/NewSimulation";
+import Opportunities from "./pages/Opportunities";
 import SimulationView from "./pages/SimulationView";
 
 function Router() {
@@ -17,6 +18,7 @@ function Router() {
       <Route path={"/new"} component={NewSimulation} />
       <Route path="/simulation/:id" component={SimulationView} />
       <Route path="/dashboard/leads" component={DashboardLeads} />
+      <Route path="/opportunities" component={Opportunities} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
