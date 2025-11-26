@@ -65,3 +65,32 @@
 - [x] Validar criação via browser (Simulação #750006 criada com version=1)
 - [x] Executar SQL de verificação obrigatória
 - [x] Gerar relatório final obrigatório
+
+## PROMPT 5 - Criar Entidade Oportunidade (Funil)
+
+- [x] Criar tabela `opportunities` com campos de funil
+- [x] Adicionar campo `leadId` INT NOT NULL FK → leads.id
+- [x] Adicionar campo `simulationId` INT NOT NULL FK → simulations.id
+- [x] Adicionar campo `ownerUserId` INT NULL FK → users.id
+- [x] Adicionar campo `status` ENUM (novo, em_analise, aguardando_cliente, em_oferta, ganho, perdido)
+- [x] Adicionar campo `reasonLost` VARCHAR(255) NULL
+- [x] Adicionar campo `stage` ENUM (opcional por enquanto)
+- [x] Adicionar campo `ticketEstimado` INT NOT NULL (em centavos)
+- [x] Adicionar campo `probabilidade` INT NOT NULL DEFAULT 0
+- [x] Adicionar campo `nextAction` VARCHAR(255) NULL
+- [x] Adicionar campo `nextActionAt` DATETIME NULL
+- [x] Adicionar timestamps (createdAt, updatedAt)
+- [x] Criar índices (ownerUserId+status, leadId, simulationId)
+- [x] Implementar função createOpportunity no db.ts
+- [x] Implementar função getOpportunitiesByUser no db.ts
+- [x] Implementar função getOpportunities com filtros no db.ts
+- [x] Criar endpoint tRPC opportunities.create
+- [x] Criar endpoint tRPC opportunities.list (com enriquecimento de dados)
+- [ ] Criar tela de listagem de oportunidades (/opportunities) - Backend pronto, frontend pendente
+- [ ] Adicionar filtros por status e ownerUserId - Backend pronto, frontend pendente
+- [ ] Adicionar botão "Criar oportunidade" na página de simulação - Backend pronto, frontend pendente
+- [x] Testar criação de oportunidade a partir de simulação (5/5 testes passando)
+- [x] Testar listagem de oportunidades
+- [x] Testar filtros de status e ownerUserId
+- [x] Executar SQL de verificação obrigatória
+- [x] Gerar relatório final obrigatório

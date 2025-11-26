@@ -1,0 +1,40 @@
+{
+  "query": "SELECT * FROM opportunities ORDER BY createdAt DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT * FROM opportunities ORDER BY createdAt DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "2",
+      "leadId": "150005",
+      "simulationId": "780001",
+      "ownerUserId": "4140021",
+      "status": "em_analise",
+      "reasonLost": "NULL",
+      "stage": "NULL",
+      "ticketEstimado": "20000000",
+      "probabilidade": "50",
+      "nextAction": "Ligar para o cliente",
+      "nextActionAt": "2025-12-01 00:00:00",
+      "createdAt": "2025-11-26 08:45:40",
+      "updatedAt": "2025-11-26 08:45:40"
+    },
+    {
+      "id": "1",
+      "leadId": "150005",
+      "simulationId": "780001",
+      "ownerUserId": "NULL",
+      "status": "novo",
+      "reasonLost": "NULL",
+      "stage": "NULL",
+      "ticketEstimado": "10000000",
+      "probabilidade": "0",
+      "nextAction": "NULL",
+      "nextActionAt": "NULL",
+      "createdAt": "2025-11-26 08:45:40",
+      "updatedAt": "2025-11-26 08:45:40"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tleadId\tsimulationId\townerUserId\tstatus\treasonLost\tstage\tticketEstimado\tprobabilidade\tnextAction\tnextActionAt\tcreatedAt\tupdatedAt\n2\t150005\t780001\t4140021\tem_analise\tNULL\tNULL\t20000000\t50\tLigar para o cliente\t2025-12-01 00:00:00\t2025-11-26 08:45:40\t2025-11-26 08:45:40\n1\t150005\t780001\tNULL\tnovo\tNULL\tNULL\t10000000\t0\tNULL\tNULL\t2025-11-26 08:45:40\t2025-11-26 08:45:40\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

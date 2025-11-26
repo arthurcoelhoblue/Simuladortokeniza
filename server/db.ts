@@ -1,6 +1,6 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { cronogramas, InsertCronograma, InsertLead, InsertSimulation, InsertUser, leads, simulations, users } from "../drizzle/schema";
+import { cronogramas, InsertCronograma, InsertLead, InsertOpportunity, InsertSimulation, InsertUser, leads, opportunities, simulations, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -227,5 +227,81 @@ export async function getLeadById(id: number) {
   if (!db) return undefined;
 
   const result = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+
+// ==================== OPPORTUNITIES ====================
+
+export async function createOpportunity(data: InsertOpportunity) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  console.log("🎯 Criando oportunidade:", {
+    leadId: data.leadId,
+    simulationId: data.simulationId,
+    ticketEstimado: data.ticketEstimado,
+    status: data.status || "novo",
+  });
+
+  const result = await db.insert(opportunities).values(data);
+  const opportunityId = result[0].insertId;
+
+  console.log("✅ Oportunidade criada com ID:", opportunityId);
+  return opportunityId;
+}
+
+export async function getOpportunitiesByUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select()
+    .from(opportunities)
+    .where(eq(opportunities.ownerUserId, userId))
+    .orderBy(opportunities.createdAt);
+
+  return result;
+}
+
+export async function getOpportunities(filters?: {
+  status?: string;
+  ownerUserId?: number;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Build where conditions
+  const conditions = [];
+  if (filters?.status) {
+    conditions.push(eq(opportunities.status, filters.status as any));
+  }
+  if (filters?.ownerUserId) {
+    conditions.push(eq(opportunities.ownerUserId, filters.ownerUserId));
+  }
+
+  // Execute query with filters
+  if (conditions.length > 0) {
+    const result = await db
+      .select()
+      .from(opportunities)
+      .where(and(...conditions))
+      .orderBy(opportunities.createdAt);
+    return result;
+  }
+
+  // No filters - return all
+  const result = await db
+    .select()
+    .from(opportunities)
+    .orderBy(opportunities.createdAt);
+  return result;
+}
+
+export async function getOpportunityById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(opportunities).where(eq(opportunities.id, id)).limit(1);
   return result.length > 0 ? result[0] : undefined;
 }

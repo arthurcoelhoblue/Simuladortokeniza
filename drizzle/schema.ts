@@ -160,3 +160,54 @@ export const cronogramasIndex = mysqlTable("cronogramas", {
 
 export type Cronograma = typeof cronogramas.$inferSelect;
 export type InsertCronograma = typeof cronogramas.$inferInsert;
+
+/**
+ * Tabela de oportunidades (funil de vendas)
+ * Conecta leads e simulações ao pipeline comercial
+ */
+export const opportunities = mysqlTable("opportunities", {
+  id: int("id").autoincrement().primaryKey(),
+  leadId: int("leadId").notNull(),
+  simulationId: int("simulationId").notNull(),
+  ownerUserId: int("ownerUserId"), // Responsável interno (FK → users.id)
+  
+  // Status do funil
+  status: mysqlEnum("status", [
+    "novo",
+    "em_analise",
+    "aguardando_cliente",
+    "em_oferta",
+    "ganho",
+    "perdido"
+  ]).notNull().default("novo"),
+  
+  reasonLost: varchar("reasonLost", { length: 255 }), // Motivo da perda
+  
+  // Stage (opcional, para funil mais detalhado)
+  stage: mysqlEnum("stage", [
+    "lead_inicial",
+    "lead_qualificado",
+    "proposta_em_construcao",
+    "proposta_enviada",
+    "negociacao",
+    "fechado"
+  ]),
+  
+  // Métricas e estimativas
+  ticketEstimado: int("ticketEstimado").notNull(), // em centavos
+  probabilidade: int("probabilidade").notNull().default(0), // 0-100
+  
+  // Próxima ação
+  nextAction: varchar("nextAction", { length: 255 }),
+  nextActionAt: timestamp("nextActionAt"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  ownerStatusIdx: index("owner_status_idx").on(table.ownerUserId, table.status),
+  leadIdx: index("lead_idx").on(table.leadId),
+  simulationIdx: index("simulation_idx").on(table.simulationId),
+}));
+
+export type Opportunity = typeof opportunities.$inferSelect;
+export type InsertOpportunity = typeof opportunities.$inferInsert;

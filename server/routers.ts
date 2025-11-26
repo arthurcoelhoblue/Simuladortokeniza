@@ -365,6 +365,108 @@ export const appRouter = router({
         return { html };
       }),
   }),
+
+  opportunities: router({
+    // Criar oportunidade a partir de uma simulação
+    create: protectedProcedure
+      .input(
+        z.object({
+          simulationId: z.number().int().positive(),
+          ownerUserId: z.number().int().positive().optional(),
+          nextAction: z.string().optional(),
+          nextActionAt: z.string().datetime().optional(), // ISO string
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        // 1. Buscar simulação
+        const simulation = await db.getSimulationById(input.simulationId);
+        if (!simulation) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Simulação não encontrada" });
+        }
+
+        // Verificar se usuário tem acesso à simulação
+        if (simulation.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+        }
+
+        // 2. Buscar leadId da simulação
+        const leadId = simulation.leadId;
+        if (!leadId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Simulação não possui lead associado" });
+        }
+
+        // 3. Calcular ticketEstimado com base em tipoSimulacao
+        let ticketEstimado: number;
+        if (simulation.tipoSimulacao === "investimento") {
+          ticketEstimado = simulation.valorAporte || 0;
+        } else {
+          ticketEstimado = simulation.valorDesejado || 0;
+        }
+
+        console.log("🎯 Criando oportunidade a partir da simulação", input.simulationId, "para o lead", leadId);
+
+        // 4. Criar oportunidade
+        const opportunityId = await db.createOpportunity({
+          leadId,
+          simulationId: input.simulationId,
+          ownerUserId: input.ownerUserId || null,
+          status: "novo",
+          probabilidade: 0,
+          ticketEstimado,
+          nextAction: input.nextAction || null,
+          nextActionAt: input.nextActionAt ? new Date(input.nextActionAt) : null,
+        });
+
+        console.log("✅ Oportunidade criada com ID:", opportunityId, "ticketEstimado:", ticketEstimado);
+
+        return { id: opportunityId };
+      }),
+
+    // Listar oportunidades com filtros
+    list: protectedProcedure
+      .input(
+        z
+          .object({
+            status: z.string().optional(),
+            ownerUserId: z.number().optional(),
+          })
+          .optional()
+      )
+      .query(async ({ input, ctx }) => {
+        const opportunities = await db.getOpportunities(input);
+
+        // Enriquecer com dados de lead e simulação
+        const enriched = await Promise.all(
+          opportunities.map(async (opp) => {
+            const lead = await db.getLeadById(opp.leadId);
+            const simulation = await db.getSimulationById(opp.simulationId);
+            const owner = opp.ownerUserId ? await db.getUserByOpenId(String(opp.ownerUserId)) : null;
+
+            return {
+              ...opp,
+              lead: lead
+                ? {
+                    nome: lead.nomeCompleto,
+                    whatsapp: lead.whatsapp,
+                    email: lead.email,
+                  }
+                : null,
+              simulation: simulation
+                ? {
+                    tipoSimulacao: simulation.tipoSimulacao,
+                    valorAporte: simulation.valorAporte,
+                    valorDesejado: simulation.valorDesejado,
+                    prazoMeses: simulation.prazoMeses,
+                  }
+                : null,
+              owner: owner ? { nome: owner.name } : null,
+            };
+          })
+        );
+
+        return enriched;
+      }),
+  }),
 });
 
 
