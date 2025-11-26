@@ -19,9 +19,13 @@ interface OfferSelectionModalProps {
 }
 
 export function OfferSelectionModal({ open, onClose, onSelectOffer }: OfferSelectionModalProps) {
-  const { data: offers, isLoading, error } = trpc.offers.listActive.useQuery(undefined, {
-    enabled: open, // Só busca quando o modal está aberto
-  });
+  // Usar API real da Tokeniza (forceRefresh = false para usar cache do banco)
+  const { data: offers, isLoading, error } = trpc.offers.listActiveFromTokeniza.useQuery(
+    { forceRefresh: false },
+    {
+      enabled: open, // Só busca quando o modal está aberto
+    }
+  );
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {

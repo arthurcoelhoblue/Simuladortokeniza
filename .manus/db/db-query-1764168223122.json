@@ -1,0 +1,18 @@
+{
+  "query": "SELECT ativo, COUNT(*) as total FROM offers GROUP BY ativo;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT ativo, COUNT(*) as total FROM offers GROUP BY ativo;",
+  "rows": [
+    {
+      "ativo": "0",
+      "total": "11"
+    },
+    {
+      "ativo": "1",
+      "total": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "ativo\ttotal\n0\t11\n1\t2\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

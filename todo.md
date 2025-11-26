@@ -410,3 +410,155 @@
 - [x] SQL de verificação executado (3 queries: últimas 5, por status, por fitNivel)
 - [x] Confirmar que nada foi quebrado (scoring, Pipedrive, endpoints anteriores)
 - [x] Criar arquivo RELATORIO_TELA_OPORTUNIDADES.md
+
+## Dashboard de Simulações Estratégico
+
+### 1. Backend - Router dashboardSimulations
+- [x] Criar router dashboardSimulations no server/routers.ts
+- [x] Criar endpoint getOverview com input (from, to, tipoSimulacao, origemSimulacao)
+- [x] Definir estrutura de retorno SimulationsDashboardOverview (skeleton)
+- [x] Adicionar logs de auditoria (📊 DashboardSimulations.getOverview)
+
+### 2. Backend - KPIs Gerais
+- [ ] Implementar totalSimulacoes, totalInvestimento, totalFinanciamento
+- [ ] Implementar totalPorOrigem (manual, oferta_tokeniza)
+- [ ] Implementar simulacoesComOfertaSelecionada (offerId != null)
+- [ ] Implementar simulacoesComOportunidade (JOIN opportunities)
+- [ ] Implementar taxaConversaoSimulacaoParaOportunidade (%)
+- [ ] Implementar mediaTokenizaScore (AVG de oportunidades vinculadas)
+
+### 3. Backend - Distribuições
+- [ ] Implementar distribuicaoPorValor (6 faixas: <=1000, 1000-5000, 5000-10000, 10000-20000, 20000-50000, >50000)
+- [ ] Implementar distribuicaoPorScoreIntencao (5 faixas: 0-9, 10-24, 25-49, 50-74, 75-100)
+- [ ] Implementar distribuicaoPorSistemaAmortizacao (GROUP BY sistemaAmortizacao)
+- [ ] Implementar distribuicaoPorOrigem (manual vs oferta_tokeniza)
+- [ ] Implementar timelineSimulacoesDiarias (GROUP BY DATE(createdAt))
+
+### 4. Backend - Clusters e Top Simulações
+- [ ] Implementar cluster highIntentHighTicket (scoreIntencao>=25, ticket>=10000)
+- [ ] Implementar cluster highIntentLowTicket (scoreIntencao>=25, ticket<10000)
+- [ ] Implementar cluster highTicketLowIntent (ticket>=30000, scoreIntencao<15)
+- [ ] Implementar cluster multiVersion (version>1 ou parentSimulationId com múltiplas versões)
+- [ ] Implementar topSimulacoesAltaIntencao (TOP 20 por scoreIntencao DESC, ticket DESC)
+- [ ] Implementar simulacoesRiscoPerdaUrgencia (offerId != null, diasParaEncerramento<=7, TOP 20)
+
+### 5. Frontend - Página /dashboard/simulacoes
+- [ ] Criar arquivo client/src/pages/DashboardSimulations.tsx
+- [ ] Implementar header com título e subtítulo
+- [ ] Implementar filtros (período: 7/30/90 dias/custom, tipoSimulacao, origemSimulacao)
+- [ ] Implementar 6 cards de KPIs gerais
+- [ ] Tratar estados (loading, error, vazio)
+
+### 6. Frontend - Gráficos
+- [ ] Instalar biblioteca de charts (recharts ou similar)
+- [ ] Implementar gráfico de linha (timelineSimulacoesDiarias)
+- [ ] Implementar gráfico de barras (distribuicaoPorValor)
+- [ ] Implementar gráfico de barras horizontais (distribuicaoPorScoreIntencao)
+- [ ] Implementar gráfico de pizza/donut (distribuicaoPorOrigem)
+- [ ] Implementar gráfico de barras (distribuicaoPorSistemaAmortizacao)
+
+### 7. Frontend - Clusters e Tabelas
+- [ ] Implementar seção de 4 cards de clusters comportamentais
+- [ ] Implementar tabela topSimulacoesAltaIntencao (9 colunas)
+- [ ] Implementar tabela simulacoesRiscoPerdaUrgencia (7 colunas)
+- [ ] Adicionar links "Ver simulação" e "Ver no Pipedrive"
+
+### 8. Navegação
+- [ ] Registrar rota /dashboard/simulacoes no App.tsx
+- [ ] Aplicar controle de acesso (adminProcedure, igual ao Dashboard de Leads)
+
+### 9. Testes
+- [ ] Criar server/dashboardSimulations.test.ts
+- [ ] Teste: getOverview sem filtros retorna estrutura completa
+- [ ] Teste: getOverview com filtro tipoSimulacao='investimento'
+- [ ] Teste: getOverview com filtro origemSimulacao='oferta_tokeniza'
+- [ ] Teste: Cenário com oportunidades + scores (mediaTokenizaScore, topSimulacoesAltaIntencao)
+- [ ] Criar client/tests/dashboardSimulations.test.tsx (opcional)
+
+### 10. Relatório Final
+- [ ] Executar SQL de verificação (SELECT COUNT(*) FROM simulations, opportunities)
+- [ ] Capturar screenshot da página /dashboard/simulacoes
+- [ ] Documentar métricas com exemplos (7 dias, 90 dias)
+- [ ] Incluir exemplos concretos (alta intenção, urgência)
+- [ ] Listar arquivos modificados/criados
+- [ ] Incluir resultados dos testes
+- [ ] Criar arquivo RELATORIO_DASHBOARD_SIMULACOES.md
+
+## Integração API Real da Tokeniza (getCrowdfundingList)
+
+### 1. Client da API
+- [x] Criar arquivo server/tokenizaApiClient.ts
+- [x] Implementar fetchCrowdfundingListFromTokeniza()
+- [x] Testar endpoint real e documentar formato JSON da resposta (array direto, UUID string)
+- [x] Adicionar tratamento de erros e logs
+
+### 2. Normalização de Dados
+- [x] Definir tipo TokenizaCrowdfundingItem baseado em JSON real
+- [x] Definir tipo NormalizedOffer
+- [x] Implementar normalizeTokenizaOffer() com conversões:
+  - [x] minimumContribution (string) → valorMinimo (centavos)
+  - [x] targetCapture (string) → valorTotalOferta (centavos)
+  - [x] deadline (string) → prazoMeses (number)
+  - [x] profitability (string "24") → taxaAnual (centésimos 2400)
+  - [x] status → ativo (boolean, true se "open")
+  - [x] finalDate → dataEncerramento (Date)
+
+### 3. Persistência e Sync
+- [x] Criar função upsertOfferFromTokeniza() no db.ts
+- [x] Implementar syncOffersFromTokenizaApi() com:
+  - [x] Upsert de ofertas recebidas da API (busca por externalId, INSERT ou UPDATE)
+  - [x] Desativação de ofertas que sumiram (ativo = false, preserva histórico)
+  - [x] Retornar resumo (totalRecebidas, totalAtivas, totalUpsert, totalDesativadas)
+- [x] Adicionar logs de auditoria (✅ syncOffersFromTokenizaApi resumo)
+- [x] Tratar campos notNull do schema (prazoMeses, taxaAnual) com valores padrão
+
+### 4. Endpoint tRPC
+- [x] Criar endpoint offers.listActiveFromTokeniza no routers.ts
+- [x] Implementar filtro ativo = true (via db.getActiveOffers)
+- [x] Implementar ordenação (dataEncerramento ASC, valorMinimo ASC)
+- [x] Adicionar parâmetro forceRefresh (chama syncOffersFromTokenizaApi se true)
+- [x] Testar sync completo (8 ofertas recebidas, 8 upsert, 3 desativadas)
+- [x] Verificar dados no banco (10 ofertas, todas inativas porque status=finished)
+
+### 5. Frontend - Modal de Ofertas
+- [x] Localizar modal/botão "Simular a partir de uma oferta da Tokeniza" (OfferSelectionModal.tsx)
+- [x] Substituir dados mockados por trpc.offers.listActiveFromTokeniza.useQuery({ forceRefresh: false })
+- [ ] Exibir lista de ofertas reais com:
+  - [ ] Nome
+  - [ ] Investimento mínimo (R$)
+  - [ ] Prazo (meses)
+  - [ ] Taxa anual (%)
+  - [ ] Badge "Encerra em X dias" (se dataEncerramento próxima)
+- [ ] Implementar duas opções claras:
+  - [ ] "Simular do zero" (origemSimulacao=manual, engajouComOferta=false, offerId=null)
+  - [ ] "Usar uma oferta Tokeniza" (selecionar da lista)
+- [ ] Ao selecionar oferta, preencher automaticamente:
+  - [ ] descricaoOferta, valorTotalOferta, prazoMeses, taxaJurosAa
+  - [ ] origemSimulacao=oferta_tokeniza, engajouComOferta=true, offerId=X
+
+### 6. Integração com Scoring
+- [ ] Garantir que simulations.create recebe e salva origemSimulacao, engajouComOferta, offerId
+- [ ] Verificar que opportunities.create usa esses campos no scoreEngine
+- [ ] Confirmar que scoreIntencao, scoreEngajamento, scoreValor, scoreUrgencia funcionam
+
+### 7. Testes
+- [x] Criar server/tokenizaApiIntegration.test.ts (9/9 testes passando)
+- [x] Teste: normalizeTokenizaOffer converte campos corretamente (minimumContribution, profitability, etc)
+- [x] Teste: status "open" → ativo = true, "finished" → ativo = false
+- [x] Teste: valores padrão quando campos null/undefined
+- [x] Teste: conversão de valores string com decimal
+- [x] Teste: externalId/nome ausentes usam fallback
+- [ ] Teste: syncOffersFromTokenizaApi upserta ofertas novas (requer mock da API)
+- [ ] Teste: syncOffersFromTokenizaApi desativa ofertas que sumiram (requer mock da API)
+- [ ] Teste: offers.listActiveFromTokeniza retorna só ativo=true (requer dados no banco)
+- [ ] Teste: ordenação por dataEncerramento funciona (requer dados no banco)
+- [ ] Teste frontend: modal seleciona oferta e preenche formulário (opcional)
+
+### 8. Relatório Final
+- [x] Documentar formato REAL da resposta da API (JSON) - Array direto com UUID
+- [x] Documentar mapeamento campo-a-campo (API → offers) - Tabela completa
+- [x] Executar SQL de verificação (SELECT ofertas ativas e desativadas) - 2 queries
+- [x] Listar arquivos modificados/criados (7 arquivos)
+- [x] Incluir resultados dos testes (9/9 passando - 100%)
+- [x] Incluir logs de sync (8 recebidas, 8 upsert, 3 desativadas)
+- [x] Criar arquivo RELATORIO_INTEGRACAO_API_TOKENIZA.md

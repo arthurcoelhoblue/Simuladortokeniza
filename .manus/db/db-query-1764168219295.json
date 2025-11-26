@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, externalId, nome, valorMinimo, valorTotalOferta, prazoMeses, taxaAnual, ativo, tipoAtivo, dataEncerramento FROM offers WHERE externalId IS NOT NULL AND externalId NOT LIKE 'TOK-%' ORDER BY updatedAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, externalId, nome, valorMinimo, valorTotalOferta, prazoMeses, taxaAnual, ativo, tipoAtivo, dataEncerramento FROM offers WHERE externalId IS NOT NULL AND externalId NOT LIKE 'TOK-%' ORDER BY updatedAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "30002",
+      "externalId": "d4eacf02-3d4e-11f0-98f5-06aff79fa023",
+      "nome": "Capital de Giro Tokeniza",
+      "valorMinimo": "50000",
+      "valorTotalOferta": "30000000",
+      "prazoMeses": "24",
+      "taxaAnual": "2400",
+      "ativo": "0",
+      "tipoAtivo": "Títulos de Dívida",
+      "dataEncerramento": "2025-08-04 00:00:00"
+    },
+    {
+      "id": "30003",
+      "externalId": "24589f4c-485e-11ef-be96-06aff79fa023",
+      "nome": "Tokeniza - TKNZ",
+      "valorMinimo": "25000",
+      "valorTotalOferta": "100000000",
+      "prazoMeses": "6",
+      "taxaAnual": "2000",
+      "ativo": "0",
+      "tipoAtivo": "Criptoativos",
+      "dataEncerramento": "2024-12-23 00:00:00"
+    },
+    {
+      "id": "30004",
+      "externalId": "088a5b06-673f-11f0-95aa-06aff79fa023",
+      "nome": "Use Energy II - Bitcoin Mining",
+      "valorMinimo": "20000",
+      "valorTotalOferta": "45000000",
+      "prazoMeses": "60",
+      "taxaAnual": "2400",
+      "ativo": "0",
+      "tipoAtivo": "ESG - Sustainability ",
+      "dataEncerramento": "2025-09-22 00:00:00"
+    },
+    {
+      "id": "30005",
+      "externalId": "3ae168a6-9eee-11f0-8eee-06aff79fa023",
+      "nome": "Sunset Tower - Real Estate Investment",
+      "valorMinimo": "50000",
+      "valorTotalOferta": "30000000",
+      "prazoMeses": "2",
+      "taxaAnual": "2400",
+      "ativo": "0",
+      "tipoAtivo": "Real Estate Assets ",
+      "dataEncerramento": "2025-12-02 00:00:00"
+    },
+    {
+      "id": "30001",
+      "externalId": "f7575a78-4863-11ef-8a04-06aff79fa023",
+      "nome": "Renda Passiva Com Energia Solar",
+      "valorMinimo": "100000",
+      "valorTotalOferta": "60000000",
+      "prazoMeses": "40",
+      "taxaAnual": "2400",
+      "ativo": "0",
+      "tipoAtivo": "ESG - Sustentabilidade ",
+      "dataEncerramento": "2025-01-24 00:00:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\texternalId\tnome\tvalorMinimo\tvalorTotalOferta\tprazoMeses\ttaxaAnual\tativo\ttipoAtivo\tdataEncerramento\n30002\td4eacf02-3d4e-11f0-98f5-06aff79fa023\tCapital de Giro Tokeniza\t50000\t30000000\t24\t2400\t0\tTítulos de Dívida\t2025-08-04 00:00:00\n30003\t24589f4c-485e-11ef-be96-06aff79fa023\tTokeniza - TKNZ\t25000\t100000000\t6\t2000\t0\tCriptoativos\t2024-12-23 00:00:00\n30004\t088a5b06-673f-11f0-95aa-06aff79fa023\tUse Energy II - Bitcoin Mining\t20000\t45000000\t60\t2400\t0\tESG - Sustainability \t2025-09-22 00:00:00\n30005\t3ae168a6-9eee-11f0-8eee-06aff79fa023\tSunset Tower - Real Estate Investment\t50000\t30000000\t2\t2400\t0\tReal Estate Assets \t2025-12-02 00:00:00\n30001\tf7575a78-4863-11ef-8a04-06aff79fa023\tRenda Passiva Com Energia Solar\t100000\t60000000\t40\t2400\t0\tESG - Sustentabilidade \t2025-01-24 00:00:00\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

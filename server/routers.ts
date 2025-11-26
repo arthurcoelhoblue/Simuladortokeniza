@@ -879,7 +879,57 @@ export const appRouter = router({
 
   // Router de ofertas Tokeniza
   offers: router({
-    // Listar ofertas ativas (para seleção no formulário)
+    // Listar ofertas ativas da API da Tokeniza (fonte única de verdade)
+    listActiveFromTokeniza: publicProcedure
+      .input(
+        z.object({
+          forceRefresh: z.boolean().optional().default(false),
+        })
+      )
+      .query(async ({ input, ctx }) => {
+        // Se forceRefresh = true, sincronizar com a API antes de retornar
+        if (input.forceRefresh) {
+          console.log("🔄 Forçando sincronização com API da Tokeniza...");
+          await db.syncOffersFromTokenizaApi();
+        }
+
+        // Buscar ofertas ativas do banco
+        const activeOffers = await db.getActiveOffers();
+        
+        // Ordenar por dataEncerramento (próxima primeiro) e valorMinimo (crescente)
+        const sorted = activeOffers.sort((a, b) => {
+          // Ofertas sem dataEncerramento vão pro final
+          if (!a.dataEncerramento && !b.dataEncerramento) {
+            return (a.valorMinimo || 0) - (b.valorMinimo || 0);
+          }
+          if (!a.dataEncerramento) return 1;
+          if (!b.dataEncerramento) return -1;
+          
+          // Ordenar por data de encerramento
+          const dateA = new Date(a.dataEncerramento).getTime();
+          const dateB = new Date(b.dataEncerramento).getTime();
+          if (dateA !== dateB) return dateA - dateB;
+          
+          // Se datas iguais, ordenar por valor mínimo
+          return (a.valorMinimo || 0) - (b.valorMinimo || 0);
+        });
+
+        // Retornar apenas campos necessários para o modal
+        return sorted.map((o) => ({
+          id: o.id,
+          nome: o.nome,
+          descricao: o.descricao,
+          valorMinimo: o.valorMinimo,
+          valorTotalOferta: o.valorTotalOferta,
+          prazoMeses: o.prazoMeses,
+          taxaAnual: o.taxaAnual,
+          tipoGarantia: o.tipoGarantia,
+          tipoAtivo: o.tipoAtivo,
+          dataEncerramento: o.dataEncerramento,
+        }));
+      }),
+
+    // Listar ofertas ativas (para seleção no formulário) - DEPRECATED, usar listActiveFromTokeniza
     listActive: publicProcedure
       .query(async () => {
         const activeOffers = await db.getActiveOffers();
@@ -930,6 +980,74 @@ export const appRouter = router({
         });
 
         return matches;
+      }),
+  }),
+
+  dashboardSimulations: router({
+    getOverview: adminProcedure
+      .input(
+        z.object({
+          from: z.string().datetime().optional(),
+          to: z.string().datetime().optional(),
+          tipoSimulacao: z.enum(["investimento", "financiamento"]).optional(),
+          origemSimulacao: z.enum(["manual", "oferta_tokeniza"]).optional(),
+        })
+      )
+      .query(async ({ input, ctx }) => {
+        console.log("📊 DashboardSimulations.getOverview", {
+          from: input.from,
+          to: input.to,
+          tipoSimulacao: input.tipoSimulacao,
+          origemSimulacao: input.origemSimulacao,
+        });
+
+        // Implementação das métricas (será feita na próxima fase)
+        return {
+          filtrosAplicados: {
+            from: input.from,
+            to: input.to,
+            tipoSimulacao: input.tipoSimulacao,
+            origemSimulacao: input.origemSimulacao,
+          },
+          kpisGerais: {
+            totalSimulacoes: 0,
+            totalInvestimento: 0,
+            totalFinanciamento: 0,
+            totalPorOrigem: {
+              manual: 0,
+              oferta_tokeniza: 0,
+            },
+            simulacoesComOfertaSelecionada: 0,
+            simulacoesComOportunidade: 0,
+            taxaConversaoSimulacaoParaOportunidade: 0,
+            mediaTokenizaScore: null,
+          },
+          distribuicaoPorValor: [],
+          distribuicaoPorScoreIntencao: [],
+          distribuicaoPorSistemaAmortizacao: [],
+          distribuicaoPorOrigem: [],
+          timelineSimulacoesDiarias: [],
+          clustersComportamento: {
+            highIntentHighTicket: {
+              descricao: "Alta intenção + Alto ticket (≥R$ 10k)",
+              quantidade: 0,
+            },
+            highIntentLowTicket: {
+              descricao: "Alta intenção + Baixo ticket (<R$ 10k)",
+              quantidade: 0,
+            },
+            highTicketLowIntent: {
+              descricao: "Alto ticket (≥R$ 30k) + Baixa intenção",
+              quantidade: 0,
+            },
+            multiVersion: {
+              descricao: "Re-simulações (versões múltiplas)",
+              quantidade: 0,
+            },
+          },
+          topSimulacoesAltaIntencao: [],
+          simulacoesRiscoPerdaUrgencia: [],
+        };
       }),
   }),
 });

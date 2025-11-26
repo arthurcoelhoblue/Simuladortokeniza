@@ -405,3 +405,168 @@ export async function updateOpportunityScores(
     })
     .where(eq(opportunities.id, opportunityId));
 }
+
+/**
+ * Insere ou atualiza uma oferta da Tokeniza baseado em externalId
+ * @param data Dados normalizados da oferta
+ * @returns ID da oferta inserida/atualizada
+ */
+export async function upsertOfferFromTokeniza(data: {
+  externalId: string;
+  nome: string;
+  descricao?: string | null;
+  tipoOferta: "investimento" | "financiamento";
+  tipoGarantia?: string | null;
+  tipoAtivo?: string | null;
+  valorMinimo?: number | null;
+  valorMaximo?: number | null;
+  valorTotalOferta: number;
+  prazoMeses: number | null;
+  taxaAnual: number | null;
+  ativo: boolean;
+  dataEncerramento?: Date | null;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const { offers } = await import("../drizzle/schema");
+
+  // Buscar oferta existente por externalId
+  const existing = await db
+    .select()
+    .from(offers)
+    .where(eq(offers.externalId, data.externalId))
+    .limit(1);
+
+  if (existing.length > 0) {
+    // Atualizar oferta existente
+    await db
+      .update(offers)
+      .set({
+        nome: data.nome,
+        descricao: data.descricao,
+        tipoOferta: data.tipoOferta,
+        tipoGarantia: data.tipoGarantia as any,
+        tipoAtivo: data.tipoAtivo,
+        valorMinimo: data.valorMinimo,
+        valorMaximo: data.valorMaximo,
+        valorTotalOferta: data.valorTotalOferta,
+        prazoMeses: data.prazoMeses ?? 12, // default 12 meses se null
+        taxaAnual: data.taxaAnual ?? 0, // default 0 se null
+        ativo: data.ativo ? 1 : 0,
+        dataEncerramento: data.dataEncerramento,
+        updatedAt: new Date(),
+      })
+      .where(eq(offers.id, existing[0].id));
+
+    return existing[0].id;
+  } else {
+    // Inserir nova oferta
+    const result: any = await db.insert(offers).values({
+      externalId: data.externalId,
+      nome: data.nome,
+      descricao: data.descricao,
+      tipoOferta: data.tipoOferta,
+      tipoGarantia: data.tipoGarantia as any,
+      tipoAtivo: data.tipoAtivo,
+      valorMinimo: data.valorMinimo,
+      valorMaximo: data.valorMaximo,
+      valorTotalOferta: data.valorTotalOferta,
+      prazoMeses: data.prazoMeses ?? 12, // default 12 meses se null
+      taxaAnual: data.taxaAnual ?? 0, // default 0 se null
+      ativo: data.ativo ? 1 : 0,
+      dataEncerramento: data.dataEncerramento,
+    });
+
+    return Number(result.insertId);
+  }
+}
+
+/**
+ * Sincroniza ofertas da API da Tokeniza com o banco de dados
+ * - Upserta ofertas recebidas da API
+ * - Desativa ofertas que sumiram da plataforma (ativo = false)
+ * 
+ * @returns Resumo da sincronização
+ */
+export async function syncOffersFromTokenizaApi(): Promise<{
+  totalRecebidas: number;
+  totalAtivas: number;
+  totalUpsert: number;
+  totalDesativadas: number;
+}> {
+  const { fetchCrowdfundingListFromTokeniza, normalizeTokenizaOffer } = await import("./tokenizaApiClient");
+  
+  const raw = await fetchCrowdfundingListFromTokeniza();
+  
+  // A API retorna um array direto
+  const items: any[] = Array.isArray(raw) ? raw : (raw.data ?? raw.offers ?? []);
+
+  const externalIdsDaApi: string[] = [];
+  let totalAtivas = 0;
+  let totalUpsert = 0;
+
+  for (const item of items) {
+    const normalized = normalizeTokenizaOffer(item);
+
+    if (!normalized.externalId || !normalized.nome || !normalized.valorTotalOferta) {
+      console.warn("⚠️ Oferta ignorada por dados insuficientes:", normalized);
+      continue;
+    }
+
+    externalIdsDaApi.push(normalized.externalId);
+    await upsertOfferFromTokeniza(normalized);
+    totalUpsert++;
+    if (normalized.ativo) totalAtivas++;
+  }
+
+  // 🔁 ESPELHAR ESTADO: desativar ofertas que sumiram da API
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const { offers } = await import("../drizzle/schema");
+  const { and, isNotNull } = await import("drizzle-orm");
+
+  const offersControladasPelaApi = await db
+    .select()
+    .from(offers)
+    .where(
+      and(
+        eq(offers.tipoOferta, "investimento"),
+        isNotNull(offers.externalId)
+      )
+    );
+
+  let totalDesativadas = 0;
+
+  for (const offer of offersControladasPelaApi) {
+    if (offer.externalId && !externalIdsDaApi.includes(offer.externalId)) {
+      if (offer.ativo) {
+        await db
+          .update(offers)
+          .set({ ativo: 0, updatedAt: new Date() })
+          .where(eq(offers.id, offer.id));
+        totalDesativadas++;
+        console.log(`🔄 Oferta desativada (sumiu da API): ${offer.nome} (externalId: ${offer.externalId})`);
+      }
+    }
+  }
+
+  console.log("✅ syncOffersFromTokenizaApi resumo:", {
+    totalRecebidas: items.length,
+    totalAtivas,
+    totalUpsert,
+    totalDesativadas,
+  });
+
+  return {
+    totalRecebidas: items.length,
+    totalAtivas,
+    totalUpsert,
+    totalDesativadas,
+  };
+}

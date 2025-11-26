@@ -1,0 +1,130 @@
+{
+  "query": "SELECT id, externalId, nome, valorMinimo, valorTotalOferta, prazoMeses, taxaAnual, ativo, dataEncerramento, updatedAt FROM offers ORDER BY updatedAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, externalId, nome, valorMinimo, valorTotalOferta, prazoMeses, taxaAnual, ativo, dataEncerramento, updatedAt FROM offers ORDER BY updatedAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "3",
+      "externalId": "TOK-003",
+      "nome": "Duplicatas Indústria",
+      "valorMinimo": "20000000",
+      "valorTotalOferta": "200000000",
+      "prazoMeses": "18",
+      "taxaAnual": "2000",
+      "ativo": "0",
+      "dataEncerramento": "NULL",
+      "updatedAt": "2025-11-26 14:40:26"
+    },
+    {
+      "id": "2",
+      "externalId": "TOK-002",
+      "nome": "Recebíveis Cartão - Varejo",
+      "valorMinimo": "10000000",
+      "valorTotalOferta": "50000000",
+      "prazoMeses": "12",
+      "taxaAnual": "1800",
+      "ativo": "0",
+      "dataEncerramento": "NULL",
+      "updatedAt": "2025-11-26 14:40:26"
+    },
+    {
+      "id": "1",
+      "externalId": "TOK-001",
+      "nome": "Loteamento Sunset Gardens",
+      "valorMinimo": "5000000",
+      "valorTotalOferta": "100000000",
+      "prazoMeses": "24",
+      "taxaAnual": "2400",
+      "ativo": "0",
+      "dataEncerramento": "NULL",
+      "updatedAt": "2025-11-26 14:40:26"
+    },
+    {
+      "id": "30003",
+      "externalId": "24589f4c-485e-11ef-be96-06aff79fa023",
+      "nome": "Tokeniza - TKNZ",
+      "valorMinimo": "25000",
+      "valorTotalOferta": "100000000",
+      "prazoMeses": "6",
+      "taxaAnual": "2000",
+      "ativo": "0",
+      "dataEncerramento": "2024-12-23 00:00:00",
+      "updatedAt": "2025-11-26 14:40:25"
+    },
+    {
+      "id": "30004",
+      "externalId": "088a5b06-673f-11f0-95aa-06aff79fa023",
+      "nome": "Use Energy II - Bitcoin Mining",
+      "valorMinimo": "20000",
+      "valorTotalOferta": "45000000",
+      "prazoMeses": "60",
+      "taxaAnual": "2400",
+      "ativo": "0",
+      "dataEncerramento": "2025-09-22 00:00:00",
+      "updatedAt": "2025-11-26 14:40:25"
+    },
+    {
+      "id": "30006",
+      "externalId": "d27d7094-68aa-11f0-9bf4-06aff79fa023",
+      "nome": "Welshman - Environmental Offer ",
+      "valorMinimo": "100000",
+      "valorTotalOferta": "1300000000",
+      "prazoMeses": "12",
+      "taxaAnual": "2500",
+      "ativo": "0",
+      "dataEncerramento": "2026-01-22 00:00:00",
+      "updatedAt": "2025-11-26 14:40:25"
+    },
+    {
+      "id": "30001",
+      "externalId": "f7575a78-4863-11ef-8a04-06aff79fa023",
+      "nome": "Renda Passiva Com Energia Solar",
+      "valorMinimo": "100000",
+      "valorTotalOferta": "60000000",
+      "prazoMeses": "40",
+      "taxaAnual": "2400",
+      "ativo": "0",
+      "dataEncerramento": "2025-01-24 00:00:00",
+      "updatedAt": "2025-11-26 14:40:25"
+    },
+    {
+      "id": "30005",
+      "externalId": "3ae168a6-9eee-11f0-8eee-06aff79fa023",
+      "nome": "Sunset Tower - Real Estate Investment",
+      "valorMinimo": "50000",
+      "valorTotalOferta": "30000000",
+      "prazoMeses": "2",
+      "taxaAnual": "2400",
+      "ativo": "0",
+      "dataEncerramento": "2025-12-02 00:00:00",
+      "updatedAt": "2025-11-26 14:40:25"
+    },
+    {
+      "id": "30002",
+      "externalId": "d4eacf02-3d4e-11f0-98f5-06aff79fa023",
+      "nome": "Capital de Giro Tokeniza",
+      "valorMinimo": "50000",
+      "valorTotalOferta": "30000000",
+      "prazoMeses": "24",
+      "taxaAnual": "2400",
+      "ativo": "0",
+      "dataEncerramento": "2025-08-04 00:00:00",
+      "updatedAt": "2025-11-26 14:40:25"
+    },
+    {
+      "id": "30007",
+      "externalId": "354f3c54-cf34-11ef-962d-06aff79fa023",
+      "nome": "Debênture Prefixada - 1.75% Mensal com Garantia Imobiliária",
+      "valorMinimo": "100000",
+      "valorTotalOferta": "600000000",
+      "prazoMeses": "24",
+      "taxaAnual": "2100",
+      "ativo": "0",
+      "dataEncerramento": "2025-07-19 00:00:00",
+      "updatedAt": "2025-11-26 14:40:25"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\texternalId\tnome\tvalorMinimo\tvalorTotalOferta\tprazoMeses\ttaxaAnual\tativo\tdataEncerramento\tupdatedAt\n3\tTOK-003\tDuplicatas Indústria\t20000000\t200000000\t18\t2000\t0\tNULL\t2025-11-26 14:40:26\n2\tTOK-002\tRecebíveis Cartão - Varejo\t10000000\t50000000\t12\t1800\t0\tNULL\t2025-11-26 14:40:26\n1\tTOK-001\tLoteamento Sunset Gardens\t5000000\t100000000\t24\t2400\t0\tNULL\t2025-11-26 14:40:26\n30003\t24589f4c-485e-11ef-be96-06aff79fa023\tTokeniza - TKNZ\t25000\t100000000\t6\t2000\t0\t2024-12-23 00:00:00\t2025-11-26 14:40:25\n30004\t088a5b06-673f-11f0-95aa-06aff79fa023\tUse Energy II - Bitcoin Mining\t20000\t45000000\t60\t2400\t0\t2025-09-22 00:00:00\t2025-11-26 14:40:25\n30006\td27d7094-68aa-11f0-9bf4-06aff79fa023\tWelshman - Environmental Offer \t100000\t1300000000\t12\t2500\t0\t2026-01-22 00:00:00\t2025-11-26 14:40:25\n30001\tf7575a78-4863-11ef-8a04-06aff79fa023\tRenda Passiva Com Energia Solar\t100000\t60000000\t40\t2400\t0\t2025-01-24 00:00:00\t2025-11-26 14:40:25\n30005\t3ae168a6-9eee-11f0-8eee-06aff79fa023\tSunset Tower - Real Estate Investment\t50000\t30000000\t2\t2400\t0\t2025-12-02 00:00:00\t2025-11-26 14:40:25\n30002\td4eacf02-3d4e-11f0-98f5-06aff79fa023\tCapital de Giro Tokeniza\t50000\t30000000\t24\t2400\t0\t2025-08-04 00:00:00\t2025-11-26 14:40:25\n30007\t354f3c54-cf34-11ef-962d-06aff79fa023\tDebênture Prefixada - 1.75% Mensal com Garantia Imobiliária\t100000\t600000000\t24\t2100\t0\t2025-07-19 00:00:00\t2025-11-26 14:40:25\n",
+  "stderr": "",
+  "execution_time_ms": 570
+}
