@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE offers SET ativo = 0 WHERE externalId IS NULL OR externalId LIKE 'TOK-%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute UPDATE offers SET ativo = 0 WHERE externalId IS NULL OR externalId LIKE 'TOK-%';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 124
+}

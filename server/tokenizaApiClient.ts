@@ -79,7 +79,7 @@ export type TokenizaCrowdfundingItem = {
   targetCapture?: string; // string em reais (ex: "600000")
   deadline?: string; // string em meses (ex: "40")
   profitability?: string; // string em % anual (ex: "24")
-  status?: string; // "open", "finished", "coming_soon", etc
+  status?: string; // "active", "finished", "inactive", etc
   finalDate?: string; // ISO date
   startDate?: string; // ISO date
   company?: string;
@@ -154,8 +154,8 @@ export function normalizeTokenizaOffer(raw: TokenizaCrowdfundingItem): Normalize
   const tipoGarantia = null;
   const tipoAtivo = raw.type ?? null;
 
-  // Status: considerar ativo se status = "open"
-  const ativo = raw.status === "open";
+  // Status: considerar ativo se status = "active"
+  const ativo = raw.status === "active";
 
   // Data de encerramento
   const dataEncerramento = raw.finalDate

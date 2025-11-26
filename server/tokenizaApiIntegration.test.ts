@@ -12,7 +12,7 @@ describe("Integração API Tokeniza", () => {
         targetCapture: "600000",
         deadline: "40",
         profitability: "24",
-        status: "open",
+        status: "active",
         finalDate: "2025-12-31T00:00:00.000Z",
         startDate: "2024-07-28T00:00:00.000Z",
         company: "USE CONDOMINIO LOGISTICO E ENERGIA LTDA",
@@ -80,7 +80,7 @@ describe("Integração API Tokeniza", () => {
         targetCapture: "750000",
         deadline: "36",
         profitability: "15.5", // com decimal
-        status: "open",
+        status: "active",
       };
 
       const normalized = normalizeTokenizaOffer(rawOffer);

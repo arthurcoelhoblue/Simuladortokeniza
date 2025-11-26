@@ -562,3 +562,10 @@
 - [x] Incluir resultados dos testes (9/9 passando - 100%)
 - [x] Incluir logs de sync (8 recebidas, 8 upsert, 3 desativadas)
 - [x] Criar arquivo RELATORIO_INTEGRACAO_API_TOKENIZA.md
+
+## Correção Status API Tokeniza
+
+- [x] Corrigir normalizeTokenizaOffer: status "active" ao invés de "open"
+- [x] Atualizar testes para usar status "active" (9/9 passando)
+- [x] Verificar ofertas ativas no banco (0 ofertas ativas - correto)
+- [x] Gerar relatório final completo (RELATORIO_FINAL_CONSOLIDADO.md)

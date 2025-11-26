@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, externalId, nome, ativo FROM offers ORDER BY updatedAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, externalId, nome, ativo FROM offers ORDER BY updatedAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "30008",
+      "externalId": "03eaa32c-0a4b-11f0-bdc6-06aff79fa023",
+      "nome": "Pre-Fixed Token (45 days) - 5% ",
+      "ativo": "0"
+    },
+    {
+      "id": "30006",
+      "externalId": "d27d7094-68aa-11f0-9bf4-06aff79fa023",
+      "nome": "Welshman - Environmental Offer ",
+      "ativo": "1"
+    },
+    {
+      "id": "30005",
+      "externalId": "3ae168a6-9eee-11f0-8eee-06aff79fa023",
+      "nome": "Sunset Tower - Real Estate Investment",
+      "ativo": "1"
+    },
+    {
+      "id": "30002",
+      "externalId": "d4eacf02-3d4e-11f0-98f5-06aff79fa023",
+      "nome": "Capital de Giro Tokeniza",
+      "ativo": "0"
+    },
+    {
+      "id": "30003",
+      "externalId": "24589f4c-485e-11ef-be96-06aff79fa023",
+      "nome": "Tokeniza - TKNZ",
+      "ativo": "0"
+    },
+    {
+      "id": "30004",
+      "externalId": "088a5b06-673f-11f0-95aa-06aff79fa023",
+      "nome": "Use Energy II - Bitcoin Mining",
+      "ativo": "0"
+    },
+    {
+      "id": "30007",
+      "externalId": "354f3c54-cf34-11ef-962d-06aff79fa023",
+      "nome": "Debênture Prefixada - 1.75% Mensal com Garantia Imobiliária",
+      "ativo": "0"
+    },
+    {
+      "id": "30001",
+      "externalId": "f7575a78-4863-11ef-8a04-06aff79fa023",
+      "nome": "Renda Passiva Com Energia Solar",
+      "ativo": "0"
+    },
+    {
+      "id": "4",
+      "externalId": "TOK-004",
+      "nome": "Capital de Giro - Construção",
+      "ativo": "0"
+    },
+    {
+      "id": "5",
+      "externalId": "TOK-005",
+      "nome": "Veículos Comerciais",
+      "ativo": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\texternalId\tnome\tativo\n30008\t03eaa32c-0a4b-11f0-bdc6-06aff79fa023\tPre-Fixed Token (45 days) - 5% \t0\n30006\td27d7094-68aa-11f0-9bf4-06aff79fa023\tWelshman - Environmental Offer \t1\n30005\t3ae168a6-9eee-11f0-8eee-06aff79fa023\tSunset Tower - Real Estate Investment\t1\n30002\td4eacf02-3d4e-11f0-98f5-06aff79fa023\tCapital de Giro Tokeniza\t0\n30003\t24589f4c-485e-11ef-be96-06aff79fa023\tTokeniza - TKNZ\t0\n30004\t088a5b06-673f-11f0-95aa-06aff79fa023\tUse Energy II - Bitcoin Mining\t0\n30007\t354f3c54-cf34-11ef-962d-06aff79fa023\tDebênture Prefixada - 1.75% Mensal com Garantia Imobiliária\t0\n30001\tf7575a78-4863-11ef-8a04-06aff79fa023\tRenda Passiva Com Energia Solar\t0\n4\tTOK-004\tCapital de Giro - Construção\t0\n5\tTOK-005\tVeículos Comerciais\t0\n",
+  "stderr": "",
+  "execution_time_ms": 93
+}

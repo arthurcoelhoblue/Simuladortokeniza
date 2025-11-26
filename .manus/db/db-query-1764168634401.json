@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id, externalId, nome, ativo FROM offers WHERE ativo = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, externalId, nome, ativo FROM offers WHERE ativo = 1;",
+  "rows": [
+    {
+      "id": "4",
+      "externalId": "TOK-004",
+      "nome": "Capital de Giro - Construção",
+      "ativo": "1"
+    },
+    {
+      "id": "5",
+      "externalId": "TOK-005",
+      "nome": "Veículos Comerciais",
+      "ativo": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\texternalId\tnome\tativo\n4\tTOK-004\tCapital de Giro - Construção\t1\n5\tTOK-005\tVeículos Comerciais\t1\n",
+  "stderr": "",
+  "execution_time_ms": 78
+}
