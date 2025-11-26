@@ -618,3 +618,13 @@
 - [x] Gerar relatório final (RELATORIO_INTEGRACAO_PIPEDRIVE_FINAL.md)
 - [ ] Configurar credenciais Pipedrive (PENDENTE - Ação do usuário)
 - [ ] Executar testes completos com credenciais (PENDENTE - Após configuração)
+
+## Melhoria de Logs - Integração Pipedrive
+
+- [x] Substituir função createDeal com logs detalhados (➡️ enviando, ⬅️ resposta)
+- [x] Adicionar logs extras no opportunities.create (🎯 criando deal, 📌 resultado)
+- [x] Adicionar log de owner_id se configurado
+- [x] Adicionar tratamento específico para erros Axios
+- [x] Adicionar suporte a PIPEDRIVE_DEFAULT_OWNER_ID opcional
+- [x] Testar e validar logs no console
+- [x] Criar guia de referência de logs (GUIA_LOGS_PIPEDRIVE.md)

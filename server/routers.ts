@@ -508,19 +508,29 @@ export const appRouter = router({
 
         // 6. Integração com Pipedrive (NOVA VERSÃO)
         try {
+          console.log("🎯 Iniciando integração Pipedrive para oportunidade:", opportunityId);
+
           // Buscar lead completo
           const lead = await db.getLeadById(leadId);
           if (!lead) {
             throw new Error("Lead não encontrado");
           }
+          console.log("👤 Lead encontrado:", { id: lead.id, nome: lead.nomeCompleto, email: lead.email });
 
           // Buscar oportunidade recém-criada com scores atualizados
           const opportunity = await db.getOpportunityById(opportunityId);
           if (!opportunity) {
             throw new Error("Oportunidade não encontrada");
           }
+          console.log("📊 Oportunidade encontrada:", {
+            id: opportunity.id,
+            tipo: opportunity.tipoOportunidade,
+            tokenizaScore: opportunity.tokenizaScore,
+            ticketEstimado: opportunity.ticketEstimado,
+          });
 
           // Criar deal no Pipedrive com título [Simulação] - Nome
+          console.log("🎯 Criando deal no Pipedrive para oportunidade:", opportunityId);
           const { createDeal } = await import("./pipedrive");
           const dealId = await createDeal({
             lead,
@@ -535,12 +545,16 @@ export const appRouter = router({
             },
           });
 
+          console.log("📌 Resultado createDeal:", dealId);
+
           if (dealId) {
             // Atualizar oportunidade com pipedriveDealId
             await db.updateOpportunity(opportunityId, {
               pipedriveDealId: dealId.toString(),
             });
-            console.log("✅ Deal criado no Pipedrive:", dealId);
+            console.log("✅ pipedriveDealId salvo na opportunity:", opportunityId, dealId);
+          } else {
+            console.warn("⚠️ Nenhum dealId retornado. Oportunidade criada apenas localmente:", opportunityId);
           }
         } catch (error) {
           console.error("❌ Erro ao integrar com Pipedrive:", error);

@@ -111,6 +111,10 @@ export async function createDeal({ lead, opportunity, simulation, score }: {
       person_id,
       pipeline_id,
       stage_id,
+      // Opcional: fixar dono do deal
+      ...(process.env.PIPEDRIVE_DEFAULT_OWNER_ID
+        ? { owner_id: Number(process.env.PIPEDRIVE_DEFAULT_OWNER_ID) }
+        : {}),
     };
 
     // Campos customizados (apenas se ENV estiver configurado)
@@ -136,14 +140,33 @@ export async function createDeal({ lead, opportunity, simulation, score }: {
       payload[process.env.PIPEDRIVE_FIELD_TIPO_OPORTUNIDADE] = opportunity.tipoOportunidade;
     }
 
+    console.log("➡️ Enviando DEAL para Pipedrive:", {
+      title: payload.title,
+      value: payload.value,
+      pipeline_id: payload.pipeline_id,
+      stage_id: payload.stage_id,
+      owner_id: payload.owner_id,
+    });
+
     const res = await api.post("/deals", payload);
 
-    console.log("✅ Deal criado no Pipedrive:", res.data.data.id);
+    console.log("⬅️ Resposta Pipedrive DEAL:", {
+      status: res.status,
+      success: res.data?.success,
+      id: res.data?.data?.id,
+    });
 
     return res.data.data.id;
 
   } catch (err: any) {
-    console.error("❌ Erro ao criar deal:", err.response?.data || err);
+    if (axios.isAxiosError(err)) {
+      console.error("❌ Erro Pipedrive DEAL:", {
+        status: err.response?.status,
+        data: err.response?.data,
+      });
+    } else {
+      console.error("❌ Erro Pipedrive DEAL (não Axios):", err);
+    }
     return null;
   }
 }
