@@ -374,3 +374,34 @@ export async function countRelatedSimulations(leadId: number, tipoSimulacao: "in
 
   return result.length;
 }
+
+export async function updateOpportunityScores(
+  opportunityId: number,
+  scores: {
+    tokenizaScore: number;
+    fitNivel: "frio" | "morno" | "quente" | "prioritario";
+    scoreValor: number;
+    scoreIntencao: number;
+    scoreEngajamento: number;
+    scoreUrgencia: number;
+  }
+) {
+  const database = await getDb();
+  if (!database) {
+    console.warn("[Database] Cannot update opportunity scores: database not available");
+    return;
+  }
+
+  await database
+    .update(opportunities)
+    .set({
+      tokenizaScore: scores.tokenizaScore,
+      fitNivel: scores.fitNivel,
+      scoreValor: scores.scoreValor,
+      scoreIntencao: scores.scoreIntencao,
+      scoreEngajamento: scores.scoreEngajamento,
+      scoreUrgencia: scores.scoreUrgencia,
+      updatedAt: new Date(),
+    })
+    .where(eq(opportunities.id, opportunityId));
+}

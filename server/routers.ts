@@ -128,6 +128,11 @@ export const appRouter = router({
           // Outros
           identificadorInvestidor: z.string().optional(),
           moedaReferencia: z.string().default("BRL"),
+          
+          // Sistema de scoring - intenção
+          origemSimulacao: z.enum(["manual", "oferta_tokeniza"]).default("manual"),
+          engajouComOferta: z.boolean().default(false),
+          offerId: z.number().int().positive().optional().nullable(),
         })
       )
       .mutation(async ({ input, ctx }) => {
@@ -303,6 +308,10 @@ export const appRouter = router({
             // Versionamento
             version: 1,
             parentSimulationId: null,
+            // Sistema de scoring - intenção
+            origemSimulacao: input.origemSimulacao,
+            engajouComOferta: input.engajouComOferta ? 1 : 0,
+            offerId: input.offerId || null,
           };
 
           console.log("💾 Dados finais para criar simulação:", {
@@ -476,10 +485,15 @@ export const appRouter = router({
             offer,
             versoesRelacionadas,
           });
+          
+          // Calcular fitNivel baseado em tokenizaScore
+          const { calcularFitNivel } = await import("./fitNivel");
+          const fitNivel = calcularFitNivel(scoreComponents.tokenizaScore);
 
-          // Atualizar oportunidade com scores
+          // Atualizar oportunidade com scores e fitNivel
           await db.updateOpportunity(opportunityId, {
             tokenizaScore: scoreComponents.tokenizaScore,
+            fitNivel,
             scoreValor: scoreComponents.scoreValor,
             scoreIntencao: scoreComponents.scoreIntencao,
             scoreEngajamento: scoreComponents.scoreEngajamento,
@@ -577,6 +591,71 @@ export const appRouter = router({
         );
 
         return enriched;
+      }),
+    
+    // Requalificar oportunidade (recalcular scores)
+    requalify: protectedProcedure
+      .input(
+        z.object({
+          opportunityId: z.number().int().positive(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        // 1. Buscar oportunidade
+        const opportunity = await db.getOpportunityById(input.opportunityId);
+        if (!opportunity) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Oportunidade não encontrada" });
+        }
+        
+        // 2. Buscar simulação relacionada
+        const simulation = await db.getSimulationById(opportunity.simulationId);
+        if (!simulation) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Simulação não encontrada" });
+        }
+        
+        // 3. Buscar offer relacionada (se offerId existir)
+        let offer = null;
+        if (simulation.offerId) {
+          offer = await db.getOfferById(simulation.offerId);
+        }
+        
+        // 4. Contar versões relacionadas para scoreEngajamento
+        const versoesRelacionadas = await db.countRelatedSimulations(
+          simulation.leadId!,
+          simulation.tipoSimulacao
+        );
+        
+        // 5. Recalcular scores via scoreEngine
+        const { calcularScoreParaOpportunity } = await import("./scoreEngine");
+        
+        const scoreComponents = calcularScoreParaOpportunity({
+          simulation,
+          opportunity,
+          offer,
+          versoesRelacionadas,
+        });
+        
+        // 6. Calcular fitNivel baseado em tokenizaScore
+        const { calcularFitNivel } = await import("./fitNivel");
+        const fitNivel = calcularFitNivel(scoreComponents.tokenizaScore);
+        
+        // 7. Atualizar oportunidade com novos scores e fitNivel
+        await db.updateOpportunityScores(input.opportunityId, {
+          tokenizaScore: scoreComponents.tokenizaScore,
+          fitNivel,
+          scoreValor: scoreComponents.scoreValor,
+          scoreIntencao: scoreComponents.scoreIntencao,
+          scoreEngajamento: scoreComponents.scoreEngajamento,
+          scoreUrgencia: scoreComponents.scoreUrgencia,
+        });
+        
+        console.log("♻️ Requalificando oportunidade", input.opportunityId, "→ novo tokenizaScore:", scoreComponents.tokenizaScore);
+        
+        // 7. Retornar novos valores
+        return {
+          opportunityId: input.opportunityId,
+          ...scoreComponents,
+        };
       }),
   }),
 
@@ -712,6 +791,30 @@ export const appRouter = router({
 
   // Router de ofertas Tokeniza
   offers: router({
+    // Listar ofertas ativas (para seleção no formulário)
+    listActive: publicProcedure
+      .query(async () => {
+        const activeOffers = await db.getActiveOffers();
+        
+        // Ordenar por dataEncerramento (próxima primeiro) e valorMinimo (crescente)
+        return activeOffers.sort((a, b) => {
+          // Ofertas sem dataEncerramento vão pro final
+          if (!a.dataEncerramento && !b.dataEncerramento) {
+            return (a.valorMinimo || 0) - (b.valorMinimo || 0);
+          }
+          if (!a.dataEncerramento) return 1;
+          if (!b.dataEncerramento) return -1;
+          
+          // Ordenar por data de encerramento
+          const dateA = new Date(a.dataEncerramento).getTime();
+          const dateB = new Date(b.dataEncerramento).getTime();
+          if (dateA !== dateB) return dateA - dateB;
+          
+          // Se datas iguais, ordenar por valor mínimo
+          return (a.valorMinimo || 0) - (b.valorMinimo || 0);
+        });
+      }),
+    
     // Buscar ofertas compatíveis para uma simulação
     matchForSimulation: protectedProcedure
       .input(

@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { OfferSelectionModal } from "@/components/OfferSelectionModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,11 @@ export default function NewSimulation() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const [modo, setModo] = useState<'investidor' | 'captador'>('investidor');
+  
+  // Sistema de scoring - captura de intenção
+  const [origemSimulacao, setOrigemSimulacao] = useState<'manual' | 'oferta_tokeniza'>('manual');
+  const [offerId, setOfferId] = useState<number | null>(null);
+  const [showOfferModal, setShowOfferModal] = useState(false);
 
   // Função para calcular taxa de estruturação baseada no valor da oferta (em R$)
   const calcularTaxaEstruturacao = (valorOferta: number): number => {
@@ -130,6 +136,10 @@ export default function NewSimulation() {
       capitalizarJurosEmCarencia: formData.capitalizarJurosEmCarencia,
       amortizacaoMetodo: formData.amortizacaoMetodo,
       modo: modo, // Salva o modo da simulação
+      // Sistema de scoring - intenção
+      origemSimulacao: origemSimulacao,
+      engajouComOferta: offerId !== null,
+      offerId: offerId,
       // Custos são calculados apenas no modo captador
       taxaSetupFixaBrl: modo === 'captador' && formData.taxaEstruturacao ? parseFloat(formData.taxaEstruturacao) * 100 : undefined,
       feeSucessoPercentSobreCaptacao: modo === 'captador' && formData.feePercentualCaptacao ? parseFloat(formData.feePercentualCaptacao) * 100 : undefined,
@@ -185,6 +195,72 @@ export default function NewSimulation() {
                 ? 'Simule o retorno do seu investimento'
                 : 'Simule os custos da sua captação'}
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Captura de Intenção - Sistema de Scoring */}
+        <Card className="mb-6 border-lime-500/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              🎯 Como você quer simular?
+            </CardTitle>
+            <CardDescription>
+              Sua resposta nos ajuda a entender melhor sua intenção e priorizar seu atendimento
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setOrigemSimulacao('manual');
+                  setOfferId(null);
+                }}
+                className={`p-4 rounded-lg border-2 transition-all text-left ${
+                  origemSimulacao === 'manual'
+                    ? 'border-lime-500 bg-lime-500/10'
+                    : 'border-border hover:border-lime-500/50'
+                }`}
+              >
+                <div className="font-semibold mb-1">✏️ Simulação Livre</div>
+                <p className="text-sm text-muted-foreground">
+                  Quero explorar diferentes cenários sem uma oferta específica
+                </p>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setOrigemSimulacao('oferta_tokeniza');
+                  setShowOfferModal(true);
+                }}
+                className={`p-4 rounded-lg border-2 transition-all text-left ${
+                  origemSimulacao === 'oferta_tokeniza'
+                    ? 'border-lime-500 bg-lime-500/10'
+                    : 'border-border hover:border-lime-500/50'
+                }`}
+              >
+                <div className="font-semibold mb-1">💼 A partir de uma Oferta Tokeniza</div>
+                <p className="text-sm text-muted-foreground">
+                  Tenho interesse em uma oferta específica da plataforma
+                </p>
+              </button>
+            </div>
+            
+            {origemSimulacao === 'oferta_tokeniza' && offerId && (
+              <div className="p-3 bg-lime-500/10 border border-lime-500/50 rounded-lg">
+                <p className="text-sm font-medium text-lime-700 dark:text-lime-400">
+                  ✅ Oferta selecionada (ID: {offerId})
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowOfferModal(true)}
+                  className="text-xs text-lime-600 dark:text-lime-400 hover:underline mt-1"
+                >
+                  Trocar oferta
+                </button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -597,6 +673,28 @@ export default function NewSimulation() {
           </div>
         </form>
       </div>
+      
+      {/* Modal de Seleção de Ofertas */}
+      <OfferSelectionModal
+        open={showOfferModal}
+        onClose={() => setShowOfferModal(false)}
+        onSelectOffer={(offer) => {
+          // Preencher automaticamente os campos do formulário
+          setFormData(prev => ({
+            ...prev,
+            valorTotalOferta: ((offer.valorMinimo || 0) / 100).toString(),
+            valorInvestido: ((offer.valorMinimo || 0) / 100).toString(),
+            prazoMeses: offer.prazoMeses.toString(),
+            taxaJurosAa: offer.taxaAnual.toString(),
+          }));
+          
+          // Setar campos de scoring
+          setOfferId(offer.id);
+          setOrigemSimulacao('oferta_tokeniza');
+          
+          toast.success(`Oferta "${offer.nome}" selecionada! Campos preenchidos automaticamente.`);
+        }}
+      />
     </div>
   );
 }

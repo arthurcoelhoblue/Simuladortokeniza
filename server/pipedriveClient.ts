@@ -190,6 +190,7 @@ export async function createPipedriveDealForOpportunity(params: {
 
     // Campos customizados do Pipedrive (configurados via ENV)
     const PIPEDRIVE_FIELD_TOKENIZA_SCORE = process.env.PIPEDRIVE_FIELD_TOKENIZA_SCORE || "";
+    const PIPEDRIVE_FIELD_FIT_NIVEL = process.env.PIPEDRIVE_FIELD_FIT_NIVEL || "";
     const PIPEDRIVE_FIELD_ORIGEM_SIMULACAO = process.env.PIPEDRIVE_FIELD_ORIGEM_SIMULACAO || "";
     const PIPEDRIVE_FIELD_TICKET_REAIS = process.env.PIPEDRIVE_FIELD_TICKET_REAIS || "";
 
@@ -207,6 +208,11 @@ export async function createPipedriveDealForOpportunity(params: {
     if (PIPEDRIVE_FIELD_TOKENIZA_SCORE) {
       payload[PIPEDRIVE_FIELD_TOKENIZA_SCORE] = opportunity.tokenizaScore;
       console.log(`🏆 Enviando tokenizaScore=${opportunity.tokenizaScore} para Pipedrive (campo: ${PIPEDRIVE_FIELD_TOKENIZA_SCORE})`);
+    }
+    
+    if (PIPEDRIVE_FIELD_FIT_NIVEL && opportunity.fitNivel) {
+      payload[PIPEDRIVE_FIELD_FIT_NIVEL] = opportunity.fitNivel;
+      console.log(`🎯 Enviando fitNivel=${opportunity.fitNivel} para Pipedrive (campo: ${PIPEDRIVE_FIELD_FIT_NIVEL})`);
     }
 
     if (PIPEDRIVE_FIELD_ORIGEM_SIMULACAO) {

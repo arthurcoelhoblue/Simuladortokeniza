@@ -279,3 +279,80 @@
 - [x] Incluir resultados dos testes (8/8 passando)
 - [x] Incluir SQL de verificação executado
 - [x] Criar arquivo RELATORIO_DASHBOARD_LEADS.md
+
+## Finalização do Sistema de Scoring - Intenção Dominante
+
+### 1. Revisão do Estado Atual
+- [x] Confirmar campos em simulations (origemSimulacao, engajouComOferta, offerId) - Existem
+- [x] Confirmar campos em offers (dataEncerramento) - Existe
+- [x] Confirmar campos em opportunities (tokenizaScore, scoreValor, scoreIntencao, scoreEngajamento, scoreUrgencia) - Existem
+- [x] Confirmar scoreEngine.ts com 5 funções - Confirmado (5844 bytes)
+- [x] Confirmar 21 testes passando em scoring.test.ts - 21/21 passando (100%)
+- [x] Listar arquivos revisados no relatório - REVISAO_SISTEMA_SCORING.md criado
+
+### 2. Frontend - Captura de Intenção
+- [x] Adicionar pergunta "Como você quer simular?" no topo do formulário
+- [x] Implementar opção "Simulação livre" (origemSimulacao=manual, engajouComOferta=false, offerId=null)
+- [x] Implementar opção "A partir de oferta Tokeniza" (origemSimulacao=oferta_tokeniza)
+- [x] Criar estado para controlar fluxo de seleção de oferta (origemSimulacao, offerId, showOfferModal)
+
+### 3. Modal de Seleção de Ofertas
+- [x] Criar componente Modal/Dialog para seleção de ofertas (OfferSelectionModal.tsx)
+- [x] Criar endpoint offers.listActive no backend
+- [x] Buscar ofertas ativas via tRPC (trpc.offers.listActive.useQuery)
+- [x] Ordenar por dataEncerramento (próxima primeiro) e valorMinimo (crescente)
+- [x] Exibir: nome, taxa anual, prazo, investimento mínimo, tipo de ativo/garantia
+- [x] Ao selecionar oferta: preencher valorTotalOferta, valorInvestido, taxaJurosAa, prazoMeses
+- [x] Setar origemSimulacao=oferta_tokeniza, engajouComOferta=true (via offerId !== null), offerId=X
+- [x] Adicionar badge de urgência para ofertas que encerram em <=7 dias
+- [x] Integrar modal com NewSimulation.tsx
+
+### 4. Backend - Envio de Campos
+- [x] Garantir que simulations.create aceita origemSimulacao, engajouComOferta, offerId (schema atualizado)
+- [x] Adicionar campos no simulationPayload para salvar no banco
+- [x] Validar que opportunities.create usa esses campos no scoreEngine (já implementado)
+- [x] Passar valorAporte/valorDesejado, origemSimulacao, engajouComOferta, offerId para calcularScoreParaOpportunity (já implementado)
+- [x] Salvar scoreValor, scoreIntencao, scoreEngajamento, scoreUrgencia, tokenizaScore (já implementado)
+
+### 5. Endpoint de Requalificação
+- [x] Criar opportunities.requalify com input opportunityId
+- [x] Buscar opportunity, simulation e offer relacionadas
+- [x] Recalcular scores via scoreEngine (calcularScoreParaOpportunity)
+- [x] Criar função updateOpportunityScores no db.ts
+- [x] Atualizar campos de score na oportunidade
+- [x] Adicionar log "♻️ Requalificando oportunidade X → novo tokenizaScore: Y"
+- [x] Retornar novos valores (opportunityId + scoreComponents)
+
+### 6. Implementar fitNivel
+- [x] Adicionar coluna fitNivel ENUM('frio', 'morno', 'quente', 'prioritario') em opportunities (SQL executado)
+- [x] Criar função calcularFitNivel em fitNivel.ts
+- [x] Implementar regra: >=75 prioritario, >=50 quente, >=25 morno, <25 frio
+- [x] Aplicar fitNivel em opportunities.create (import calcularFitNivel + updateOpportunity)
+- [x] Aplicar fitNivel em opportunities.requalify (import calcularFitNivel + updateOpportunityScores)
+- [x] Atualizar schema Drizzle (campo fitNivel adicionado)
+- [x] Atualizar função updateOpportunityScores para aceitar fitNivel
+### 7. Integração Pipedrive
+- [x] Enviar tokenizaScore para Pipedrive (se PIPEDRIVE_FIELD_TOKENIZA_SCORE existir) - Já implementado
+- [x] Adicionar variável PIPEDRIVE_FIELD_FIT_NIVEL
+- [x] Enviar fitNivel para Pipedrive em campo de texto (se PIPEDRIVE_FIELD_FIT_NIVEL configurado)
+- [x] Adicionar log de envio de fitNivel (🎯 Enviando fitNivel=...)em env vars
+### 8. Testes Automatizados
+- [x] Criar arquivo scoringIntegration.test.ts (12/12 testes passando)
+- [x] Teste: Simulação manual, low ticket, sem oferta → scoreIntencao=0, fitNivel=frio
+- [x] Teste: Simulação via oferta, ticket médio (R$ 5k) → fitNivel=morno
+- [x] Teste: Simulação via oferta, high ticket (R$ 50k) → fitNivel=quente
+- [x] Teste: Simulação via oferta, very high ticket (R$ 200k), urgência → fitNivel=quente
+- [x] Teste: Lead engajado (5 versões), high ticket (R$ 100k), via oferta → fitNivel=prioritario
+- [x] Teste: scoreIntencao=0 para simulações manuais
+- [x] Teste: scoreIntencao>=25 para simulações via oferta com engajamento
+- [x] Teste: tokenizaScore no intervalo 0-100 (normalização)
+- [x] Garantir que todos os testes passam (33/33 testes passando - 100%)
+
+### 9. Relatório Final
+- [x] Listar arquivos modificados (backend, frontend, documentação)
+- [x] Documentar novos endpoints (opportunities.requalify, offers.listActive)
+- [x] Incluir logs de criação com oferta e sem oferta
+- [x] Incluir exemplo de fitNivel=prioritario (5 exemplos detalhados)
+- [x] Incluir exemplo de fitNivel=frio
+- [x] Incluir resultado dos testes (3 arquivos, 33 testes passando - 100%)
+- [x] Criar arquivo RELATORIO_FINAL_SCORING.md

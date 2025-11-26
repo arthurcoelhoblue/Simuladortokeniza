@@ -216,6 +216,7 @@ export const opportunities = mysqlTable("opportunities", {
   
   // Sistema de scoring Tokeniza
   tokenizaScore: int("tokenizaScore").notNull().default(0), // Score consolidado (0-100)
+  fitNivel: mysqlEnum("fitNivel", ["frio", "morno", "quente", "prioritario"]).notNull().default("frio"), // Classificação de qualidade
   scoreValor: int("scoreValor").notNull().default(0), // Componente: ticket (até 50 pts)
   scoreIntencao: int("scoreIntencao").notNull().default(0), // Componente: intenção (até 40 pts)
   scoreEngajamento: int("scoreEngajamento").notNull().default(0), // Componente: engajamento (até 20 pts)
