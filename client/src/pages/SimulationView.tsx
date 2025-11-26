@@ -843,7 +843,14 @@ export default function SimulationView() {
         <Card>
           <CardHeader>
             <CardTitle>Cronograma Mensal</CardTitle>
-            <CardDescription>Detalhamento mês a mês do investimento</CardDescription>
+            <CardDescription>
+              Detalhamento mês a mês do investimento
+              {cronograma && cronograma.length > 0 && cronograma[0].tipoSistema && (
+                <span className="ml-2 text-muted-foreground">
+                  • Sistema: {cronograma[0].tipoSistema}
+                </span>
+              )}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">

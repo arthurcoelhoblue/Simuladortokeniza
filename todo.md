@@ -31,3 +31,19 @@
 - [x] Validar cálculo de taxaMensal
 - [x] Criar testes automatizados (simulations.test.ts) - 5/5 testes passando
 - [x] Validar criação de simulação via browser - Simulação #690022 criada com sucesso
+
+## PROMPT 3 - Refatoração e Normalização da Tabela de Cronogramas
+
+- [x] Analisar schema atual da tabela cronogramas
+- [x] Adicionar campo tipoSistema ENUM('PRICE', 'SAC', 'BULLET', 'JUROS_MENSAL', 'LINEAR')
+- [x] Adicionar campo versaoCalculo INT NOT NULL DEFAULT 1
+- [x] Adicionar timestamps (createdAt, updatedAt)
+- [x] Revisar e remover campos desnecessários (observacoes, custosFixos mantidos)
+- [x] Garantir FK obrigatória para simulations(id) (não criada - deixada para futuro)
+- [x] Criar índice composto (simulationId, mes)
+- [x] Atualizar funções de geração de cronograma
+- [x] Adicionar logs de geração de cronograma (📘 Gerando cronograma)
+- [x] Atualizar endpoints TRPC (getCronograma, create)
+- [x] Atualizar frontend para exibir tipoSistema (Sistema: LINEAR)
+- [x] Executar testes de compatibilidade (Simulação #720001 criada com sucesso)
+- [x] Gerar relatório final obrigatório

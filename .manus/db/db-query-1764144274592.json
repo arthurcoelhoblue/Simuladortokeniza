@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE cronogramas c\nINNER JOIN simulations s ON c.simulationId = s.id\nSET c.tipoSistema = s.sistemaAmortizacao\nWHERE c.tipoSistema = 'LINEAR'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute UPDATE cronogramas c\nINNER JOIN simulations s ON c.simulationId = s.id\nSET c.tipoSistema = s.sistemaAmortizacao\nWHERE c.tipoSistema = 'LINEAR'",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 82
+}

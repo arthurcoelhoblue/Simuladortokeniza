@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { index, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -128,7 +128,7 @@ export const cronogramas = mysqlTable("cronogramas", {
   id: int("id").autoincrement().primaryKey(),
   simulationId: int("simulationId").notNull(),
   
-  mes: int("mes").notNull(), // 1 a N
+  mes: int("mes").notNull(), // 1 a N (número da parcela)
   dataParcela: varchar("dataParcela", { length: 10 }).notNull(), // YYYY-MM-DD
   saldoInicial: int("saldoInicial").notNull(), // em centavos
   juros: int("juros").notNull(), // em centavos
@@ -138,8 +138,21 @@ export const cronogramas = mysqlTable("cronogramas", {
   saldoFinal: int("saldoFinal").notNull(), // em centavos
   observacoes: text("observacoes"),
   
+  // Novos campos de normalização
+  tipoSistema: mysqlEnum("tipoSistema", ["PRICE", "SAC", "BULLET", "JUROS_MENSAL", "LINEAR"]).notNull().default("LINEAR"),
+  versaoCalculo: int("versaoCalculo").notNull().default(1),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
+
+// Índice composto para melhorar performance de leitura
+export const cronogramasIndex = mysqlTable("cronogramas", {
+  simulationId: int("simulationId").notNull(),
+  mes: int("mes").notNull(),
+}, (table) => ({
+  simulationMesIdx: index("simulation_mes_idx").on(table.simulationId, table.mes),
+}));
 
 export type Cronograma = typeof cronogramas.$inferSelect;
 export type InsertCronograma = typeof cronogramas.$inferInsert;

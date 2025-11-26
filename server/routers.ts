@@ -292,19 +292,28 @@ export const appRouter = router({
           const simulationId = await db.createSimulation(simulationPayload);
           console.log("✅ Simulação criada com ID:", simulationId);
 
-        // Salva cronograma
-        const cronogramaItems = resultado.cronograma.map((mes) => ({
-          simulationId: simulationId as number,
-          mes: mes.mes,
-          dataParcela: mes.dataParcela,
-          saldoInicial: mes.saldoInicial,
-          juros: mes.juros,
-          amortizacao: mes.amortizacao,
-          parcela: mes.parcela,
-          custosFixos: mes.custosFixos,
-          saldoFinal: mes.saldoFinal,
-          observacoes: mes.observacoes || null,
-        }));
+          // Salva cronograma
+          console.log("📘 Gerando cronograma:", {
+            simulacaoId: simulationId,
+            sistema: sistemaAmortizacao,
+            parcelas: resultado.cronograma.length,
+          });
+
+          const cronogramaItems = resultado.cronograma.map((mes) => ({
+            simulationId: simulationId as number,
+            mes: mes.mes,
+            dataParcela: mes.dataParcela,
+            saldoInicial: mes.saldoInicial,
+            juros: mes.juros,
+            amortizacao: mes.amortizacao,
+            parcela: mes.parcela,
+            custosFixos: mes.custosFixos,
+            saldoFinal: mes.saldoFinal,
+            observacoes: mes.observacoes || null,
+            // Novos campos de normalização
+            tipoSistema: sistemaAmortizacao,
+            versaoCalculo: 1,
+          }));
 
           await db.createCronogramas(cronogramaItems);
           console.log("✅ Cronograma salvo com", cronogramaItems.length, "parcelas");
