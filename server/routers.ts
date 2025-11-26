@@ -395,15 +395,19 @@ export const appRouter = router({
           throw new TRPCError({ code: "BAD_REQUEST", message: "Simulação não possui lead associado" });
         }
 
-        // 3. Calcular ticketEstimado com base em tipoSimulacao
+        // 3. Calcular ticketEstimado e tipoOportunidade com base em tipoSimulacao
         let ticketEstimado: number;
+        let tipoOportunidade: "investidor" | "emissor";
+        
         if (simulation.tipoSimulacao === "investimento") {
           ticketEstimado = simulation.valorAporte || 0;
+          tipoOportunidade = "investidor";
         } else {
           ticketEstimado = simulation.valorDesejado || 0;
+          tipoOportunidade = "emissor";
         }
 
-        console.log("🎯 Criando oportunidade a partir da simulação", input.simulationId, "para o lead", leadId);
+        console.log("🎯 Criando oportunidade tipo=", tipoOportunidade, "para simulação", input.simulationId);
 
         // 4. Criar oportunidade
         const opportunityId = await db.createOpportunity({
@@ -413,6 +417,7 @@ export const appRouter = router({
           status: "novo",
           probabilidade: 0,
           ticketEstimado,
+          tipoOportunidade,
           nextAction: input.nextAction || null,
           nextActionAt: input.nextActionAt ? new Date(input.nextActionAt) : null,
         });

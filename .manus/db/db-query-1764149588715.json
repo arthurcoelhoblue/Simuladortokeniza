@@ -1,0 +1,60 @@
+{
+  "query": "SELECT id, leadId, simulationId, tipoOportunidade, status, ticketEstimado, pipedriveDealId, createdAt FROM opportunities ORDER BY id DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, leadId, simulationId, tipoOportunidade, status, ticketEstimado, pipedriveDealId, createdAt FROM opportunities ORDER BY id DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "60002",
+      "leadId": "210002",
+      "simulationId": "840002",
+      "tipoOportunidade": "emissor",
+      "status": "novo",
+      "ticketEstimado": "20000000",
+      "pipedriveDealId": "NULL",
+      "createdAt": "2025-11-26 09:32:47"
+    },
+    {
+      "id": "60001",
+      "leadId": "210001",
+      "simulationId": "840001",
+      "tipoOportunidade": "investidor",
+      "status": "novo",
+      "ticketEstimado": "10000000",
+      "pipedriveDealId": "NULL",
+      "createdAt": "2025-11-26 09:32:46"
+    },
+    {
+      "id": "30004",
+      "leadId": "180015",
+      "simulationId": "810004",
+      "tipoOportunidade": "emissor",
+      "status": "novo",
+      "ticketEstimado": "30000000",
+      "pipedriveDealId": "NULL",
+      "createdAt": "2025-11-26 09:05:56"
+    },
+    {
+      "id": "30003",
+      "leadId": "180014",
+      "simulationId": "810003",
+      "tipoOportunidade": "investidor",
+      "status": "novo",
+      "ticketEstimado": "50000000",
+      "pipedriveDealId": "NULL",
+      "createdAt": "2025-11-26 09:05:56"
+    },
+    {
+      "id": "30002",
+      "leadId": "180013",
+      "simulationId": "810002",
+      "tipoOportunidade": "emissor",
+      "status": "novo",
+      "ticketEstimado": "20000000",
+      "pipedriveDealId": "NULL",
+      "createdAt": "2025-11-26 09:05:56"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tleadId\tsimulationId\ttipoOportunidade\tstatus\tticketEstimado\tpipedriveDealId\tcreatedAt\n60002\t210002\t840002\temissor\tnovo\t20000000\tNULL\t2025-11-26 09:32:47\n60001\t210001\t840001\tinvestidor\tnovo\t10000000\tNULL\t2025-11-26 09:32:46\n30004\t180015\t810004\temissor\tnovo\t30000000\tNULL\t2025-11-26 09:05:56\n30003\t180014\t810003\tinvestidor\tnovo\t50000000\tNULL\t2025-11-26 09:05:56\n30002\t180013\t810002\temissor\tnovo\t20000000\tNULL\t2025-11-26 09:05:56\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

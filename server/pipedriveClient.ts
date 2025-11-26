@@ -1,5 +1,6 @@
-import { Lead, Simulation, Opportunity } from "../drizzle/schema";
-import { updateLead } from "./db";
+import { Lead, Opportunity, Simulation } from "../drizzle/schema";
+import { updateLead, updateOpportunity } from "./db";
+import { getPipedrivePipelineAndStage } from "./pipedriveMapping";
 
 /**
  * Cliente de integração com Pipedrive
@@ -166,6 +167,16 @@ export async function createPipedriveDealForOpportunity(params: {
   console.log(`🎯 Criando deal no Pipedrive para oportunidade ${opportunity.id} (simulação ${simulation.id})`);
 
   try {
+    // Obter pipeline e stage corretos baseado no tipoOportunidade
+    const { pipeline_id, stage_id } = getPipedrivePipelineAndStage(opportunity.tipoOportunidade);
+    
+    if (!pipeline_id || !stage_id) {
+      console.warn(`⚠️ Pipeline/Stage não configurado para tipoOportunidade=${opportunity.tipoOportunidade}`);
+      return null;
+    }
+    
+    console.log(`🔗 Pipedrive: usando pipeline_id=${pipeline_id}, stage_id=${stage_id} (${opportunity.tipoOportunidade})`);
+
     // Calcular valor em reais
     const ticketEmReais = opportunity.ticketEstimado / 100;
     const ticketFormatado = ticketEmReais.toLocaleString("pt-BR", {
@@ -183,7 +194,8 @@ export async function createPipedriveDealForOpportunity(params: {
       value: ticketEmReais,
       currency: "BRL",
       person_id: personId,
-      stage_id: parseInt(PIPEDRIVE_STAGE_ID),
+      pipeline_id,
+      stage_id,
       // Campos customizados podem ser adicionados aqui
       // Ex: prazo_meses: simulation.prazoMeses
     };

@@ -112,3 +112,17 @@
 - [x] Validar salvamento de IDs nas tabelas locais (updateLead e updateOpportunity)
 - [x] Executar SQL de verificação obrigatória
 - [x] Gerar relatório final obrigatório
+
+## Pipelines Diferentes no Pipedrive (Investidor vs Emissor)
+
+- [x] Adicionar campo tipoOportunidade ENUM('investidor', 'emissor') na tabela opportunities
+- [x] Migrar dados existentes (financiamento → emissor, investimento → investidor)
+- [x] Atualizar schema Drizzle com campo tipoOportunidade
+- [x] Adicionar variáveis de ambiente (PIPEDRIVE_INVESTOR_PIPELINE_ID, PIPEDRIVE_INVESTOR_STAGE_ID, PIPEDRIVE_EMISSOR_PIPELINE_ID, PIPEDRIVE_EMISSOR_STAGE_ID)
+- [x] Criar helper getPipedrivePipelineAndStage em server/pipedriveMapping.ts
+- [x] Ajustar opportunities.create para setar tipoOportunidade baseado em tipoSimulacao
+- [x] Atualizar createPipedriveDealForOpportunity para usar pipelines diferentes
+- [x] Criar testes automatizados para ambos os tipos (4/4 testes passando)
+- [x] Validar criação de deal no pipeline correto via logs
+- [x] Executar SQL de verificação obrigatória
+- [x] Gerar relatório final obrigatório

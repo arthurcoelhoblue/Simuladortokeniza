@@ -172,6 +172,9 @@ export const opportunities = mysqlTable("opportunities", {
   simulationId: int("simulationId").notNull(),
   ownerUserId: int("ownerUserId"), // Responsável interno (FK → users.id)
   
+  // Tipo de oportunidade (investidor ou emissor)
+  tipoOportunidade: mysqlEnum("tipoOportunidade", ["investidor", "emissor"]).notNull().default("investidor"),
+  
   // Status do funil
   status: mysqlEnum("status", [
     "novo",
