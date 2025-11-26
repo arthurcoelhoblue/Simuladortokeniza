@@ -569,3 +569,52 @@
 - [x] Atualizar testes para usar status "active" (9/9 passando)
 - [x] Verificar ofertas ativas no banco (0 ofertas ativas - correto)
 - [x] Gerar relatório final completo (RELATORIO_FINAL_CONSOLIDADO.md)
+
+## Adicionar Segundo Admin e Botão Dashboard
+
+- [x] Adicionar arthurcsantos@gmail.com à lista adminEmails
+- [x] Criar botão "Dashboard de Leads" na home
+- [x] Botão deve aparecer apenas para arthur@blueconsult.com.br e arthurcsantos@gmail.com
+- [ ] Testar acesso com ambos os emails
+
+## Integração Completa Pipedrive (PROMPT MASTER)
+
+### 1. Variáveis de Ambiente
+- [ ] Adicionar PIPEDRIVE_API_TOKEN
+- [ ] Adicionar PIPEDRIVE_BASE_URL
+- [ ] Adicionar PIPEDRIVE_INVESTOR_PIPELINE_ID e STAGE_ID
+- [ ] Adicionar PIPEDRIVE_EMISSOR_PIPELINE_ID e STAGE_ID
+- [ ] Adicionar 6 campos customizados (scores, origem, tipo)
+
+### 2. Arquivo server/pipedrive.ts
+- [x] Criar função findOrCreatePerson (busca por email, telefone, cria se não existir)
+- [x] Criar função getPipelineConfig (seleciona pipeline/stage correto por tipoOportunidade)
+- [x] Criar função createDeal (cria deal com título [Simulação] - Nome)
+- [x] Adicionar logs de auditoria em todas as funções
+- [x] Usar axios ao invés de fetch
+- [x] Adicionar tratamento de campos customizados opcionais
+
+### 3. Integração com opportunities.create
+- [x] Importar createDeal do pipedrive.ts
+- [x] Chamar createDeal após calcular scores
+- [x] Salvar pipedriveDealId na oportunidade
+- [x] Adicionar tratamento de erro
+- [x] Enviar todos os scores calculados (total, valor, intencao, engajamento, urgencia)
+
+### 4. Testes Automatizados
+- [x] Criar server/pipedriveRealIntegration.test.ts
+- [x] Teste: criar pessoa de teste (skipIf sem credenciais)
+- [x] Teste: criar deal com padrão [Simulação] - Nome (skipIf sem credenciais)
+- [x] Teste: selecionar pipeline correto (investidor vs emissor)
+- [x] Teste: buscar pessoa existente por email
+- [x] Teste: criar deal de emissor no pipeline correto
+- [x] Teste: validar campos customizados se configurados
+- [x] 3/8 testes passando (5 pulados por falta de credenciais)
+
+### 5. Validação
+- [x] Executar testes (3/8 passando, 5 aguardando credenciais)
+- [x] Verificar pipeline/stage corretos (investidor vs emissor) - Lógica validada
+- [x] Verificar campos customizados preenchidos - Sistema suporta campos opcionais
+- [x] Gerar relatório final (RELATORIO_INTEGRACAO_PIPEDRIVE_FINAL.md)
+- [ ] Configurar credenciais Pipedrive (PENDENTE - Ação do usuário)
+- [ ] Executar testes completos com credenciais (PENDENTE - Após configuração)

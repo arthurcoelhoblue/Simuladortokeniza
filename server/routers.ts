@@ -12,7 +12,7 @@ import { generatePDFHTML } from "./pdfExport";
  * Lista de emails com acesso administrativo
  * Usado para proteger dashboards e endpoints internos
  */
-const adminEmails = ["arthur@blueconsult.com.br"];
+const adminEmails = ["arthur@blueconsult.com.br", "arthurcsantos@gmail.com"];
 
 /**
  * Procedure administrativo que verifica se o usuário logado
@@ -506,7 +506,7 @@ export const appRouter = router({
           // Não falhar a criação da oportunidade se score falhar
         }
 
-        // 6. Integração com Pipedrive
+        // 6. Integração com Pipedrive (NOVA VERSÃO)
         try {
           // Buscar lead completo
           const lead = await db.getLeadById(leadId);
@@ -514,31 +514,33 @@ export const appRouter = router({
             throw new Error("Lead não encontrado");
           }
 
-          // Buscar oportunidade recém-criada
+          // Buscar oportunidade recém-criada com scores atualizados
           const opportunity = await db.getOpportunityById(opportunityId);
           if (!opportunity) {
             throw new Error("Oportunidade não encontrada");
           }
 
-          // Criar/buscar pessoa no Pipedrive
-          const { findOrCreatePipedrivePersonForLead, createPipedriveDealForOpportunity } = await import("./pipedriveClient");
-          const personId = await findOrCreatePipedrivePersonForLead(lead);
+          // Criar deal no Pipedrive com título [Simulação] - Nome
+          const { createDeal } = await import("./pipedrive");
+          const dealId = await createDeal({
+            lead,
+            opportunity,
+            simulation,
+            score: {
+              total: opportunity.tokenizaScore || 0,
+              valor: opportunity.scoreValor || 0,
+              intencao: opportunity.scoreIntencao || 0,
+              engajamento: opportunity.scoreEngajamento || 0,
+              urgencia: opportunity.scoreUrgencia || 0,
+            },
+          });
 
-          if (personId) {
-            // Criar deal no Pipedrive
-            const dealId = await createPipedriveDealForOpportunity({
-              lead,
-              simulation,
-              opportunity,
-              personId,
+          if (dealId) {
+            // Atualizar oportunidade com pipedriveDealId
+            await db.updateOpportunity(opportunityId, {
+              pipedriveDealId: dealId.toString(),
             });
-
-            if (dealId) {
-              // Atualizar oportunidade com pipedriveDealId
-              await db.updateOpportunity(opportunityId, {
-                pipedriveDealId: dealId.toString(),
-              });
-            }
+            console.log("✅ Deal criado no Pipedrive:", dealId);
           }
         } catch (error) {
           console.error("❌ Erro ao integrar com Pipedrive:", error);

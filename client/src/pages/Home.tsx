@@ -287,10 +287,19 @@ export default function Home() {
               Gerencie e visualize suas simulações de investimento tokenizado
             </p>
           </div>
-          <Button size="lg" onClick={() => setLocation("/new")}>
-            <Plus className="mr-2 h-5 w-5" />
-            Nova Simulação
-          </Button>
+          <div className="flex gap-3">
+            {/* Botão Dashboard - apenas para admins */}
+            {(user?.email === "arthur@blueconsult.com.br" || user?.email === "arthurcsantos@gmail.com") && (
+              <Button size="lg" variant="outline" onClick={() => setLocation("/dashboard/leads")}>
+                <BarChart3 className="mr-2 h-5 w-5" />
+                Dashboard de Leads
+              </Button>
+            )}
+            <Button size="lg" onClick={() => setLocation("/new")}>
+              <Plus className="mr-2 h-5 w-5" />
+              Nova Simulação
+            </Button>
+          </div>
         </div>
 
         {loadingSimulations ? (
