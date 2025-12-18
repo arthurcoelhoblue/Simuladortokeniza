@@ -670,3 +670,82 @@
 - [ ] Usuário adicionar variáveis no painel Settings → Secrets (PENDENTE)
 - [ ] Reiniciar servidor após configurar (PENDENTE)
 - [ ] Testar criação de deal real (PENDENTE)
+
+## Módulo de Geração de Propostas (Admin)
+
+### 1. Análise do Modelo Canva
+- [ ] Acessar link do Canva e analisar design completo
+- [ ] Extrair todas as páginas (1, 2, 3, 6)
+- [ ] Identificar fontes, cores, logos e elementos visuais
+- [ ] Mapear posicionamento de variáveis em cada página
+- [ ] Documentar estrutura do PDF
+
+### 2. Schema e Backend
+- [ ] Criar tabela `proposals` no schema
+- [ ] Adicionar campos: empresa, cnpj, endereco, data, valor, projeto, lastro, etc
+- [ ] Criar procedure `proposals.create` (adminOnly)
+- [ ] Criar procedure `proposals.list` (adminOnly)
+- [ ] Criar procedure `proposals.generatePDF` (adminOnly)
+- [ ] Implementar validação de role admin
+
+### 3. Geração de PDF
+- [ ] Escolher biblioteca de PDF (react-pdf ou pdfkit)
+- [ ] Replicar design da página 1 (capa com data)
+- [ ] Replicar design da página 2 (dados da empresa)
+- [ ] Replicar design da página 3 (projeto e especificações)
+- [ ] Replicar design da página 6 (valores e condições)
+- [ ] Implementar upload do PDF para S3
+- [ ] Salvar URL do PDF no banco
+
+### 4. Interface Admin
+- [ ] Criar rota `/admin/propostas` (protegida por role)
+- [ ] Criar formulário com todas as variáveis
+- [ ] Implementar validação de campos obrigatórios
+- [ ] Adicionar preview antes de gerar
+- [ ] Criar listagem de propostas geradas
+- [ ] Implementar download de PDF
+- [ ] Adicionar botão "Nova Proposta" no menu admin
+
+### 5. Testes e Validação
+- [ ] Testar acesso apenas para admin
+- [ ] Testar preenchimento do formulário
+- [ ] Validar geração de PDF com design correto
+- [ ] Testar download de PDF
+- [ ] Verificar salvamento no banco
+
+## Módulo de Geração de Propostas (Admin)
+
+### 1. Análise do Modelo Canva
+- [x] Acessar link do Canva fornecido pelo usuário
+- [x] Analisar design das páginas 1, 2, 3 e 6
+- [x] Extrair cores, tipografia e layout
+- [x] Identificar posição de todas as variáveis
+- [x] Salvar screenshots para referência (4 páginas salvas)
+
+### 2. Schema e Backend
+- [x] Criar tabela proposals no schema (via SQL direto)
+- [x] Adicionar funções CRUD em server/db.ts (6 funções)
+- [x] Criar router proposals em server/routers.ts
+- [x] Implementar adminProcedure para proteção
+- [x] Adicionar procedures: create, list, getById, update, delete
+
+### 3. Interface Admin
+- [x] Criar página Propostas.tsx (listagem)
+- [x] Criar página NovaProposta.tsx (formulário)
+- [x] Adicionar rotas no App.tsx (/propostas, /propostas/nova)
+- [x] Implementar formulário com todas as variáveis (17 campos)
+- [x] Adicionar validação de campos
+
+### 4. Geração de PDF
+- [ ] Escolher biblioteca de PDF (react-pdf, jsPDF, puppeteer)
+- [ ] Replicar design do Canva em HTML/CSS
+- [ ] Implementar função generateProposalPDF
+- [ ] Fazer upload do PDF para S3
+- [ ] Salvar URL do PDF na proposta
+- [ ] Adicionar botão "Gerar PDF" na interface
+
+### 5. Testes e Validação
+- [ ] Testar criação de proposta
+- [ ] Validar geração de PDF
+- [ ] Verificar design vs modelo Canva
+- [ ] Testar download de PDF

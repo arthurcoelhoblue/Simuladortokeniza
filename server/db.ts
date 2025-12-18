@@ -1,6 +1,6 @@
 import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { cronogramas, InsertCronograma, InsertLead, InsertOpportunity, InsertSimulation, InsertUser, leads, opportunities, simulations, users } from "../drizzle/schema";
+import { cronogramas, InsertCronograma, InsertLead, InsertOpportunity, InsertProposal, InsertSimulation, InsertUser, leads, opportunities, proposals, simulations, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -569,4 +569,57 @@ export async function syncOffersFromTokenizaApi(): Promise<{
     totalUpsert,
     totalDesativadas,
   };
+}
+
+// ============================================
+// Funções de Propostas (Proposals)
+// ============================================
+
+export async function createProposal(data: InsertProposal) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(proposals).values(data);
+  return result[0].insertId;
+}
+
+export async function getProposalById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(proposals).where(eq(proposals.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getProposalsByUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(proposals)
+    .where(eq(proposals.createdByUserId, userId))
+    .orderBy(desc(proposals.createdAt));
+}
+
+export async function getAllProposals() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(proposals)
+    .orderBy(desc(proposals.createdAt));
+}
+
+export async function updateProposal(id: number, data: Partial<InsertProposal>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(proposals)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(proposals.id, id));
+}
+
+export async function deleteProposal(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(proposals).where(eq(proposals.id, id));
 }

@@ -1070,6 +1070,91 @@ export const appRouter = router({
         };
       }),
   }),
+
+  // Router de propostas (apenas admin)
+  proposals: router({
+    // Criar nova proposta
+    create: adminProcedure
+      .input(
+        z.object({
+          dataMesAno: z.string().min(1),
+          empresa: z.string().min(1),
+          cnpj: z.string().min(1),
+          endereco: z.string().min(1),
+          dataApresentacao: z.string().min(1),
+          valorCaptacao: z.number().int().positive(),
+          nomeProjeto: z.string().min(1),
+          lastroAtivo: z.string().min(1),
+          visaoGeral: z.string().min(1),
+          captacaoInicial: z.string().min(1),
+          destinacaoRecursos: z.string().min(1),
+          prazoExecucao: z.string().min(1),
+          prazoCaptacao: z.string().min(1),
+          valorFixoInicial: z.number().int().positive(),
+          taxaSucesso: z.number().int().positive(),
+          valorLiquidoTotal: z.number().int().positive(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        console.log("📝 Criando proposta para empresa:", input.empresa);
+        
+        const proposalId = await db.createProposal({
+          createdByUserId: ctx.user.id,
+          ...input,
+          status: "rascunho",
+        });
+        
+        console.log("✅ Proposta criada com ID:", proposalId);
+        return { id: proposalId };
+      }),
+    
+    // Listar todas as propostas (admin)
+    list: adminProcedure.query(async ({ ctx }) => {
+      console.log("📊 Listando propostas para admin:", ctx.user.email);
+      return await db.getAllProposals();
+    }),
+    
+    // Buscar proposta por ID
+    getById: adminProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .query(async ({ input }) => {
+        const proposal = await db.getProposalById(input.id);
+        if (!proposal) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Proposta não encontrada" });
+        }
+        return proposal;
+      }),
+    
+    // Atualizar proposta
+    update: adminProcedure
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          pdfUrl: z.string().optional(),
+          pdfKey: z.string().optional(),
+          status: z.enum(["rascunho", "gerado", "enviado"]).optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await db.updateProposal(input.id, {
+          pdfUrl: input.pdfUrl,
+          pdfKey: input.pdfKey,
+          status: input.status,
+        });
+        
+        console.log("✅ Proposta atualizada:", input.id);
+        return { success: true };
+      }),
+    
+    // Deletar proposta
+    delete: adminProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .mutation(async ({ input }) => {
+        await db.deleteProposal(input.id);
+        console.log("🗑️ Proposta deletada:", input.id);
+        return { success: true };
+      }),
+  }),
 });
 
 

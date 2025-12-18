@@ -272,3 +272,52 @@ export const offers = mysqlTable("offers", {
 
 export type Offer = typeof offers.$inferSelect;
 export type InsertOffer = typeof offers.$inferInsert;
+
+/**
+ * Tabela de propostas comerciais
+ * Armazena propostas geradas para clientes (apenas admin)
+ */
+export const proposals = mysqlTable("proposals", {
+  id: int("id").autoincrement().primaryKey(),
+  createdByUserId: int("createdByUserId").notNull(), // FK → users.id (admin que criou)
+  
+  // Página 1 - Capa
+  dataMesAno: varchar("dataMesAno", { length: 50 }).notNull(), // ex: "Dezembro de 2025"
+  
+  // Página 2 - Apresentação
+  empresa: varchar("empresa", { length: 255 }).notNull(),
+  cnpj: varchar("cnpj", { length: 20 }).notNull(),
+  endereco: text("endereco").notNull(),
+  dataApresentacao: varchar("dataApresentacao", { length: 50 }).notNull(), // ex: "dezembro de 2025"
+  
+  // Página 3 - Projeto
+  valorCaptacao: int("valorCaptacao").notNull(), // em centavos
+  nomeProjeto: varchar("nomeProjeto", { length: 255 }).notNull(),
+  lastroAtivo: varchar("lastroAtivo", { length: 255 }).notNull(),
+  visaoGeral: text("visaoGeral").notNull(),
+  captacaoInicial: text("captacaoInicial").notNull(),
+  destinacaoRecursos: text("destinacaoRecursos").notNull(),
+  prazoExecucao: varchar("prazoExecucao", { length: 255 }).notNull(),
+  prazoCaptacao: varchar("prazoCaptacao", { length: 255 }).notNull(),
+  
+  // Página 6 - Valores
+  valorFixoInicial: int("valorFixoInicial").notNull(), // em centavos
+  taxaSucesso: int("taxaSucesso").notNull(), // em centavos
+  valorLiquidoTotal: int("valorLiquidoTotal").notNull(), // em centavos
+  
+  // Armazenamento do PDF gerado
+  pdfUrl: text("pdfUrl"), // URL do PDF no S3
+  pdfKey: varchar("pdfKey", { length: 255 }), // Chave do arquivo no S3
+  
+  // Status
+  status: mysqlEnum("status", ["rascunho", "gerado", "enviado"]).notNull().default("rascunho"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  createdByIdx: index("created_by_idx").on(table.createdByUserId),
+  statusIdx: index("status_idx").on(table.status),
+}));
+
+export type Proposal = typeof proposals.$inferSelect;
+export type InsertProposal = typeof proposals.$inferInsert;
