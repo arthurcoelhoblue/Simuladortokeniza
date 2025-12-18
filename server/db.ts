@@ -1,6 +1,6 @@
 import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { cronogramas, InsertCronograma, InsertLead, InsertOpportunity, InsertProposal, InsertSimulation, InsertUser, leads, opportunities, proposals, simulations, users } from "../drizzle/schema";
+import { cronogramas, InsertCronograma, InsertLead, InsertOpportunity, InsertProposal, InsertSimulation, InsertUser, InsertViabilityAnalysis, leads, opportunities, proposals, simulations, users, viabilityAnalysis } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -87,6 +87,15 @@ export async function getUserByOpenId(openId: string) {
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
 
   return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updateUserPerfil(userId: number, perfil: 'captador' | 'investidor') {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(users).set({ perfil }).where(eq(users.id, userId));
 }
 
 // Simulações
@@ -649,4 +658,54 @@ export async function duplicateSimulation(id: number, userId: number) {
   }
 
   return newId;
+}
+// ===== VIABILITY ANALYSIS =====
+
+export async function createViabilityAnalysis(analysis: InsertViabilityAnalysis) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(viabilityAnalysis).values(analysis);
+  return result[0].insertId;
+}
+
+export async function getViabilityAnalysisByUser(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return await db
+    .select()
+    .from(viabilityAnalysis)
+    .where(eq(viabilityAnalysis.userId, userId))
+    .orderBy(desc(viabilityAnalysis.createdAt));
+}
+
+export async function getViabilityAnalysisById(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db
+    .select()
+    .from(viabilityAnalysis)
+    .where(eq(viabilityAnalysis.id, id))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function updateViabilityAnalysis(id: number, data: Partial<InsertViabilityAnalysis>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(viabilityAnalysis)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(viabilityAnalysis.id, id));
+}
+
+export async function deleteViabilityAnalysis(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(viabilityAnalysis).where(eq(viabilityAnalysis.id, id));
 }

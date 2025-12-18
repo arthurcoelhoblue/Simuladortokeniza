@@ -17,6 +17,7 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  perfil: mysqlEnum("perfil", ["captador", "investidor"]),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -321,3 +322,68 @@ export const proposals = mysqlTable("proposals", {
 
 export type Proposal = typeof proposals.$inferSelect;
 export type InsertProposal = typeof proposals.$inferInsert;
+
+/**
+ * Tabela de análises de viabilidade
+ * Armazena análises financeiras de negócios para tokenização
+ */
+export const viabilityAnalysis = mysqlTable("viability_analysis", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(), // FK → users.id
+  nome: varchar("nome", { length: 255 }).notNull(),
+  
+  // 1. DADOS DA CAPTAÇÃO (TOKENIZAÇÃO)
+  valorCaptacao: int("valorCaptacao").notNull(), // em centavos
+  coInvestimento: int("coInvestimento").notNull(), // percentual em basis points (ex: 2000 = 20%)
+  feeFixo: int("feeFixo").notNull(), // em centavos
+  taxaSucesso: int("taxaSucesso").notNull(), // percentual em basis points (ex: 500 = 5%)
+  
+  // 2. REMUNERAÇÃO DOS INVESTIDORES
+  taxaJurosMensal: int("taxaJurosMensal").notNull(), // percentual em basis points (ex: 185 = 1.85%)
+  prazoMeses: int("prazoMeses").notNull(),
+  carenciaMeses: int("carenciaMeses").notNull(),
+  modeloPagamento: mysqlEnum("modeloPagamento", ["SAC", "PRICE", "BULLET"]).notNull(),
+  
+  // 3. CUSTOS DE IMPLANTAÇÃO (CAPEX)
+  capexObras: int("capexObras").notNull(), // em centavos
+  capexEquipamentos: int("capexEquipamentos").notNull(),
+  capexLicencas: int("capexLicencas").notNull(),
+  capexMarketing: int("capexMarketing").notNull(),
+  capexCapitalGiro: int("capexCapitalGiro").notNull(),
+  capexOutros: int("capexOutros").notNull(),
+  
+  // 4. CUSTOS OPERACIONAIS MENSAIS (OPEX)
+  opexAluguel: int("opexAluguel").notNull(), // em centavos
+  opexPessoal: int("opexPessoal").notNull(),
+  opexRoyalties: int("opexRoyalties").notNull(),
+  opexMarketing: int("opexMarketing").notNull(),
+  opexUtilidades: int("opexUtilidades").notNull(),
+  opexManutencao: int("opexManutencao").notNull(),
+  opexSeguros: int("opexSeguros").notNull(),
+  opexOutros: int("opexOutros").notNull(),
+  
+  // 5. PROJEÇÃO DE RECEITAS
+  ticketMedio: int("ticketMedio").notNull(), // em centavos
+  capacidadeMaxima: int("capacidadeMaxima").notNull(), // número de clientes
+  mesAbertura: int("mesAbertura").notNull(), // mês após CAPEX
+  clientesInicio: int("clientesInicio").notNull(), // clientes no mês 1 de operação
+  taxaCrescimento: int("taxaCrescimento").notNull(), // percentual em basis points (ex: 1000 = 10%)
+  mesEstabilizacao: int("mesEstabilizacao").notNull(),
+  clientesSteadyState: int("clientesSteadyState").notNull(),
+  
+  // RESULTADOS CALCULADOS (JSON)
+  fluxoCaixa: text("fluxoCaixa"), // JSON array de 60 meses
+  indicadores: text("indicadores"), // JSON com indicadores calculados
+  
+  // Status
+  status: mysqlEnum("status", ["em_analise", "viavel", "inviavel"]).notNull().default("em_analise"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userIdx: index("user_idx").on(table.userId),
+  statusIdx: index("status_idx").on(table.status),
+}));
+
+export type ViabilityAnalysis = typeof viabilityAnalysis.$inferSelect;
+export type InsertViabilityAnalysis = typeof viabilityAnalysis.$inferInsert;

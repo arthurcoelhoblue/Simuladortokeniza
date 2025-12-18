@@ -14,6 +14,12 @@ import Opportunities from "./pages/Opportunities";
 import PropostaDetalhes from "./pages/PropostaDetalhes";
 import Propostas from "./pages/Propostas";
 import SimulationView from "./pages/SimulationView";
+import SelecionarPerfil from "./pages/SelecionarPerfil";
+import CaptadorDashboard from "./pages/CaptadorDashboard";
+import InvestidorDashboard from "./pages/InvestidorDashboard";
+import ViabilidadeList from "./pages/ViabilidadeList";
+import ViabilidadeNova from "./pages/ViabilidadeNova";
+import ViabilidadeDetalhes from "./pages/ViabilidadeDetalhes";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -22,6 +28,12 @@ function Router() {
       <Navigation />
       <Switch>
       <Route path={"/"} component={Home} />
+      <Route path="/selecionar-perfil" component={SelecionarPerfil} />
+      <Route path="/captador/dashboard" component={CaptadorDashboard} />
+      <Route path="/investidor/dashboard" component={InvestidorDashboard} />
+      <Route path="/captador/viabilidade" component={ViabilidadeList} />
+      <Route path="/captador/viabilidade/nova" component={ViabilidadeNova} />
+      <Route path="/captador/viabilidade/:id" component={ViabilidadeDetalhes} />
       <Route path={"/new"} component={NewSimulation} />
       <Route path="/simulation/:id" component={SimulationView} />
       <Route path="/dashboard/leads" component={DashboardLeads} />

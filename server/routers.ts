@@ -43,6 +43,15 @@ export const appRouter = router({
         success: true,
       } as const;
     }),
+    selecionarPerfil: protectedProcedure
+      .input(z.object({ perfil: z.enum(['captador', 'investidor']) }))
+      .mutation(async ({ ctx, input }) => {
+        await db.updateUserPerfil(ctx.user.id, input.perfil);
+        return {
+          success: true,
+          perfil: input.perfil,
+        };
+      }),
   }),
 
   simulations: router({
@@ -1204,6 +1213,206 @@ export const appRouter = router({
         });
         
         return { pdfUrl };
+      }),
+  }),
+
+  // Router de Análise de Viabilidade
+  viability: router({
+    // Criar nova análise
+    create: protectedProcedure
+      .input(z.object({
+        nome: z.string().min(1),
+        valorCaptacao: z.number().int().positive(),
+        coInvestimento: z.number().int().min(0).max(10000),
+        feeFixo: z.number().int().min(0),
+        taxaSucesso: z.number().int().min(0).max(10000),
+        taxaJurosMensal: z.number().int().min(0).max(10000),
+        prazoMeses: z.number().int().positive(),
+        carenciaMeses: z.number().int().min(0),
+        modeloPagamento: z.enum(['SAC', 'PRICE', 'BULLET']),
+        capexObras: z.number().int().min(0),
+        capexEquipamentos: z.number().int().min(0),
+        capexLicencas: z.number().int().min(0),
+        capexMarketing: z.number().int().min(0),
+        capexCapitalGiro: z.number().int().min(0),
+        capexOutros: z.number().int().min(0),
+        opexAluguel: z.number().int().min(0),
+        opexPessoal: z.number().int().min(0),
+        opexRoyalties: z.number().int().min(0),
+        opexMarketing: z.number().int().min(0),
+        opexUtilidades: z.number().int().min(0),
+        opexManutencao: z.number().int().min(0),
+        opexSeguros: z.number().int().min(0),
+        opexOutros: z.number().int().min(0),
+        ticketMedio: z.number().int().positive(),
+        capacidadeMaxima: z.number().int().positive(),
+        mesAbertura: z.number().int().positive(),
+        clientesInicio: z.number().int().positive(),
+        taxaCrescimento: z.number().int().min(0).max(10000),
+        mesEstabilizacao: z.number().int().positive(),
+        clientesSteadyState: z.number().int().positive(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { calcularAnaliseViabilidade } = await import("./viabilityCalculations");
+        
+        // Calcular fluxo de caixa e indicadores
+        const { fluxoCaixa, indicadores } = calcularAnaliseViabilidade(input);
+        
+        // Determinar status
+        const status = indicadores.viavel ? 'viavel' : 'inviavel';
+        
+        // Salvar no banco
+        const id = await db.createViabilityAnalysis({
+          ...input,
+          userId: ctx.user.id,
+          fluxoCaixa: JSON.stringify(fluxoCaixa),
+          indicadores: JSON.stringify(indicadores),
+          status,
+        });
+        
+        console.log(`✅ Análise de viabilidade criada: #${id} (${status})`);
+        
+        return { id, status, indicadores };
+      }),
+    
+    // Listar análises do usuário
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getViabilityAnalysisByUser(ctx.user.id);
+    }),
+    
+    // Buscar análise por ID
+    getById: protectedProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .query(async ({ ctx, input }) => {
+        const analysis = await db.getViabilityAnalysisById(input.id);
+        
+        if (!analysis) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Análise não encontrada" });
+        }
+        
+        // Verificar se pertence ao usuário
+        if (analysis.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+        }
+        
+        // Parse JSON fields
+        return {
+          ...analysis,
+          fluxoCaixa: analysis.fluxoCaixa ? JSON.parse(analysis.fluxoCaixa) : [],
+          indicadores: analysis.indicadores ? JSON.parse(analysis.indicadores) : null,
+        };
+      }),
+    
+    // Atualizar análise
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        nome: z.string().min(1).optional(),
+        valorCaptacao: z.number().int().positive().optional(),
+        coInvestimento: z.number().int().min(0).max(10000).optional(),
+        feeFixo: z.number().int().min(0).optional(),
+        taxaSucesso: z.number().int().min(0).max(10000).optional(),
+        taxaJurosMensal: z.number().int().min(0).max(10000).optional(),
+        prazoMeses: z.number().int().positive().optional(),
+        carenciaMeses: z.number().int().min(0).optional(),
+        modeloPagamento: z.enum(['SAC', 'PRICE', 'BULLET']).optional(),
+        capexObras: z.number().int().min(0).optional(),
+        capexEquipamentos: z.number().int().min(0).optional(),
+        capexLicencas: z.number().int().min(0).optional(),
+        capexMarketing: z.number().int().min(0).optional(),
+        capexCapitalGiro: z.number().int().min(0).optional(),
+        capexOutros: z.number().int().min(0).optional(),
+        opexAluguel: z.number().int().min(0).optional(),
+        opexPessoal: z.number().int().min(0).optional(),
+        opexRoyalties: z.number().int().min(0).optional(),
+        opexMarketing: z.number().int().min(0).optional(),
+        opexUtilidades: z.number().int().min(0).optional(),
+        opexManutencao: z.number().int().min(0).optional(),
+        opexSeguros: z.number().int().min(0).optional(),
+        opexOutros: z.number().int().min(0).optional(),
+        ticketMedio: z.number().int().positive().optional(),
+        capacidadeMaxima: z.number().int().positive().optional(),
+        mesAbertura: z.number().int().positive().optional(),
+        clientesInicio: z.number().int().positive().optional(),
+        taxaCrescimento: z.number().int().min(0).max(10000).optional(),
+        mesEstabilizacao: z.number().int().positive().optional(),
+        clientesSteadyState: z.number().int().positive().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        
+        // Verificar se existe e pertence ao usuário
+        const existing = await db.getViabilityAnalysisById(id);
+        if (!existing) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Análise não encontrada" });
+        }
+        if (existing.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+        }
+        
+        // Merge com dados existentes
+        const updated = { ...existing, ...data };
+        
+        // Recalcular
+        const { calcularAnaliseViabilidade } = await import("./viabilityCalculations");
+        const { fluxoCaixa, indicadores } = calcularAnaliseViabilidade(updated);
+        const status = indicadores.viavel ? 'viavel' : 'inviavel';
+        
+        // Atualizar no banco
+        await db.updateViabilityAnalysis(id, {
+          ...data,
+          fluxoCaixa: JSON.stringify(fluxoCaixa),
+          indicadores: JSON.stringify(indicadores),
+          status,
+        });
+        
+        console.log(`✅ Análise de viabilidade atualizada: #${id} (${status})`);
+        
+        return { success: true, status, indicadores };
+      }),
+    
+    // Deletar análise
+    delete: protectedProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        // Verificar se existe e pertence ao usuário
+        const existing = await db.getViabilityAnalysisById(input.id);
+        if (!existing) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Análise não encontrada" });
+        }
+        if (existing.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+        }
+        
+        await db.deleteViabilityAnalysis(input.id);
+        console.log(`🗑️ Análise de viabilidade deletada: #${input.id}`);
+        
+        return { success: true };
+      }),
+    
+    // Duplicar análise (para criar cenários)
+    duplicate: protectedProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        // Buscar análise original
+        const original = await db.getViabilityAnalysisById(input.id);
+        if (!original) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Análise não encontrada" });
+        }
+        if (original.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+        }
+        
+        // Criar cópia
+        const { id: _, createdAt, updatedAt, ...data } = original;
+        const newId = await db.createViabilityAnalysis({
+          ...data,
+          nome: `${original.nome} (Cópia)`,
+        });
+        
+        console.log(`📋 Análise duplicada: #${input.id} → #${newId}`);
+        
+        return { id: newId };
       }),
   }),
 });

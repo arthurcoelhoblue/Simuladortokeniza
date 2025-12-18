@@ -962,3 +962,86 @@
 - [x] Atualizar proposalPDF.ts com executablePath correto
 - [ ] Testar geração de PDF com novo caminho
 - [ ] Validar que PDF é gerado sem erros
+
+
+## 🚀 NOVA FUNCIONALIDADE: Separação de Módulos + Análise de Viabilidade
+
+### Fase 1: Tela de Seleção de Perfil
+- [x] Criar página de seleção de perfil após login (/selecionar-perfil)
+- [x] Adicionar campo "perfil" na tabela users (enum: 'captador' | 'investidor')
+- [x] Criar componente de seleção visual (cards grandes com ícones)
+- [x] Redirecionar usuário para módulo correto após seleção
+- [ ] Permitir trocar de perfil no menu do usuário
+
+### Fase 2: Separação de Rotas por Perfil
+- [ ] Criar layout específico para Captador (/captador/*)
+- [ ] Criar layout específico para Investidor (/investidor/*)
+- [ ] Mover rotas de simulação para /investidor/simulacoes
+- [ ] Mover rotas de propostas para /captador/propostas
+- [ ] Criar middleware de verificação de perfil
+- [ ] Atualizar navegação do DashboardLayout por perfil
+
+### Fase 3: Backend - Análise de Viabilidade
+- [ ] Criar schema da tabela `viabilityAnalysis` no drizzle/schema.ts
+- [ ] Executar pnpm db:push para criar tabela
+- [ ] Criar funções de cálculo no server/viabilityCalculations.ts
+- [ ] Criar router viability no server/routers.ts
+- [ ] Implementar endpoints CRUD (create, list, getById, update, delete, duplicate)
+
+### Fase 4: Frontend - Análise de Viabilidade
+- [ ] Criar página /captador/viabilidade (listagem)
+- [ ] Criar página /captador/viabilidade/nova (formulário)
+- [ ] Criar página /captador/viabilidade/[id] (detalhes + edição)
+- [ ] Criar componente ViabilityForm.tsx (formulário em 5 abas)
+- [ ] Criar componente ViabilityResults.tsx (indicadores + gráficos)
+- [ ] Adicionar validações de formulário
+
+### Fase 5: Integração e Melhorias
+- [ ] Adicionar link "Criar Proposta Comercial" a partir de análise viável
+- [ ] Pré-preencher proposta com dados da análise de viabilidade
+- [ ] Adicionar badge de status na análise (Viável/Inviável/Em Análise)
+- [ ] Criar sistema de comparação de cenários
+- [ ] Adicionar tooltips explicativos
+
+### Fase 6: Testes e Documentação
+- [ ] Testar fluxo completo Captador
+- [ ] Testar fluxo completo Investidor
+- [ ] Testar cálculos com dados da planilha original
+- [ ] Criar documentação do módulo
+- [ ] Salvar checkpoint final
+
+
+## 🚀 NOVA FUNCIONALIDADE: Separação de Módulos Captador/Investidor + Análise de Viabilidade
+
+### Fase 1: Tela de Seleção de Perfil
+- [x] Criar página de seleção de perfil após login (/selecionar-perfil)
+- [x] Adicionar campo "perfil" na tabela users (enum: 'captador' | 'investidor')
+- [x] Criar componente de seleção visual (cards grandes com ícones)
+- [x] Redirecionar usuário para módulo correto após seleção
+- [ ] Permitir trocar de perfil no menu do usuário
+
+### Fase 2: Separar Rotas e Navegação
+- [x] Criar DashboardCaptador.tsx com 4 cards de ações principais
+- [x] Criar DashboardInvestidor.tsx com 4 cards de ações principais
+- [x] Registrar rotas /captador/* e /investidor/* no App.tsx
+- [x] Implementar proteção de rotas por perfil
+- [ ] Adicionar botão "Trocar Perfil" no menu de navegação
+
+### Fase 3: Backend - Análise de Viabilidade
+- [x] Criar schema viability_analysis no drizzle/schema.ts
+- [x] Criar funções de cálculo em server/viabilityCalculations.ts
+- [x] Implementar funções CRUD no server/db.ts
+- [x] Criar router tRPC em server/routers.ts
+- [ ] Testar endpoints com dados de exemplo
+
+### Fase 4: Frontend - Análise de Viabilidade
+- [x] Criar ViabilidadeList.tsx (listagem de análises)
+- [x] Criar ViabilidadeNova.tsx (formulário simplificado)
+- [x] Criar ViabilidadeDetalhes.tsx (resultados + indicadores)
+- [x] Registrar rotas no App.tsx
+- [x] Integrar com tRPC
+- [ ] Adicionar gráficos de fluxo de caixa (recharts)
+- [ ] Criar formulário completo em 5 abas (Captação, Remuneração, CAPEX, OPEX, Receitas)
+- [ ] Adicionar funcionalidade de duplicar análise (cenários)
+- [ ] Adicionar funcionalidade de editar análise
+- [ ] Adicionar funcionalidade de deletar análise
