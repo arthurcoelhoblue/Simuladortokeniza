@@ -954,3 +954,11 @@
 - [x] Status mudou de "Rascunho" para "Gerado"
 - [x] Botões "Download PDF" e "Copiar Link" disponíveis
 - [ ] Testar download do PDF e validar design
+
+## Correção: Caminho do Chrome no Puppeteer
+
+- [x] Identificar localização do Chrome instalado (/home/ubuntu/.cache/puppeteer/chrome/linux-143.0.7499.146/chrome-linux64/chrome)
+- [x] Verificar se Chrome está em /root/.cache/puppeteer ou outro local (estava em /home/ubuntu)
+- [x] Atualizar proposalPDF.ts com executablePath correto
+- [ ] Testar geração de PDF com novo caminho
+- [ ] Validar que PDF é gerado sem erros
