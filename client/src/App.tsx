@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import Navigation from "@/components/Navigation";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -9,13 +10,16 @@ import Home from "./pages/Home";
 import NewSimulation from "./pages/NewSimulation";
 import NovaProposta from "./pages/NovaProposta";
 import Opportunities from "./pages/Opportunities";
+import PropostaDetalhes from "./pages/PropostaDetalhes";
 import Propostas from "./pages/Propostas";
 import SimulationView from "./pages/SimulationView";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
-    <Switch>
+    <>
+      <Navigation />
+      <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/new"} component={NewSimulation} />
       <Route path="/simulation/:id" component={SimulationView} />
@@ -23,10 +27,12 @@ function Router() {
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/propostas" component={Propostas} />
       <Route path="/propostas/nova" component={NovaProposta} />
+      <Route path="/propostas/:id" component={PropostaDetalhes} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
-    </Switch>
+      </Switch>
+    </>
   );
 }
 

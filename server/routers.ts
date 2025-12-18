@@ -1154,6 +1154,39 @@ export const appRouter = router({
         console.log("🗑️ Proposta deletada:", input.id);
         return { success: true };
       }),
+    
+    // Gerar PDF da proposta
+    generatePDF: adminProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .mutation(async ({ input }) => {
+        console.log("📝 Gerando PDF para proposta:", input.id);
+        
+        // 1. Buscar proposta
+        const proposal = await db.getProposalById(input.id);
+        if (!proposal) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Proposta não encontrada" });
+        }
+        
+        // 2. Gerar PDF
+        const { generateProposalPDF } = await import("./proposalPDF");
+        const pdfBuffer = await generateProposalPDF(proposal);
+        
+        // 3. Upload para S3
+        const { storagePut } = await import("./storage");
+        const pdfKey = `proposals/${proposal.id}/proposta-${Date.now()}.pdf`;
+        const { url: pdfUrl } = await storagePut(pdfKey, pdfBuffer, "application/pdf");
+        
+        console.log("✅ PDF gerado e enviado para S3:", pdfUrl);
+        
+        // 4. Atualizar proposta
+        await db.updateProposal(input.id, {
+          pdfUrl,
+          pdfKey,
+          status: "gerado",
+        });
+        
+        return { pdfUrl };
+      }),
   }),
 });
 

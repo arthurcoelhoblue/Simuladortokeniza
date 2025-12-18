@@ -749,3 +749,35 @@
 - [ ] Validar geração de PDF
 - [ ] Verificar design vs modelo Canva
 - [ ] Testar download de PDF
+
+## Fase 2: Melhorias do Módulo de Propostas
+
+### Sugestão 1: Geração de PDF
+- [x] Instalar puppeteer para geração de PDF
+- [x] Criar template HTML/CSS replicando design do Canva (4 páginas)
+- [x] Implementar função generateProposalPDF em server/proposalPDF.ts
+- [x] Fazer upload do PDF para S3 via storagePut
+- [x] Criar procedure proposals.generatePDF (adminOnly)
+- [x] Adicionar botão "Gerar PDF" na interface (PropostaDetalhes.tsx)
+- [x] Atualizar status da proposta para "gerado"
+
+### Sugestão 2: Página de Detalhes
+- [x] Criar página PropostaDetalhes.tsx
+- [x] Adicionar rota /propostas/:id no App.tsx
+- [x] Implementar preview dos dados preenchidos (4 cards: capa, apresentação, projeto, valores)
+- [x] Adicionar botão "Gerar PDF" (se ainda não gerado)
+- [x] Adicionar botão "Download PDF" (se já gerado)
+- [x] Mostrar status da proposta (rascunho/gerado/enviado)
+- [x] Adicionar metadados (createdAt, updatedAt, pdfUrl)
+
+### Sugestão 3: Menu de Navegação
+- [x] Criar componente Navigation.tsx (header com menu)
+- [x] Adicionar link "Propostas" (visível apenas para admin)
+- [x] Adicionar link "Dashboard" (visível apenas para admin)
+- [x] Adicionar link "Oportunidades"
+- [x] Adicionar link "Nova Simulação"
+- [x] Adicionar link "Início"
+- [x] Integrar Navigation em todas as páginas (via App.tsx)
+- [x] Adicionar indicador visual de página ativa (variant="default")
+- [x] Adicionar botão de login/logout
+- [x] Adicionar versão mobile responsiva
