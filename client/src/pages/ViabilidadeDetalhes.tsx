@@ -1,23 +1,44 @@
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft } from "lucide-react";
+import { AlertCircle, ArrowLeft, CheckCircle2, Info, TrendingUp, XCircle } from "lucide-react";
+import { useEffect } from "react";
 import { useLocation, useParams } from "wouter";
+import FluxoCaixaChart from "@/components/charts/FluxoCaixaChart";
+import EbitdaChart from "@/components/charts/EbitdaChart";
+import ClientesChart from "@/components/charts/ClientesChart";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-/**
- * Página de detalhes e resultados da análise de viabilidade
- */
 export default function ViabilidadeDetalhes() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
+  const { user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+
+  const { data: analysis, isLoading, error } = trpc.viability.getById.useQuery(
+    { id: parseInt(id!) },
+    { enabled: !!id && !!user }
+  );
   
-  const { data: analysis, isLoading } = trpc.viability.getById.useQuery({ 
-    id: parseInt(id!) 
+  const generatePDF = trpc.viability.generatePDF.useMutation({
+    onSuccess: (data) => {
+      window.open(data.pdfUrl, '_blank');
+    },
+    onError: (error) => {
+      alert(`Erro ao gerar PDF: ${error.message}`);
+    },
   });
 
-  if (isLoading) {
+  // Redirecionar se não for captador
+  useEffect(() => {
+    if (user && user.perfil !== 'captador') {
+      setLocation('/selecionar-perfil');
+    }
+  }, [user, setLocation]);
+
+  if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Carregando análise...</p>
@@ -26,179 +47,316 @@ export default function ViabilidadeDetalhes() {
     );
   }
 
-  if (!analysis) {
+  if (error || !analysis) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="max-w-md">
           <CardHeader>
-            <CardTitle>Análise não encontrada</CardTitle>
+            <CardTitle className="text-destructive">Erro</CardTitle>
           </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              {error?.message || "Análise não encontrada"}
+            </p>
+            <Button onClick={() => setLocation('/captador/viabilidade')}>
+              Voltar para Lista
+            </Button>
+          </CardContent>
         </Card>
       </div>
     );
   }
 
-  const indicadores = analysis.indicadores;
-  const formatCurrency = (value: number) => 
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value / 100);
+  const { indicadores, fluxoCaixa, insights } = analysis;
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+    }).format(value / 100);
+  };
+
+  const getInsightIcon = (type: string) => {
+    switch (type) {
+      case 'success': return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+      case 'warning': return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+      case 'error': return <XCircle className="h-5 w-5 text-red-500" />;
+      default: return <Info className="h-5 w-5 text-blue-500" />;
+    }
+  };
+
+  const getInsightBorderColor = (type: string) => {
+    switch (type) {
+      case 'success': return 'border-l-green-500';
+      case 'warning': return 'border-l-yellow-500';
+      case 'error': return 'border-l-red-500';
+      default: return 'border-l-blue-500';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Button variant="ghost" onClick={() => setLocation('/captador/viabilidade')} className="mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar
-          </Button>
-          <div className="flex items-start justify-between">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => setLocation('/captador/viabilidade')}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
             <div>
-              <h1 className="text-4xl font-bold mb-2">{analysis.nome}</h1>
-              <p className="text-xl text-muted-foreground">
-                Análise de Viabilidade Financeira
+              <h1 className="text-3xl font-bold">{analysis.nome}</h1>
+              <p className="text-muted-foreground">
+                Criado em {new Date(analysis.createdAt).toLocaleDateString('pt-BR')}
               </p>
             </div>
-            <div className={`px-4 py-2 rounded-full text-lg font-medium ${
-              analysis.status === 'viavel' 
-                ? 'bg-green-500/10 text-green-600' 
-                : analysis.status === 'inviavel'
-                ? 'bg-red-500/10 text-red-600'
-                : 'bg-yellow-500/10 text-yellow-600'
-            }`}>
-              {analysis.status === 'viavel' ? '✓ Projeto Viável' : analysis.status === 'inviavel' ? '✗ Projeto Inviável' : '⏳ Em Análise'}
-            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline">Editar</Button>
+            <Button variant="outline">Duplicar</Button>
+            <Button 
+              onClick={() => generatePDF.mutate({ id: parseInt(id!) })}
+              disabled={generatePDF.isPending}
+            >
+              {generatePDF.isPending ? 'Gerando PDF...' : 'Exportar PDF'}
+            </Button>
           </div>
         </div>
 
+        {/* Status Badge */}
+        <div className="mb-6">
+          {indicadores.viavel ? (
+            <Alert className="border-green-500 bg-green-500/10">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <AlertTitle className="text-green-500">Projeto Viável</AlertTitle>
+              <AlertDescription>
+                Este projeto atende aos critérios de viabilidade financeira.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Alert className="border-red-500 bg-red-500/10">
+              <XCircle className="h-4 w-4 text-red-500" />
+              <AlertTitle className="text-red-500">Projeto Inviável</AlertTitle>
+              <AlertDescription>
+                Este projeto não atende aos critérios de viabilidade. Revise as premissas.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+
         {/* Indicadores Principais */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-4 gap-4 mb-8">
           <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>CAPEX Total</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{formatCurrency(indicadores.capexTotal)}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>OPEX Mensal</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{formatCurrency(indicadores.opexMensal)}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-2">
               <CardDescription>Payback</CardDescription>
+              <CardTitle className="text-2xl">{indicadores.payback} meses</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>Margem EBITDA</CardDescription>
+              <CardTitle className="text-2xl">{indicadores.margemEbitdaMedia}%</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>Ponto de Equilíbrio</CardDescription>
+              <CardTitle className="text-2xl">Mês {indicadores.pontoEquilibrioOperacional}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>Saldo Final</CardDescription>
+              <CardTitle className={`text-2xl ${indicadores.saldoFinal > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                {formatCurrency(indicadores.saldoFinal)}
+              </CardTitle>
+            </CardHeader>
+          </Card>
+        </div>
+
+        {/* Insights Financeiros */}
+        {insights && insights.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Insights Financeiros
+              </CardTitle>
+              <CardDescription>
+                Análise inteligente dos indicadores e recomendações de otimização
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {insights.map((insight: any, index: number) => (
+                <div
+                  key={index}
+                  className={`border-l-4 ${getInsightBorderColor(insight.type)} bg-card p-4 rounded-r-lg`}
+                >
+                  <div className="flex items-start gap-3">
+                    {getInsightIcon(insight.type)}
+                    <div className="flex-1">
+                      <h4 className="font-semibold mb-1">{insight.title}</h4>
+                      <p className="text-sm text-muted-foreground mb-2">{insight.message}</p>
+                      
+                      {insight.recommendation && (
+                        <div className="bg-muted/50 p-3 rounded mt-2">
+                          <p className="text-sm font-medium">💡 Recomendação:</p>
+                          <p className="text-sm text-muted-foreground">{insight.recommendation}</p>
+                        </div>
+                      )}
+                      
+                      {insight.offenders && insight.offenders.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-sm font-medium mb-2">🎯 Principais custos:</p>
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            {insight.offenders.map((offender: any, i: number) => (
+                              <li key={i}>
+                                • {offender.name}: {offender.impact}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {insight.sensitivity && (
+                        <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded mt-2">
+                          <p className="text-sm font-medium text-blue-400">📊 Análise de Sensibilidade:</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {insight.sensitivity.variable}: {insight.sensitivity.currentValue} → {insight.sensitivity.suggestedValue}
+                          </p>
+                          <p className="text-sm text-blue-400 mt-1">
+                            Impacto: {insight.sensitivity.impact}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Gráficos */}
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Fluxo de Caixa (60 meses)</CardTitle>
+              <CardDescription>Evolução do saldo acumulado, receitas e despesas</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{indicadores.payback} meses</p>
+              <FluxoCaixaChart data={fluxoCaixa} />
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>Saldo Final (60 meses)</CardDescription>
+            <CardHeader>
+              <CardTitle>EBITDA Mensal</CardTitle>
+              <CardDescription>Resultado operacional antes de juros, impostos e amortização</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className={`text-3xl font-bold ${indicadores.saldoFinal > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(indicadores.saldoFinal)}
-              </p>
+              <EbitdaChart data={fluxoCaixa} />
+            </CardContent>
+          </Card>
+
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>Evolução de Clientes</CardTitle>
+              <CardDescription>Crescimento da base de clientes até estabilização</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ClientesChart 
+                data={fluxoCaixa.map((m: any) => ({ mes: m.mes, clientes: m.clientes }))} 
+                capacidadeMaxima={analysis.capacidadeMaxima}
+                pontoEquilibrio={Math.ceil((analysis.opexAluguel + analysis.opexPessoal + analysis.opexRoyalties + analysis.opexMarketing + analysis.opexUtilidades + analysis.opexManutencao + analysis.opexSeguros + analysis.opexOutros) / analysis.ticketMedio * 100)}
+              />
             </CardContent>
           </Card>
         </div>
 
-        {/* Detalhes da Captação */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Estrutura da Captação</CardTitle>
-          </CardHeader>
-          <CardContent className="grid md:grid-cols-3 gap-6">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Valor Investidores</p>
-              <p className="text-2xl font-semibold">{formatCurrency(indicadores.valorInvestidores)}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Valor Franqueado</p>
-              <p className="text-2xl font-semibold">{formatCurrency(indicadores.valorFranqueado)}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Success Fee</p>
-              <p className="text-2xl font-semibold">{formatCurrency(indicadores.successFee)}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Indicadores Operacionais */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Indicadores Operacionais</CardTitle>
-          </CardHeader>
-          <CardContent className="grid md:grid-cols-3 gap-6">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Ponto de Equilíbrio</p>
-              <p className="text-2xl font-semibold">Mês {indicadores.pontoEquilibrioOperacional}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Margem EBITDA Média</p>
-              <p className="text-2xl font-semibold">{indicadores.margemEbitdaMedia}%</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Total de Juros Pagos</p>
-              <p className="text-2xl font-semibold">{formatCurrency(indicadores.totalJurosPagos)}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Parâmetros da Análise */}
+        {/* Detalhes Técnicos */}
         <Card>
           <CardHeader>
-            <CardTitle>Parâmetros da Análise</CardTitle>
+            <CardTitle>Premissas da Análise</CardTitle>
           </CardHeader>
-          <CardContent className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="font-semibold mb-3">Remuneração</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Taxa de Juros Mensal:</span>
-                  <span className="font-medium">{(analysis.taxaJurosMensal / 100).toFixed(2)}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Prazo:</span>
-                  <span className="font-medium">{analysis.prazoMeses} meses</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Carência:</span>
-                  <span className="font-medium">{analysis.carenciaMeses} meses</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Modelo:</span>
-                  <span className="font-medium">{analysis.modeloPagamento}</span>
-                </div>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <h3 className="font-semibold mb-3">Captação</h3>
+                <dl className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Valor Total:</dt>
+                    <dd className="font-medium">{formatCurrency(analysis.valorCaptacao)}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Co-investimento:</dt>
+                    <dd className="font-medium">{(analysis.coInvestimento / 100).toFixed(1)}%</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Taxa de Juros:</dt>
+                    <dd className="font-medium">{(analysis.taxaJurosMensal / 100).toFixed(2)}% a.m.</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Prazo:</dt>
+                    <dd className="font-medium">{analysis.prazoMeses} meses</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Modelo:</dt>
+                    <dd className="font-medium">{analysis.modeloPagamento}</dd>
+                  </div>
+                </dl>
               </div>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-3">Projeção de Receitas</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Ticket Médio:</span>
-                  <span className="font-medium">{formatCurrency(analysis.ticketMedio)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Capacidade Máxima:</span>
-                  <span className="font-medium">{analysis.capacidadeMaxima} clientes</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Clientes Início:</span>
-                  <span className="font-medium">{analysis.clientesInicio} clientes</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Clientes Steady State:</span>
-                  <span className="font-medium">{analysis.clientesSteadyState} clientes</span>
-                </div>
+
+              <div>
+                <h3 className="font-semibold mb-3">CAPEX</h3>
+                <dl className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Obras:</dt>
+                    <dd className="font-medium">{formatCurrency(analysis.capexObras)}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Equipamentos:</dt>
+                    <dd className="font-medium">{formatCurrency(analysis.capexEquipamentos)}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Licenças:</dt>
+                    <dd className="font-medium">{formatCurrency(analysis.capexLicencas)}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Marketing:</dt>
+                    <dd className="font-medium">{formatCurrency(analysis.capexMarketing)}</dd>
+                  </div>
+                  <div className="flex justify-between border-t pt-2">
+                    <dt className="font-semibold">Total CAPEX:</dt>
+                    <dd className="font-bold">{formatCurrency(indicadores.capexTotal)}</dd>
+                  </div>
+                </dl>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-3">Receitas</h3>
+                <dl className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Ticket Médio:</dt>
+                    <dd className="font-medium">{formatCurrency(analysis.ticketMedio)}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Capacidade:</dt>
+                    <dd className="font-medium">{analysis.capacidadeMaxima} clientes</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Clientes Início:</dt>
+                    <dd className="font-medium">{analysis.clientesInicio}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Crescimento:</dt>
+                    <dd className="font-medium">{(analysis.taxaCrescimento / 100).toFixed(1)}% a.m.</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Steady State:</dt>
+                    <dd className="font-medium">{analysis.clientesSteadyState} clientes</dd>
+                  </div>
+                </dl>
               </div>
             </div>
           </CardContent>

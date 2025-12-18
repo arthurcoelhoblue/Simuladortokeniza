@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Calculator, FileText, TrendingUp } from "lucide-react";
+import { BarChart3, Building2, Calculator, FileText, TrendingUp } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 
@@ -46,7 +46,7 @@ export default function CaptadorDashboard() {
         </div>
 
         {/* Cards de Ações Principais */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {/* Análise de Viabilidade */}
           <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/captador/viabilidade')}>
             <CardHeader>
@@ -116,25 +116,25 @@ export default function CaptadorDashboard() {
             </CardContent>
           </Card>
 
-          {/* Gestão de Ofertas */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/opportunities')}>
+          {/* Comparação de Cenários */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/captador/viabilidade-comparacao')}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-purple-500/10">
-                  <Building2 className="h-6 w-6 text-purple-600" />
+                  <BarChart3 className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">Gestão de Ofertas</CardTitle>
-                  <CardDescription>Publique oportunidades</CardDescription>
+                  <CardTitle className="text-lg">Comparação de Cenários</CardTitle>
+                  <CardDescription>Compare até 3 análises</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Gerencie suas ofertas de tokenização e acompanhe o interesse dos investidores.
+                Compare diferentes cenários de viabilidade lado a lado (otimista, realista, pessimista).
               </p>
               <Button className="w-full" variant="outline">
-                Gerenciar
+                Comparar
               </Button>
             </CardContent>
           </Card>

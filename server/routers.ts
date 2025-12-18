@@ -1296,10 +1296,48 @@ export const appRouter = router({
         }
         
         // Parse JSON fields
+        const fluxoCaixa = analysis.fluxoCaixa ? JSON.parse(analysis.fluxoCaixa) : [];
+        const indicadores = analysis.indicadores ? JSON.parse(analysis.indicadores) : null;
+        
+        // Gerar insights financeiros
+        const { analyzeFinancialHealth } = await import("./viabilityInsights");
+        const insights = analyzeFinancialHealth({
+          indicadores,
+          fluxoCaixa,
+          valorCaptacao: analysis.valorCaptacao,
+          coInvestimento: analysis.coInvestimento,
+          taxaJurosMensal: analysis.taxaJurosMensal,
+          prazoMeses: analysis.prazoMeses,
+          carenciaMeses: analysis.carenciaMeses,
+          modeloPagamento: analysis.modeloPagamento,
+          capexObras: analysis.capexObras,
+          capexEquipamentos: analysis.capexEquipamentos,
+          capexLicencas: analysis.capexLicencas,
+          capexMarketing: analysis.capexMarketing,
+          capexCapitalGiro: analysis.capexCapitalGiro,
+          capexOutros: analysis.capexOutros,
+          opexAluguel: analysis.opexAluguel,
+          opexPessoal: analysis.opexPessoal,
+          opexRoyalties: analysis.opexRoyalties,
+          opexMarketing: analysis.opexMarketing,
+          opexUtilidades: analysis.opexUtilidades,
+          opexManutencao: analysis.opexManutencao,
+          opexSeguros: analysis.opexSeguros,
+          opexOutros: analysis.opexOutros,
+          ticketMedio: analysis.ticketMedio,
+          capacidadeMaxima: analysis.capacidadeMaxima,
+          clientesInicio: analysis.clientesInicio,
+          taxaCrescimento: analysis.taxaCrescimento,
+          mesEstabilizacao: analysis.mesEstabilizacao,
+          clientesSteadyState: analysis.clientesSteadyState,
+          mesAbertura: analysis.mesAbertura,
+        });
+        
         return {
           ...analysis,
-          fluxoCaixa: analysis.fluxoCaixa ? JSON.parse(analysis.fluxoCaixa) : [],
-          indicadores: analysis.indicadores ? JSON.parse(analysis.indicadores) : null,
+          fluxoCaixa,
+          indicadores,
+          insights,
         };
       }),
     
@@ -1413,6 +1451,80 @@ export const appRouter = router({
         console.log(`📋 Análise duplicada: #${input.id} → #${newId}`);
         
         return { id: newId };
+      }),
+    
+    // Gerar PDF da análise
+    generatePDF: protectedProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const analysis = await db.getViabilityAnalysisById(input.id);
+        
+        if (!analysis) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Análise não encontrada" });
+        }
+        
+        if (analysis.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+        }
+        
+        // Parse JSON fields
+        const fluxoCaixa = analysis.fluxoCaixa ? JSON.parse(analysis.fluxoCaixa) : [];
+        const indicadores = analysis.indicadores ? JSON.parse(analysis.indicadores) : null;
+        
+        // Gerar insights
+        const { analyzeFinancialHealth } = await import("./viabilityInsights");
+        const insights = analyzeFinancialHealth({
+          indicadores,
+          fluxoCaixa,
+          valorCaptacao: analysis.valorCaptacao,
+          coInvestimento: analysis.coInvestimento,
+          taxaJurosMensal: analysis.taxaJurosMensal,
+          prazoMeses: analysis.prazoMeses,
+          carenciaMeses: analysis.carenciaMeses,
+          modeloPagamento: analysis.modeloPagamento,
+          capexObras: analysis.capexObras,
+          capexEquipamentos: analysis.capexEquipamentos,
+          capexLicencas: analysis.capexLicencas,
+          capexMarketing: analysis.capexMarketing,
+          capexCapitalGiro: analysis.capexCapitalGiro,
+          capexOutros: analysis.capexOutros,
+          opexAluguel: analysis.opexAluguel,
+          opexPessoal: analysis.opexPessoal,
+          opexRoyalties: analysis.opexRoyalties,
+          opexMarketing: analysis.opexMarketing,
+          opexUtilidades: analysis.opexUtilidades,
+          opexManutencao: analysis.opexManutencao,
+          opexSeguros: analysis.opexSeguros,
+          opexOutros: analysis.opexOutros,
+          ticketMedio: analysis.ticketMedio,
+          capacidadeMaxima: analysis.capacidadeMaxima,
+          clientesInicio: analysis.clientesInicio,
+          taxaCrescimento: analysis.taxaCrescimento,
+          mesEstabilizacao: analysis.mesEstabilizacao,
+          clientesSteadyState: analysis.clientesSteadyState,
+          mesAbertura: analysis.mesAbertura,
+        });
+        
+        // Gerar PDF
+        const { generateViabilityPDF } = await import("./viabilityPDF");
+        const pdfBuffer = await generateViabilityPDF({
+          ...analysis,
+          fluxoCaixa,
+          indicadores,
+          insights,
+        });
+        
+        // Upload para S3
+        const { storagePut } = await import("./storage");
+        const timestamp = Date.now();
+        const fileName = `viabilidade-${input.id}-${timestamp}.pdf`;
+        const fileKey = `viability/${input.id}/${fileName}`;
+        
+        const { url } = await storagePut(fileKey, pdfBuffer, "application/pdf");
+        
+        console.log(`📝 PDF gerado: ${fileName} -> ${url}`);
+        
+        return { pdfUrl: url };
       }),
   }),
 });

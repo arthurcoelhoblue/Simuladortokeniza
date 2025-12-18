@@ -1045,3 +1045,77 @@
 - [ ] Adicionar funcionalidade de duplicar análise (cenários)
 - [ ] Adicionar funcionalidade de editar análise
 - [ ] Adicionar funcionalidade de deletar análise
+
+
+## 📊 Sistema de Insights e Visualizações - Análise de Viabilidade
+
+### Fase 1: Sistema de Insights Melhorado
+- [ ] Criar server/viabilityInsights.ts com interface FinancialInsight melhorada
+- [ ] Adicionar análise de Payback
+- [ ] Adicionar análise de CAPEX
+- [ ] Adicionar análise de modelo de amortização
+- [ ] Adicionar análise de carência
+- [ ] Implementar identificação de ofensores (OPEX e CAPEX)
+- [ ] Adicionar recomendações automáticas
+- [ ] Adicionar análise de sensibilidade
+- [ ] Ordenar insights por severidade
+- [ ] Integrar com endpoint viability.getById
+
+### Fase 2: Gráficos Interativos (Recharts)
+- [ ] Instalar recharts via pnpm
+- [ ] Criar componente FluxoCaixaChart.tsx
+- [ ] Criar componente EbitdaChart.tsx
+- [ ] Criar componente ClientesChart.tsx
+- [ ] Criar componente AmortizacaoChart.tsx
+- [ ] Adicionar gráficos na página ViabilidadeDetalhes.tsx
+
+### Fase 3: Exportação para PDF
+- [ ] Criar server/viabilityPDF.ts
+- [ ] Implementar geração de HTML do relatório
+- [ ] Adicionar gráficos estáticos ao PDF
+- [ ] Adicionar endpoint viability.generatePDF
+- [ ] Fazer upload para S3
+- [ ] Adicionar botão "Exportar PDF" na página de detalhes
+
+### Fase 4: Comparação de Cenários
+- [ ] Criar página ViabilidadeComparacao.tsx
+- [ ] Implementar seleção de múltiplas análises
+- [ ] Criar tabela comparativa de indicadores
+- [ ] Adicionar gráficos comparativos lado a lado
+- [ ] Registrar rota /captador/viabilidade/comparar
+
+
+## 📊 Sistema de Insights, Gráficos e Comparação de Cenários
+
+### Fase 1: Sistema de Insights Financeiros
+- [x] Criar arquivo server/viabilityInsights.ts com análise inteligente
+- [x] Implementar 10 tipos de análise (viabilidade, rentabilidade, liquidez, estrutura)
+- [x] Adicionar análise de sensibilidade e recomendações
+- [x] Integrar insights no endpoint viability.getById
+
+### Fase 2: Gráficos Interativos com Recharts
+- [x] Instalar biblioteca recharts
+- [x] Criar componente FluxoCaixaChart.tsx (fluxo de caixa 60 meses)
+- [x] Criar componente EbitdaChart.tsx (EBITDA mensal)
+- [x] Criar componente ClientesChart.tsx (evolução de clientes)
+
+### Fase 3: Página de Detalhes Aprimorada
+- [x] Reescrever ViabilidadeDetalhes.tsx com gráficos
+- [x] Adicionar seção de insights com ícones e cores
+- [x] Exibir recomendações e análise de sensibilidade
+- [x] Mostrar principais custos (offenders)
+
+### Fase 4: Exportação para PDF
+- [x] Criar arquivo server/viabilityPDF.ts
+- [x] Implementar geração de HTML profissional
+- [x] Integrar Puppeteer para renderização
+- [x] Adicionar endpoint viability.generatePDF
+- [x] Upload automático para S3
+- [x] Integrar botão "Exportar PDF" na página de detalhes
+
+### Fase 5: Comparação de Cenários
+- [x] Criar página ViabilidadeComparacao.tsx
+- [x] Implementar seletores de até 3 análises
+- [x] Criar tabela comparativa de indicadores
+- [x] Adicionar rota /captador/viabilidade-comparacao
+- [x] Adicionar card no dashboard do captador
