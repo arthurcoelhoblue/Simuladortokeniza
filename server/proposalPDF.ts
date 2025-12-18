@@ -417,7 +417,15 @@ export async function generateProposalPDF(proposal: Proposal): Promise<Buffer> {
   try {
     browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--disable-extensions',
+      ],
+      timeout: 60000, // 60 segundos
     });
     
     const page = await browser.newPage();

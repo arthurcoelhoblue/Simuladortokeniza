@@ -936,3 +936,21 @@
 2. Testar geração de PDF novamente após configuração
 
 3. Validar design do PDF vs modelo Canva
+
+## Correção: Geração de PDF com Puppeteer
+
+- [x] Adicionar flags de sandbox ao Puppeteer:
+  - [x] `--no-sandbox`
+  - [x] `--disable-setuid-sandbox`
+  - [x] `--disable-dev-shm-usage`
+  - [x] `--disable-gpu`
+  - [x] `--disable-software-rasterizer`
+  - [x] `--disable-extensions`
+- [x] Aumentar timeout para 60 segundos
+- [x] Atualizar função generateProposalPDF em server/proposalPDF.ts
+- [x] Testar geração de PDF com Proposta #2 (SUCESSO!)
+- [x] Validar upload para S3 (URL: https://d2xsxph8kpxj0f.cloudfront.net/...)
+- [x] Verificar URL do PDF salva na proposta (exibida na interface)
+- [x] Status mudou de "Rascunho" para "Gerado"
+- [x] Botões "Download PDF" e "Copiar Link" disponíveis
+- [ ] Testar download do PDF e validar design
