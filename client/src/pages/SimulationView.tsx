@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Download, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, Download, FileText, Trash2 } from "lucide-react";
 import { useLocation, useRoute } from "wouter";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -42,6 +42,16 @@ export default function SimulationView() {
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao deletar simulação");
+    },
+  });
+
+  const duplicateMutation = trpc.simulations.duplicate.useMutation({
+    onSuccess: (data) => {
+      toast.success("Simulação duplicada com sucesso!");
+      setLocation(`/simulation/${data.id}`);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao duplicar simulação");
     },
   });
 
@@ -646,14 +656,52 @@ export default function SimulationView() {
             )}
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="default"
+              onClick={() => {
+                // Criar proposta a partir da simulação
+                const proposalData = {
+                  valorCaptacao: simulation.valorDesejado * 100, // converter para centavos
+                  nomeProjeto: simulation.descricaoOferta || "Projeto de Captação",
+                  empresa: "A definir",
+                  cnpj: "",
+                  endereco: "",
+                  lastroAtivo: "A definir",
+                  visaoGeral: `Projeto de captação de R$ ${(simulation.valorDesejado / 1000000).toFixed(2)}M via tokenização.`,
+                  captacaoInicial: `R$ ${(simulation.valorDesejado / 1000000).toFixed(2)}M`,
+                  destinacaoRecursos: "A definir",
+                  prazoExecucao: `${simulation.prazoMeses} meses`,
+                  prazoCaptacao: `${simulation.prazoMeses} meses`,
+                  dataMesAno: new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
+                  dataApresentacao: new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
+                  valorFixoInicial: 0,
+                  taxaSucesso: 0,
+                  valorLiquidoTotal: simulation.valorDesejado * 100,
+                };
+                // Armazenar no sessionStorage para preencher formulário
+                sessionStorage.setItem("proposal-draft", JSON.stringify(proposalData));
+                setLocation("/propostas/nova");
+              }}
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Criar Proposta
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => duplicateMutation.mutate({ id: simulationId })}
+              disabled={duplicateMutation.isPending}
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              {duplicateMutation.isPending ? "Duplicando..." : "Duplicar"}
+            </Button>
             <Button variant="outline" onClick={handleExportCSV}>
-            <Download className="w-4 h-4 mr-2" />
-            Exportar CSV
-          </Button>
-          <Button variant="outline" onClick={exportPDF}>
-            <Download className="w-4 h-4 mr-2" />
-            Exportar PDF
-          </Button>
+              <Download className="w-4 h-4 mr-2" />
+              Exportar CSV
+            </Button>
+            <Button variant="outline" onClick={exportPDF}>
+              <Download className="w-4 h-4 mr-2" />
+              Exportar PDF
+            </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isPending}>
               <Trash2 className="mr-2 h-4 w-4" />
               Deletar

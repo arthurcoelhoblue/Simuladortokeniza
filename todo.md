@@ -781,3 +781,42 @@
 - [x] Adicionar indicador visual de página ativa (variant="default")
 - [x] Adicionar botão de login/logout
 - [x] Adicionar versão mobile responsiva
+
+## Fase 3: Novas Funcionalidades
+
+### 1. Edição de Propostas
+- [x] Criar página EditarProposta.tsx (/propostas/:id/editar)
+- [x] Adicionar rota no App.tsx
+- [x] Preencher formulário com dados existentes
+- [x] Permitir edição apenas de propostas em "rascunho"
+- [x] Adicionar botão "Salvar" que atualiza proposta
+- [x] Adicionar link "Editar" na página de detalhes
+
+### 2. Envio por Email (Simplificado)
+- [x] Adicionar botão "Copiar Link" na página de detalhes
+- [x] Permitir envio manual via email com link copiado
+- [ ] Integração automática com serviço de email (futuro)
+
+### 3. Criar Proposta a partir de Simulação
+- [x] Adicionar botão "Criar Proposta" na página SimulationView
+- [x] Criar função que mapeia simulação → proposta
+- [x] Preencher automaticamente: valor, projeto, especificações, prazos
+- [x] Usar sessionStorage para transferir dados
+- [x] Redirecionar para /propostas/nova com dados pré-preenchidos
+- [x] Permitir edição antes de salvar
+
+### 4. Duplicar Simulação
+- [x] Adicionar função duplicateSimulation em server/db.ts
+- [x] Criar procedure simulations.duplicate
+- [x] Copiar simulação com novo ID e timestamp
+- [x] Adicionar sufixo " - Cópia" na descrição
+- [x] Copiar cronograma junto com simulação
+- [x] Adicionar botão "Duplicar" na página SimulationView
+- [x] Redirecionar para /simulation/:newId após duplicar
+- [x] Permitir edição imediata dos parâmetros
+
+### 5. Testes
+- [ ] Testar edição de proposta
+- [ ] Testar criação de proposta a partir de simulação
+- [ ] Testar duplicação de simulação
+- [ ] Validar fluxo completo: simular → duplicar → criar proposta

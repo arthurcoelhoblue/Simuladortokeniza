@@ -24,30 +24,46 @@ export default function NovaProposta() {
     },
   });
 
-  const [formData, setFormData] = useState({
-    // Página 1
-    dataMesAno: new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
-    
-    // Página 2
-    empresa: "",
-    cnpj: "",
-    endereco: "",
-    dataApresentacao: new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
-    
-    // Página 3
-    valorCaptacao: "",
-    nomeProjeto: "",
-    lastroAtivo: "",
-    visaoGeral: "O projeto consiste na construção e comercialização de um condomínio de galpões industriais/logísticos, com captação tokenizada para investidores, direcionado a um projeto imediato com demanda regional.",
-    captacaoInicial: "",
-    destinacaoRecursos: "",
-    prazoExecucao: "",
-    prazoCaptacao: "",
-    
-    // Página 6
-    valorFixoInicial: "",
-    taxaSucesso: "",
-    valorLiquidoTotal: "",
+  const [formData, setFormData] = useState(() => {
+    // Carregar dados do sessionStorage se existir (vindo de simulação)
+    const draft = sessionStorage.getItem("proposal-draft");
+    if (draft) {
+      sessionStorage.removeItem("proposal-draft"); // Limpar após carregar
+      const data = JSON.parse(draft);
+      // Converter centavos para formato de exibição
+      return {
+        ...data,
+        valorCaptacao: (data.valorCaptacao / 100).toFixed(2).replace(".", ","),
+        valorFixoInicial: (data.valorFixoInicial / 100).toFixed(2).replace(".", ","),
+        taxaSucesso: (data.taxaSucesso / 100).toFixed(2).replace(".", ","),
+        valorLiquidoTotal: (data.valorLiquidoTotal / 100).toFixed(2).replace(".", ","),
+      };
+    }
+    return {
+      // Página 1
+      dataMesAno: new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
+      
+      // Página 2
+      empresa: "",
+      cnpj: "",
+      endereco: "",
+      dataApresentacao: new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
+      
+      // Página 3
+      valorCaptacao: "",
+      nomeProjeto: "",
+      lastroAtivo: "",
+      visaoGeral: "O projeto consiste na construção e comercialização de um condomínio de galpões industriais/logísticos, com captação tokenizada para investidores, direcionado a um projeto imediato com demanda regional.",
+      captacaoInicial: "",
+      destinacaoRecursos: "",
+      prazoExecucao: "",
+      prazoCaptacao: "",
+      
+      // Página 6
+      valorFixoInicial: "",
+      taxaSucesso: "",
+      valorLiquidoTotal: "",
+    };
   });
 
   const handleSubmit = (e: React.FormEvent) => {

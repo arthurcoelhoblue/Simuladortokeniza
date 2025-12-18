@@ -6,6 +6,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import DashboardLeads from "./pages/DashboardLeads";
+import EditarProposta from "./pages/EditarProposta";
 import Home from "./pages/Home";
 import NewSimulation from "./pages/NewSimulation";
 import NovaProposta from "./pages/NovaProposta";
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/propostas" component={Propostas} />
       <Route path="/propostas/nova" component={NovaProposta} />
+      <Route path="/propostas/:id/editar" component={EditarProposta} />
       <Route path="/propostas/:id" component={PropostaDetalhes} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}

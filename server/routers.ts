@@ -396,6 +396,24 @@ export const appRouter = router({
         
         return { html };
       }),
+
+    // Duplicar simulação
+    duplicate: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        // Verificar se a simulação existe e pertence ao usuário
+        const simulation = await db.getSimulationById(input.id);
+        if (!simulation) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Simulação não encontrada" });
+        }
+        if (simulation.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+        }
+
+        // Duplicar simulação
+        const newId = await db.duplicateSimulation(input.id, ctx.user.id);
+        return { id: newId };
+      }),
   }),
 
   opportunities: router({
@@ -1111,7 +1129,7 @@ export const appRouter = router({
     // Listar todas as propostas (admin)
     list: adminProcedure.query(async ({ ctx }) => {
       console.log("📊 Listando propostas para admin:", ctx.user.email);
-      return await db.getAllProposals();
+      return await db.getProposalsByUser(ctx.user.id);
     }),
     
     // Buscar proposta por ID

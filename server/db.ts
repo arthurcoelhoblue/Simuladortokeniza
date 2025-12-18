@@ -600,26 +600,53 @@ export async function getProposalsByUser(userId: number) {
     .orderBy(desc(proposals.createdAt));
 }
 
-export async function getAllProposals() {
+export async function deleteProposal(id: number) {
   const db = await getDb();
-  if (!db) return [];
-  
-  return db.select().from(proposals)
-    .orderBy(desc(proposals.createdAt));
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(proposals).where(eq(proposals.id, id));
 }
 
 export async function updateProposal(id: number, data: Partial<InsertProposal>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
-  await db.update(proposals)
+
+  await db
+    .update(proposals)
     .set({ ...data, updatedAt: new Date() })
     .where(eq(proposals.id, id));
 }
 
-export async function deleteProposal(id: number) {
+export async function duplicateSimulation(id: number, userId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
-  await db.delete(proposals).where(eq(proposals.id, id));
+
+  // Buscar simulação original
+  const original = await getSimulationById(id);
+  if (!original) throw new Error("Simulação não encontrada");
+
+  // Criar cópia sem id, timestamps e com sufixo no nome
+  const { id: _, createdAt, updatedAt, descricaoOferta, ...simulationData } = original;
+  const newSimulation: InsertSimulation = {
+    ...simulationData,
+    userId, // Usar userId do usuário atual
+    descricaoOferta: descricaoOferta ? `${descricaoOferta} - Cópia` : null,
+  };
+
+  // Inserir nova simulação
+  const newId = await createSimulation(newSimulation);
+
+  // Copiar cronograma se existir
+  const cronograma = await getCronogramasBySimulationId(id);
+  if (cronograma.length > 0) {
+    for (const item of cronograma) {
+      const { id: __, simulationId, ...cronogramaData } = item;
+      await db.insert(cronogramas).values({
+        ...cronogramaData,
+        simulationId: newId,
+      });
+    }
+  }
+
+  return newId;
 }

@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Download, FileText, Loader2 } from "lucide-react";
+import { ArrowLeft, Copy, Download, Edit, FileText, Loader2 } from "lucide-react";
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
 
@@ -97,6 +97,12 @@ export default function PropostaDetalhes() {
 
       {/* Ações */}
       <div className="flex gap-2 mb-6">
+        {proposal.status === "rascunho" && (
+          <Button onClick={() => setLocation(`/propostas/${proposal.id}/editar`)} variant="outline">
+            <Edit className="w-4 h-4 mr-2" />
+            Editar
+          </Button>
+        )}
         {!proposal.pdfUrl && (
           <Button
             onClick={() => generatePDFMutation.mutate({ id: proposal.id })}
@@ -116,10 +122,22 @@ export default function PropostaDetalhes() {
           </Button>
         )}
         {proposal.pdfUrl && (
-          <Button onClick={() => window.open(proposal.pdfUrl!, "_blank")}>
-            <Download className="w-4 h-4 mr-2" />
-            Download PDF
-          </Button>
+          <>
+            <Button onClick={() => window.open(proposal.pdfUrl!, "_blank")}>
+              <Download className="w-4 h-4 mr-2" />
+              Download PDF
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                navigator.clipboard.writeText(proposal.pdfUrl!);
+                toast.success("Link do PDF copiado!");
+              }}
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              Copiar Link
+            </Button>
+          </>
         )}
       </div>
 
