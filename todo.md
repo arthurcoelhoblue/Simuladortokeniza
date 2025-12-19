@@ -1119,3 +1119,11 @@
 - [x] Criar tabela comparativa de indicadores
 - [x] Adicionar rota /captador/viabilidade-comparacao
 - [x] Adicionar card no dashboard do captador
+
+
+## 🔧 Correção Permanente: Geração de PDF sem Chrome Externo
+
+- [x] Modificar server/viabilityPDF.ts para remover executablePath fixo
+- [x] Usar puppeteer padrão que baixa Chrome automaticamente
+- [x] Testar geração de PDF após mudança
+- [x] Criar checkpoint final com correção permanente
