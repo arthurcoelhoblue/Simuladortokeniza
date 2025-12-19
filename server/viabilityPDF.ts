@@ -16,6 +16,8 @@ interface PDFData extends Omit<ViabilityAnalysis, 'fluxoCaixa' | 'indicadores'> 
 export async function generateViabilityPDF(data: PDFData): Promise<Buffer> {
   const html = generateHTML(data);
   
+  // Puppeteer usa Chrome instalado automaticamente via npm
+  // Não usa executablePath fixo para evitar problemas após deploys
   const browser = await puppeteer.launch({
     headless: true,
     args: [
