@@ -1209,3 +1209,21 @@
 - [x] Corrigir condição em SimulationView.tsx (usa modo OU tipoSimulacao como fallback)
 - [x] Validar no browser com simulação de captador (Simulação #1080001)
 - [x] Criar checkpoint
+
+
+## Patch 1.1: Impedir Simulações Sem Modo Explícito
+
+### Problema Identificado
+- Simulações criadas via `/new` (sem `?modo=`) defaultam para investidor
+- Isso causa simulações "falsas de investidor" que deveriam ser captador
+- Botão "vem tornar seu sonho realidade" some porque `modo = 'investidor'`
+
+### Correções
+- [x] Header "Nova Simulação" redireciona para `/nova-simulacao` (já feito no checkpoint anterior)
+- [x] Adicionar guarda em NewSimulation.tsx: se não tiver `?modo=`, redireciona para `/nova-simulacao`
+- [x] Validar Header "Nova Simulação" → cai em `/nova-simulacao`
+- [x] Validar `/new` (sem modo) → redireciona para `/nova-simulacao`
+- [x] Criar simulação via `/new?modo=captador` → salva como captador (Simulação #1080001 validada)
+- [x] Validar botão "vem tornar seu sonho realidade" aparece na simulação de captador
+- [x] Gerar relatório completo do Patch 1.1
+- [x] Criar checkpoint

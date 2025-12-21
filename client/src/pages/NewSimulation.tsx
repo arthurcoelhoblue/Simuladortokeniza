@@ -35,6 +35,14 @@ export default function NewSimulation() {
   const search = window.location.search;
   const qs = new URLSearchParams(search);
   const modoParam = qs.get("modo");
+  
+  // GUARDA: Se não tiver modo, redireciona para seletor
+  useEffect(() => {
+    if (!modoParam || (modoParam !== "captador" && modoParam !== "investidor")) {
+      setLocation("/nova-simulacao");
+    }
+  }, [modoParam, setLocation]);
+  
   const modo = (modoParam === "captador" || modoParam === "investidor")
     ? modoParam
     : "investidor";
