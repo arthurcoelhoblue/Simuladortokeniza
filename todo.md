@@ -1150,3 +1150,12 @@
 ### Fase 4: Testes e Checkpoint
 - [ ] Testar fluxo completo no navegador
 - [ ] Criar checkpoint final
+
+
+## 🔧 Correção: Separação Total de Captador e Investidor
+
+- [x] Substituir texto "Gere propostas comerciais profissionais" por "Análise de viabilidade do seu projeto de tokenização" no card Captador
+- [x] Revisar lista de funcionalidades do card Captador (remover misturas)
+- [x] Revisar lista de funcionalidades do card Investidor (remover misturas)
+- [x] Garantir separação total entre as duas funções
+- [x] Criar checkpoint com correções

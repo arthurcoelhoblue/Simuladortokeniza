@@ -37,7 +37,7 @@ export default function NovaSimulacao() {
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2">•</span>
-                    <span>Gere propostas comerciais profissionais</span>
+                    <span>Análise de viabilidade do seu projeto de tokenização</span>
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2">•</span>
