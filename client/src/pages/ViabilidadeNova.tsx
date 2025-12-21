@@ -15,6 +15,7 @@ type ReceitaItem = {
   precoUnitario: number;
   quantidadeMensal: number;
   crescimentoMensalPct?: number;
+  custoVariavelPct?: number | null; // Patch 7: Custo variável por receita
 };
 
 type CustoFixoItem = {
@@ -75,6 +76,8 @@ export default function ViabilidadeNova() {
     taxaCrescimento: "10", // 10%
     mesEstabilizacao: "15",
     clientesSteadyState: "",
+    // Patch 7: Custo variável global
+    custoVariavelGlobalPct: "", // 0-100%
   });
 
   // Patch 6.1: Estados para receitas e custos fixos dinâmicos
@@ -157,6 +160,7 @@ export default function ViabilidadeNova() {
       precoUnitario: r.precoUnitario,
       quantidadeMensal: r.quantidadeMensal,
       crescimentoMensalPct: r.crescimentoMensalPct,
+      custoVariavelPct: r.custoVariavelPct, // Patch 7
     }));
 
     const custosFixosPayload = custosFixos.map(c => ({
@@ -170,6 +174,10 @@ export default function ViabilidadeNova() {
       ...input,
       receitas: receitasPayload,
       custosFixos: custosFixosPayload,
+      // Patch 7: Adicionar custo variável global
+      custoVariavelGlobalPct: formData.custoVariavelGlobalPct
+        ? parseFloat(formData.custoVariavelGlobalPct)
+        : null,
       ...(fromSimulationId && { originSimulationId: parseInt(fromSimulationId) }),
     };
 
@@ -470,6 +478,36 @@ export default function ViabilidadeNova() {
           <input type="hidden" value={formData.opexSeguros} />
           <input type="hidden" value={formData.opexOutros} />
 
+          {/* Patch 7: Custo Variável Global */}
+          <Card>
+            <CardHeader>
+              <CardTitle>5. Custo Variável Global (Opcional)</CardTitle>
+              <CardDescription>
+                Defina um percentual de custo variável que se aplica a todas as receitas que não tiverem custo específico
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="custoVariavelGlobalPct">Custo Variável Global (%)</Label>
+                  <Input
+                    id="custoVariavelGlobalPct"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    placeholder="Ex: 30 (30% da receita)"
+                    value={formData.custoVariavelGlobalPct}
+                    onChange={e => setFormData({ ...formData, custoVariavelGlobalPct: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Este percentual será aplicado às receitas que não tiverem custo variável específico
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Patch 6.2: Seletor de Templates de Negócio */}
           <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
             <CardHeader>
@@ -509,7 +547,7 @@ export default function ViabilidadeNova() {
             </CardHeader>
             <CardContent className="space-y-4">
               {receitas.map((r, idx) => (
-                <div key={idx} className="grid gap-2 items-end" style={{ gridTemplateColumns: 'repeat(4, 1fr) auto' }}>
+                <div key={idx} className="grid gap-2 items-end" style={{ gridTemplateColumns: 'repeat(5, 1fr) auto' }}>
                   <div>
                     <Label>Nome da Receita</Label>
                     <Input
@@ -559,6 +597,23 @@ export default function ViabilidadeNova() {
                       onChange={e => {
                         const next = [...receitas];
                         next[idx].crescimentoMensalPct = e.target.value ? Number(e.target.value) : undefined;
+                        setReceitas(next);
+                      }}
+                    />
+                  </div>
+                  {/* Patch 7: Custo variável por receita */}
+                  <div>
+                    <Label>Custo var. (%)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      placeholder="Opcional"
+                      value={r.custoVariavelPct ?? ""}
+                      onChange={e => {
+                        const next = [...receitas];
+                        next[idx].custoVariavelPct = e.target.value ? Number(e.target.value) : null;
                         setReceitas(next);
                       }}
                     />

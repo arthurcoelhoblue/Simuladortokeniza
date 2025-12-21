@@ -279,6 +279,7 @@ export default function ViabilidadeDetalhes() {
                       <th className="text-right py-2 px-4">Preço Unit.</th>
                       <th className="text-right py-2 px-4">Qtd/Mês</th>
                       <th className="text-right py-2 px-4">Crescimento</th>
+                      <th className="text-right py-2 px-4">Custo Var.</th>
                       <th className="text-right py-2 px-4">Mês 1</th>
                       <th className="text-right py-2 px-4">Mês 6</th>
                       <th className="text-right py-2 px-4">Mês 12</th>
@@ -296,6 +297,7 @@ export default function ViabilidadeDetalhes() {
                           <td className="text-right py-2 px-4">{formatCurrency(r.precoUnitario)}</td>
                           <td className="text-right py-2 px-4">{r.quantidadeMensal}</td>
                           <td className="text-right py-2 px-4">{r.crescimentoMensalPct ? `${r.crescimentoMensalPct}%` : '-'}</td>
+                          <td className="text-right py-2 px-4">{r.custoVariavelPct ? `${r.custoVariavelPct}%` : '-'}</td>
                           <td className="text-right py-2 px-4">{formatCurrency(mes1)}</td>
                           <td className="text-right py-2 px-4">{formatCurrency(mes6)}</td>
                           <td className="text-right py-2 px-4">{formatCurrency(mes12)}</td>
@@ -303,7 +305,7 @@ export default function ViabilidadeDetalhes() {
                       );
                     })}
                     <tr className="font-bold">
-                      <td colSpan={4} className="py-2 px-4">Total</td>
+                      <td colSpan={5} className="py-2 px-4">Total</td>
                       <td className="text-right py-2 px-4">
                         {formatCurrency(
                           JSON.parse(analysis.receitas).reduce((sum: number, r: any) => 
@@ -329,6 +331,52 @@ export default function ViabilidadeDetalhes() {
                   </tbody>
                 </table>
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Patch 7: Margem Bruta */}
+        {analysis.receitas && fluxoCaixa[0]?.margemBrutaPct !== undefined && (
+          <Card className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950">
+            <CardHeader>
+              <CardTitle>📊 Margem Bruta</CardTitle>
+              <CardDescription>Receita líquida após custos variáveis</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Mês 1</p>
+                  <p className="text-2xl font-bold">
+                    {fluxoCaixa[0]?.margemBrutaPct?.toFixed(1)}%
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formatCurrency((fluxoCaixa[0]?.receitaLiquida ?? 0) / 100)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Mês 6</p>
+                  <p className="text-2xl font-bold">
+                    {fluxoCaixa[5]?.margemBrutaPct?.toFixed(1)}%
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formatCurrency((fluxoCaixa[5]?.receitaLiquida ?? 0) / 100)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Mês 12</p>
+                  <p className="text-2xl font-bold">
+                    {fluxoCaixa[11]?.margemBrutaPct?.toFixed(1)}%
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formatCurrency((fluxoCaixa[11]?.receitaLiquida ?? 0) / 100)}
+                  </p>
+                </div>
+              </div>
+              {analysis.custoVariavelGlobalPct && (
+                <p className="text-sm text-muted-foreground mt-4">
+                  Custo variável global: {parseFloat(analysis.custoVariavelGlobalPct).toFixed(1)}%
+                </p>
+              )}
             </CardContent>
           </Card>
         )}

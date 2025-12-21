@@ -1,4 +1,4 @@
-import { index, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { decimal, index, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -388,6 +388,8 @@ export const viabilityAnalysis = mysqlTable("viability_analysis", {
   // Patch 6.1: Viabilidade Genérica - Múltiplas receitas e custos fixos
   receitas: text("receitas"), // JSON array de ReceitaItem[]
   custosFixos: text("custosFixos"), // JSON array de CustoFixoItem[]
+  // Patch 7: Custo variável global
+  custoVariavelGlobalPct: decimal("custoVariavelGlobalPct", { precision: 5, scale: 2 }),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

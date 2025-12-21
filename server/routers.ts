@@ -1270,8 +1270,12 @@ export const appRouter = router({
             precoUnitario: z.number().positive(),
             quantidadeMensal: z.number().nonnegative(),
             crescimentoMensalPct: z.number().optional(),
+            // Patch 7: Custo variável por receita
+            custoVariavelPct: z.number().min(0).max(100).optional().nullable(),
           })
         ).optional(),
+        // Patch 7: Custo variável global
+        custoVariavelGlobalPct: z.number().min(0).max(100).optional().nullable(),
         custosFixos: z.array(
           z.object({
             nome: z.string().min(1),
@@ -1300,6 +1304,8 @@ export const appRouter = router({
           // Patch 6.1: Persistir receitas e custosFixos como JSON
           receitas: input.receitas ? JSON.stringify(input.receitas) : null,
           custosFixos: input.custosFixos ? JSON.stringify(input.custosFixos) : null,
+          // Patch 7: Persistir custo variável global
+          custoVariavelGlobalPct: input.custoVariavelGlobalPct ? input.custoVariavelGlobalPct.toString() : null,
         });
         
         console.log(`✅ Análise de viabilidade criada: #${id} (${status})`);
@@ -1432,6 +1438,10 @@ export const appRouter = router({
           custosFixos: typeof updated.custosFixos === 'string' && updated.custosFixos
             ? JSON.parse(updated.custosFixos)
             : undefined,
+          // Patch 7: Parse custoVariavelGlobalPct
+          custoVariavelGlobalPct: typeof updated.custoVariavelGlobalPct === 'string'
+            ? parseFloat(updated.custoVariavelGlobalPct)
+            : updated.custoVariavelGlobalPct,
         };
         
         // Recalcular

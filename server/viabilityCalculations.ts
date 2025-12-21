@@ -9,6 +9,7 @@ export interface ReceitaItem {
   precoUnitario: number;
   quantidadeMensal: number;
   crescimentoMensalPct?: number;
+  custoVariavelPct?: number | null; // Patch 7: Custo variável por receita (0-100%)
 }
 
 export interface CustoFixoItem {
@@ -60,12 +61,18 @@ export interface ViabilityInput {
   // Patch 6.2: Modelo genérico (opcional)
   receitas?: ReceitaItem[];
   custosFixos?: CustoFixoItem[];
+  // Patch 7: Custo variável global (opcional)
+  custoVariavelGlobalPct?: number | null; // 0-100%
 }
 
 export interface MesFluxo {
   mes: number;
   clientes: number;
   receitaBruta: number;
+  // Patch 7: Custo variável e margem bruta
+  custoVariavel?: number;
+  receitaLiquida?: number;
+  margemBrutaPct?: number;
   opex: number;
   ebitda: number;
   amortizacao: number;
@@ -171,6 +178,36 @@ function calcularCustosFixos(
 }
 
 /**
+ * Patch 7: Calcula custo variável mensal baseado nas receitas
+ * Regra: receita usa custoVariavelPct próprio → senão usa global → senão 0%
+ */
+function calcularCustoVariavelMensal(
+  receitas: ReceitaItem[],
+  mes: number,
+  custoVariavelGlobalPct?: number | null
+): { receitaBruta: number; custoVariavel: number } {
+  let receitaBruta = 0;
+  let custoVariavel = 0;
+
+  for (const r of receitas) {
+    // Aplicar crescimento exponencial
+    const crescimento = r.crescimentoMensalPct
+      ? Math.pow(1 + r.crescimentoMensalPct / 100, mes - 1)
+      : 1;
+
+    const receitaItem = r.precoUnitario * r.quantidadeMensal * crescimento;
+
+    // Regra de fallback: próprio → global → 0
+    const pct = r.custoVariavelPct ?? custoVariavelGlobalPct ?? 0;
+
+    receitaBruta += receitaItem;
+    custoVariavel += receitaItem * (pct / 100);
+  }
+
+  return { receitaBruta, custoVariavel };
+}
+
+/**
  * Calcula número de clientes em um mês específico
  */
 function calcularClientes(input: ViabilityInput, mes: number): number {
@@ -269,23 +306,35 @@ export function calcularFluxoCaixa(input: ViabilityInput): MesFluxo[] {
   
   for (let mes = 1; mes <= 60; mes++) {
     let receitaBruta: number;
+    let custoVariavel = 0;
+    let receitaLiquida: number;
+    let margemBrutaPct = 0;
     let opex: number;
     
     if (isModeloGenerico) {
-      // 🆕 Patch 6.2: Cálculo genérico
-      receitaBruta = Math.round(calcularReceitaMensalGenerica(input.receitas!, mes));
+      // 🆕 Patch 6.2 + 7: Cálculo genérico com custo variável
+      const resultado = calcularCustoVariavelMensal(
+        input.receitas!,
+        mes,
+        input.custoVariavelGlobalPct
+      );
+      receitaBruta = Math.round(resultado.receitaBruta);
+      custoVariavel = Math.round(resultado.custoVariavel);
+      receitaLiquida = receitaBruta - custoVariavel;
+      margemBrutaPct = receitaBruta > 0 ? (receitaLiquida / receitaBruta) * 100 : 0;
       opex = Math.round(calcularCustosFixos(input.custosFixos ?? [], mes));
     } else {
-      // 🔒 Fallback: Cálculo legado (academia)
+      // 🔒 Fallback: Cálculo legado (academia) - sem custo variável
       const clientes = calcularClientes(input, mes);
       receitaBruta = clientes * input.ticketMedio;
+      receitaLiquida = receitaBruta; // Sem custo variável no legado
       opex = mes >= input.mesAbertura ? opexMensal : 0;
     }
     
     // Clientes (usado apenas para exibição, sempre calcular)
     const clientes = isModeloGenerico ? 0 : calcularClientes(input, mes);
     
-    const ebitda = receitaBruta - opex;
+    const ebitda = receitaLiquida - opex;
     
     const { amortizacao, juros } = calcularParcela(
       valorInvestidores,
@@ -303,6 +352,10 @@ export function calcularFluxoCaixa(input: ViabilityInput): MesFluxo[] {
       mes,
       clientes,
       receitaBruta,
+      // Patch 7: Adicionar campos de custo variável
+      custoVariavel: isModeloGenerico ? custoVariavel : undefined,
+      receitaLiquida: isModeloGenerico ? receitaLiquida : undefined,
+      margemBrutaPct: isModeloGenerico ? margemBrutaPct : undefined,
       opex,
       ebitda,
       amortizacao,

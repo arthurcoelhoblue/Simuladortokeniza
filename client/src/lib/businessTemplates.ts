@@ -8,6 +8,7 @@ export interface ReceitaTemplate {
   precoUnitario: number;
   quantidadeMensal: number;
   crescimentoMensalPct?: number;
+  custoVariavelPct?: number | null; // Patch 7: Custo variável por receita
 }
 
 export interface CustoFixoTemplate {
@@ -37,18 +38,21 @@ export const businessTemplates: BusinessTemplate[] = [
         precoUnitario: 15000, // R$ 150
         quantidadeMensal: 100,
         crescimentoMensalPct: 5,
+        custoVariavelPct: 0, // Patch 7: Sem custo variável (serviço)
       },
       {
         nome: 'Mensalidade Premium',
         precoUnitario: 25000, // R$ 250
         quantidadeMensal: 30,
         crescimentoMensalPct: 3,
+        custoVariavelPct: 0, // Patch 7: Sem custo variável (serviço)
       },
       {
         nome: 'Personal Trainer',
         precoUnitario: 10000, // R$ 100
         quantidadeMensal: 20,
         crescimentoMensalPct: 2,
+        custoVariavelPct: 0, // Patch 7: Sem custo variável (serviço)
       },
     ],
     custosFixos: [
@@ -89,18 +93,21 @@ export const businessTemplates: BusinessTemplate[] = [
         precoUnitario: 3500, // R$ 35
         quantidadeMensal: 600, // ~20 por dia útil
         crescimentoMensalPct: 2,
+        custoVariavelPct: 35, // Patch 7: Food cost típico
       },
       {
         nome: 'Jantar À La Carte',
         precoUnitario: 8000, // R$ 80
         quantidadeMensal: 300, // ~10 por dia
         crescimentoMensalPct: 3,
+        custoVariavelPct: 35, // Patch 7: Food cost típico
       },
       {
         nome: 'Bebidas',
         precoUnitario: 1500, // R$ 15
         quantidadeMensal: 800,
         crescimentoMensalPct: 2,
+        custoVariavelPct: 25, // Patch 7: Margem maior em bebidas
       },
     ],
     custosFixos: [
@@ -141,23 +148,27 @@ export const businessTemplates: BusinessTemplate[] = [
         precoUnitario: 9900, // R$ 99
         quantidadeMensal: 50,
         crescimentoMensalPct: 10,
+        custoVariavelPct: 5, // Patch 7: Custo de processamento/cloud
       },
       {
         nome: 'Plano Professional',
         precoUnitario: 29900, // R$ 299
         quantidadeMensal: 20,
         crescimentoMensalPct: 8,
+        custoVariavelPct: 5, // Patch 7: Custo de processamento/cloud
       },
       {
         nome: 'Plano Enterprise',
         precoUnitario: 99900, // R$ 999
         quantidadeMensal: 5,
         crescimentoMensalPct: 5,
+        custoVariavelPct: 5, // Patch 7: Custo de processamento/cloud
       },
       {
         nome: 'Serviços de Implementação',
         precoUnitario: 500000, // R$ 5k
         quantidadeMensal: 3,
+        custoVariavelPct: 20, // Patch 7: Custo de horas de consultoria
       },
     ],
     custosFixos: [
@@ -193,24 +204,28 @@ export const businessTemplates: BusinessTemplate[] = [
         precoUnitario: 20000, // R$ 200
         quantidadeMensal: 200, // ~10 por dia útil
         crescimentoMensalPct: 3,
+        custoVariavelPct: 10, // Patch 7: Materiais descartáveis
       },
       {
         nome: 'Consulta Especialista',
         precoUnitario: 35000, // R$ 350
         quantidadeMensal: 80,
         crescimentoMensalPct: 4,
+        custoVariavelPct: 10, // Patch 7: Materiais descartáveis
       },
       {
         nome: 'Exames Laboratoriais',
         precoUnitario: 15000, // R$ 150
         quantidadeMensal: 100,
         crescimentoMensalPct: 2,
+        custoVariavelPct: 30, // Patch 7: Reagentes e insumos
       },
       {
         nome: 'Procedimentos Simples',
         precoUnitario: 50000, // R$ 500
         quantidadeMensal: 30,
         crescimentoMensalPct: 2,
+        custoVariavelPct: 15, // Patch 7: Materiais e insumos
       },
     ],
     custosFixos: [

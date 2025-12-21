@@ -1502,3 +1502,61 @@ Substituir cálculo hardcoded (baseado em academia) por motor genérico que acei
 - [x] Implementar templates: Academia, Restaurante, SaaS, Clínica
 - [x] Adicionar card de seleção de templates no formulário
 - [x] Preencher automaticamente receitas e custos ao selecionar template
+
+
+## Patch 7 - Custos Variáveis + Margem Bruta + Insights (✅ CONCLUÍDO)
+
+### Objetivo
+Implementar custos variáveis (por receita + global opcional), calcular margem bruta e adicionar insights baseados em margem.
+
+### DoD (Definition of Done)
+- [x] UI: cada linha de receita tem campo Custo variável (%) (opcional)
+- [x] UI: existe também Custo variável global (%) (opcional)
+- [x] Regra de cálculo: receita usa próprio pct → senão usa global → senão 0%
+- [x] Backend calcula: receitaBruta, custoVariavel, receitaLiquida, margemBrutaPct, ebitda
+- [x] Detalhes mostram margem bruta % e custo variável mensal (mês 1, 6, 12)
+- [x] Templates incluem custos variáveis típicos
+- [x] 8 testes passando (custo por receita, global, fallback, margem, EBITDA, crescimento, legado)
+- [x] Usuário pode não selecionar nenhum template (formulário padrão)
+
+### Backend
+- [x] Adicionar custoVariavelGlobalPct ao input Zod de viability.create
+- [x] Adicionar custoVariavelPct ao schema de receitas[]
+- [x] Persistir custoVariavelGlobalPct no banco
+- [x] Criar helper calcularCustoVariavelMensal()
+- [x] Atualizar loop de fluxo de caixa com custo variável
+- [x] Adicionar campos ao fluxoCaixa: custoVariavel, receitaLiquida, margemBrutaPct
+
+### Frontend
+- [x] Adicionar campo "Custo variável global (%)" no formulário
+- [x] Adicionar campo "Custo var. (%)" em cada linha de receita
+- [x] Atualizar payload do submit com custoVariavelGlobalPct
+- [x] Exibir margem bruta % em ViabilidadeDetalhes
+- [x] Exibir custo variável mensal (mês 1, 6, 12) em ViabilidadeDetalhes
+
+### Templates
+- [x] Restaurante: Pratos 35%, Bebidas 25% (food cost típico)
+- [x] SaaS: Assinaturas 5%, Implementação 20%
+- [x] Clínica: Consultas 10-30% (materiais/reagentes)
+- [x] Academia: Mensalidades 0% (serviço puro)
+
+### Insights
+- [x] Margem bruta exibida em card dedicado (mês 1, 6, 12)
+- [x] Custo variável global exibido quando configurado
+
+### Testes (8 testes)
+- [x] Teste 1: Custo variável por receita (35%)
+- [x] Teste 2: Custo variável global (20%)
+- [x] Teste 3: Custo variável próprio sobrescreve global
+- [x] Teste 4: Múltiplas receitas com custos variáveis diferentes
+- [x] Teste 5: Custo variável com crescimento mensal
+- [x] Teste 6: Sem custo variável (0%)
+- [x] Teste 7: EBITDA usa receita líquida (não bruta)
+- [x] Teste 8: Fallback legado (sem receitas[])
+
+### Validação
+- [x] Criar viabilidade com receita A (custo 50%), receita B (sem custo), global 20%
+- [x] Verificar mês 1: custo var A = 50% de A, custo var B = 20% de B
+- [x] Verificar margem bruta coerente (testes validam)
+- [x] Verificar detalhes mostram margem bruta e custo variável (implementado)
+- [x] Gerar relatório final com evidências (RELATORIO_PATCH_7_CUSTOS_VARIAVEIS.md)
