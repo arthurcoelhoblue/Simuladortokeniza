@@ -130,6 +130,25 @@ export default function ViabilidadeDetalhes() {
           </div>
         </div>
 
+        {/* Patch 5: Banner de Origem */}
+        {analysis.originSimulationId && (
+          <Alert className="mb-6 border-blue-500 bg-blue-500/10">
+            <Info className="h-4 w-4 text-blue-500" />
+            <AlertTitle className="text-blue-500">Criada a partir de Simulação</AlertTitle>
+            <AlertDescription className="flex items-center justify-between">
+              <span>Esta análise foi criada a partir da Simulação #{analysis.originSimulationId}</span>
+              <Button 
+                variant="link" 
+                size="sm"
+                className="text-blue-500 hover:text-blue-600"
+                onClick={() => setLocation(`/simulation/${analysis.originSimulationId}`)}
+              >
+                Ver simulação original →
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Status Badge */}
         <div className="mb-6">
           {indicadores.viavel ? (

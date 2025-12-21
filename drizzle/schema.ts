@@ -125,6 +125,9 @@ export const simulations = mysqlTable("simulations", {
   engajouComOferta: int("engajouComOferta").notNull().default(0), // boolean: 0 ou 1
   offerId: int("offerId"), // FK → offers.id (nullable)
   
+  // Rastreabilidade de origem cruzada (Patch 5)
+  originViabilityId: int("originViabilityId"), // FK → viability_analysis.id (nullable)
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -378,6 +381,9 @@ export const viabilityAnalysis = mysqlTable("viability_analysis", {
   
   // Status
   status: mysqlEnum("status", ["em_analise", "viavel", "inviavel"]).notNull().default("em_analise"),
+  
+  // Rastreabilidade de origem cruzada (Patch 5)
+  originSimulationId: int("originSimulationId"), // FK → simulations.id (nullable)
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

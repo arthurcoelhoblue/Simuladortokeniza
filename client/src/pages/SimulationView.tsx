@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Copy, Download, FileText, Trash2, TrendingUp } from "lucide-react";
+import { ArrowLeft, Copy, Download, FileText, Trash2, TrendingUp, Info } from "lucide-react";
 import { useLocation, useRoute } from "wouter";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -717,6 +718,25 @@ export default function SimulationView() {
             </Button>
           </div>
         </div>
+
+        {/* Patch 5: Banner de Origem */}
+        {simulation.originViabilityId && (
+          <Alert className="mb-6 border-blue-500 bg-blue-500/10">
+            <Info className="h-4 w-4 text-blue-500" />
+            <AlertTitle className="text-blue-500">Criada a partir de Análise de Viabilidade</AlertTitle>
+            <AlertDescription className="flex items-center justify-between">
+              <span>Esta simulação foi criada a partir da Análise de Viabilidade #{simulation.originViabilityId}</span>
+              <Button 
+                variant="link" 
+                size="sm"
+                className="text-blue-500 hover:text-blue-600"
+                onClick={() => setLocation(`/captador/viabilidade/${simulation.originViabilityId}`)}
+              >
+                Ver análise original →
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Resumo Executivo */}
         {(simulation.modo === 'captador' || simulation.tipoSimulacao === 'financiamento') ? (

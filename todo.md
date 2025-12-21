@@ -1356,3 +1356,49 @@ Validar a integração bidirecional entre Simulação de Captação e Análise d
 - [ ] Patch 5: Badges de origem nos cards (ex: "Criado a partir de Simulação #1080001")
 - [ ] Patch 6: Testes E2E com Playwright para validação automatizada
 - [ ] Patch 7: Melhorias de UX (animações, loading states, etc.)
+
+
+## Patch 5 - Rastreabilidade de Origem Cruzada + Indicadores na UI
+
+### Objetivo
+Persistir e exibir a origem cruzada entre Simulação e Viabilidade, permitindo rastreabilidade completa do fluxo de criação.
+
+### DoD (Definition of Done)
+- [x] Viabilidade criada a partir de Simulação salva `originSimulationId`
+- [x] Simulação criada a partir de Viabilidade salva `originViabilityId`
+- [x] ViabilidadeDetalhes mostra banner "Criada a partir da Simulação #..."
+- [x] SimulationView mostra banner "Criada a partir da Viabilidade #..."
+- [x] Banners têm links clicáveis para abrir item de origem
+- [x] Guardrails: origem inválida não quebra tela (campos nullable)
+- [x] 5 testes automatizados passando (5/5)
+
+### Backend
+- [x] Adicionar campo `originSimulationId` (nullable) na tabela `viability_analysis`
+- [x] Adicionar campo `originViabilityId` (nullable) na tabela `simulations`
+- [x] Atualizar schema Drizzle com novos campos
+- [x] Atualizar input Zod de `viability.create` para aceitar `originSimulationId`
+- [x] Atualizar input Zod de `simulations.create` para aceitar `originViabilityId`
+- [x] Persistir origin ids no banco de dados
+
+### Frontend
+- [x] ViabilidadeNova: enviar `originSimulationId` quando `fromSimulationId` existir
+- [x] NewSimulation: enviar `originViabilityId` quando `fromViabilityId` existir
+- [x] ViabilidadeDetalhes: renderizar banner quando `originSimulationId` existir
+- [x] SimulationView: renderizar banner quando `originViabilityId` existir
+- [x] Banners com ícone, texto e link clicável
+- [x] Tratamento de erro se origem não existir mais (renderização condicional)
+
+### Testes Automatizados
+- [x] Teste A: ViabilidadeNova envia `originSimulationId` no payload
+- [x] Teste B: NewSimulation envia `originViabilityId` no payload
+- [x] Teste C: ViabilidadeDetalhes exibe banner com origem
+- [x] Teste D: SimulationView exibe banner com origem
+- [x] Teste Extra: Retrocompatibilidade sem origin ids
+
+### Validação
+- [x] Criar simulação → criar viabilidade → verificar `originSimulationId` no banco
+- [x] Criar viabilidade → criar simulação → verificar `originViabilityId` no banco
+- [x] Verificar banners aparecem corretamente
+- [x] Verificar links de navegação funcionam
+- [x] Executar testes automatizados (5/5 passando)
+- [x] Gerar relatório final com evidências (RELATORIO_PATCH_5_RASTREABILIDADE.md)

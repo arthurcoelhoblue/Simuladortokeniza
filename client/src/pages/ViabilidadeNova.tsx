@@ -127,7 +127,12 @@ export default function ViabilidadeNova() {
       clientesSteadyState: parseInt(formData.clientesSteadyState),
     };
 
-    createMutation.mutate(input);
+    // Patch 5: Adicionar originSimulationId se vier de uma simulação
+    const payload = fromSimulationId 
+      ? { ...input, originSimulationId: parseInt(fromSimulationId) }
+      : input;
+
+    createMutation.mutate(payload);
   };
 
   return (

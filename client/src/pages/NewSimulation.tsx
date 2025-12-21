@@ -182,6 +182,8 @@ export default function NewSimulation() {
       origemSimulacao: origemSimulacao,
       engajouComOferta: offerId !== null,
       offerId: offerId,
+      // Patch 5: Rastreabilidade de origem cruzada
+      originViabilityId: fromViabilityId ? parseInt(fromViabilityId) : undefined,
       // Custos são calculados apenas no modo captador
       taxaSetupFixaBrl: modo === 'captador' && formData.taxaEstruturacao ? parseFloat(formData.taxaEstruturacao) * 100 : undefined,
       feeSucessoPercentSobreCaptacao: modo === 'captador' && formData.feePercentualCaptacao ? parseFloat(formData.feePercentualCaptacao) * 100 : undefined,

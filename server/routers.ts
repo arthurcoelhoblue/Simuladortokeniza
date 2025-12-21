@@ -142,6 +142,9 @@ export const appRouter = router({
           origemSimulacao: z.enum(["manual", "oferta_tokeniza"]).default("manual"),
           engajouComOferta: z.boolean().default(false),
           offerId: z.number().int().positive().optional().nullable(),
+          
+          // Patch 5: Rastreabilidade de origem cruzada
+          originViabilityId: z.number().int().positive().optional().nullable(),
         })
       )
       .mutation(async ({ input, ctx }) => {
@@ -326,6 +329,8 @@ export const appRouter = router({
             origemSimulacao: input.origemSimulacao,
             engajouComOferta: input.engajouComOferta ? 1 : 0,
             offerId: input.offerId || null,
+            // Patch 5: Rastreabilidade de origem cruzada
+            originViabilityId: input.originViabilityId || null,
           };
 
           console.log("💾 Dados finais para criar simulação:", {
@@ -1256,6 +1261,8 @@ export const appRouter = router({
         taxaCrescimento: z.number().int().min(0).max(10000),
         mesEstabilizacao: z.number().int().positive(),
         clientesSteadyState: z.number().int().positive(),
+        // Patch 5: Rastreabilidade de origem cruzada
+        originSimulationId: z.number().int().positive().optional().nullable(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { calcularAnaliseViabilidade } = await import("./viabilityCalculations");
@@ -1273,6 +1280,7 @@ export const appRouter = router({
           fluxoCaixa: JSON.stringify(fluxoCaixa),
           indicadores: JSON.stringify(indicadores),
           status,
+          originSimulationId: input.originSimulationId ?? null,
         });
         
         console.log(`✅ Análise de viabilidade criada: #${id} (${status})`);
