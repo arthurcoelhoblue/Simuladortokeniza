@@ -1263,6 +1263,22 @@ export const appRouter = router({
         clientesSteadyState: z.number().int().positive(),
         // Patch 5: Rastreabilidade de origem cruzada
         originSimulationId: z.number().int().positive().optional().nullable(),
+        // Patch 6.1: Viabilidade Genérica - Múltiplas receitas e custos fixos
+        receitas: z.array(
+          z.object({
+            nome: z.string().min(1),
+            precoUnitario: z.number().positive(),
+            quantidadeMensal: z.number().nonnegative(),
+            crescimentoMensalPct: z.number().optional(),
+          })
+        ).optional(),
+        custosFixos: z.array(
+          z.object({
+            nome: z.string().min(1),
+            valorMensal: z.number().positive(),
+            reajusteAnualPct: z.number().optional(),
+          })
+        ).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { calcularAnaliseViabilidade } = await import("./viabilityCalculations");
@@ -1281,6 +1297,9 @@ export const appRouter = router({
           indicadores: JSON.stringify(indicadores),
           status,
           originSimulationId: input.originSimulationId ?? null,
+          // Patch 6.1: Persistir receitas e custosFixos como JSON
+          receitas: input.receitas ? JSON.stringify(input.receitas) : null,
+          custosFixos: input.custosFixos ? JSON.stringify(input.custosFixos) : null,
         });
         
         console.log(`✅ Análise de viabilidade criada: #${id} (${status})`);

@@ -8,6 +8,20 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 
+// Patch 6.1: Tipos para viabilidade genérica
+type ReceitaItem = {
+  nome: string;
+  precoUnitario: number;
+  quantidadeMensal: number;
+  crescimentoMensalPct?: number;
+};
+
+type CustoFixoItem = {
+  nome: string;
+  valorMensal: number;
+  reajusteAnualPct?: number;
+};
+
 /**
  * Formulário simplificado de análise de viabilidade
  * Baseado na planilha de simulação fornecida
@@ -61,6 +75,15 @@ export default function ViabilidadeNova() {
     mesEstabilizacao: "15",
     clientesSteadyState: "",
   });
+
+  // Patch 6.1: Estados para receitas e custos fixos dinâmicos
+  const [receitas, setReceitas] = useState<ReceitaItem[]>([
+    { nome: "", precoUnitario: 0, quantidadeMensal: 0 },
+  ]);
+
+  const [custosFixos, setCustosFixos] = useState<CustoFixoItem[]>([
+    { nome: "", valorMensal: 0 },
+  ]);
 
   const createMutation = trpc.viability.create.useMutation({
     onSuccess: (data) => {
@@ -127,10 +150,27 @@ export default function ViabilidadeNova() {
       clientesSteadyState: parseInt(formData.clientesSteadyState),
     };
 
+    // Patch 6.1: Adicionar receitas e custosFixos ao payload
+    const receitasPayload = receitas.map(r => ({
+      nome: r.nome,
+      precoUnitario: r.precoUnitario,
+      quantidadeMensal: r.quantidadeMensal,
+      crescimentoMensalPct: r.crescimentoMensalPct,
+    }));
+
+    const custosFixosPayload = custosFixos.map(c => ({
+      nome: c.nome,
+      valorMensal: c.valorMensal,
+      reajusteAnualPct: c.reajusteAnualPct,
+    }));
+
     // Patch 5: Adicionar originSimulationId se vier de uma simulação
-    const payload = fromSimulationId 
-      ? { ...input, originSimulationId: parseInt(fromSimulationId) }
-      : input;
+    const payload = {
+      ...input,
+      receitas: receitasPayload,
+      custosFixos: custosFixosPayload,
+      ...(fromSimulationId && { originSimulationId: parseInt(fromSimulationId) }),
+    };
 
     createMutation.mutate(payload);
   };
@@ -340,173 +380,164 @@ export default function ViabilidadeNova() {
             </CardContent>
           </Card>
 
-          {/* OPEX */}
+          {/* Patch 6.1: Custos Fixos Dinâmicos (Múltiplas Linhas) */}
           <Card>
             <CardHeader>
-              <CardTitle>4. Custos Operacionais Mensais (OPEX)</CardTitle>
-              <CardDescription>Valores mensais em R$</CardDescription>
+              <CardTitle>4. Custos Fixos Mensais</CardTitle>
+              <CardDescription>Adicione todos os custos operacionais recorrentes do seu negócio</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Aluguel + Condomínio *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.opexAluguel}
-                  onChange={(e) => setFormData({ ...formData, opexAluguel: e.target.value })}
-                  required
-                  placeholder="25000"
-                />
-              </div>
-              <div>
-                <Label>Pessoal *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.opexPessoal}
-                  onChange={(e) => setFormData({ ...formData, opexPessoal: e.target.value })}
-                  required
-                  placeholder="35000"
-                />
-              </div>
-              <div>
-                <Label>Royalties *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.opexRoyalties}
-                  onChange={(e) => setFormData({ ...formData, opexRoyalties: e.target.value })}
-                  required
-                  placeholder="8000"
-                />
-              </div>
-              <div>
-                <Label>Marketing Local *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.opexMarketing}
-                  onChange={(e) => setFormData({ ...formData, opexMarketing: e.target.value })}
-                  required
-                  placeholder="5000"
-                />
-              </div>
-              <div>
-                <Label>Utilidades (Água, Luz, Internet) *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.opexUtilidades}
-                  onChange={(e) => setFormData({ ...formData, opexUtilidades: e.target.value })}
-                  required
-                  placeholder="4000"
-                />
-              </div>
-              <div>
-                <Label>Manutenção e Limpeza *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.opexManutencao}
-                  onChange={(e) => setFormData({ ...formData, opexManutencao: e.target.value })}
-                  required
-                  placeholder="2000"
-                />
-              </div>
-              <div>
-                <Label>Seguros *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.opexSeguros}
-                  onChange={(e) => setFormData({ ...formData, opexSeguros: e.target.value })}
-                  required
-                  placeholder="1000"
-                />
-              </div>
+            <CardContent className="space-y-4">
+              {custosFixos.map((c, idx) => (
+                <div key={idx} className="grid grid-cols-3 gap-2 items-end">
+                  <div>
+                    <Label>Nome do Custo</Label>
+                    <Input
+                      placeholder="Ex: Aluguel"
+                      value={c.nome}
+                      onChange={e => {
+                        const next = [...custosFixos];
+                        next[idx].nome = e.target.value;
+                        setCustosFixos(next);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label>Valor Mensal (R$)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="5000.00"
+                      value={c.valorMensal || ""}
+                      onChange={e => {
+                        const next = [...custosFixos];
+                        next[idx].valorMensal = Number(e.target.value);
+                        setCustosFixos(next);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label>Reajuste Anual % (opcional)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="5"
+                      value={c.reajusteAnualPct ?? ""}
+                      onChange={e => {
+                        const next = [...custosFixos];
+                        next[idx].reajusteAnualPct = e.target.value ? Number(e.target.value) : undefined;
+                        setCustosFixos(next);
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  setCustosFixos([...custosFixos, { nome: "", valorMensal: 0 }])
+                }>
+                + Adicionar Custo
+              </Button>
             </CardContent>
           </Card>
 
-          {/* Receitas */}
+          {/* Campos legados OPEX mantidos ocultos para retrocompatibilidade */}
+          <input type="hidden" value={formData.opexAluguel} />
+          <input type="hidden" value={formData.opexPessoal} />
+          <input type="hidden" value={formData.opexRoyalties} />
+          <input type="hidden" value={formData.opexMarketing} />
+          <input type="hidden" value={formData.opexUtilidades} />
+          <input type="hidden" value={formData.opexManutencao} />
+          <input type="hidden" value={formData.opexSeguros} />
+          <input type="hidden" value={formData.opexOutros} />
+
+          {/* Patch 6.1: Receitas Dinâmicas (Múltiplas Linhas) */}
           <Card>
             <CardHeader>
-              <CardTitle>5. Projeção de Receitas</CardTitle>
+              <CardTitle>5. Receitas Mensais</CardTitle>
+              <CardDescription>Adicione todas as fontes de receita do seu negócio</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Ticket Médio Mensal (R$/cliente) *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.ticketMedio}
-                  onChange={(e) => setFormData({ ...formData, ticketMedio: e.target.value })}
-                  required
-                  placeholder="150"
-                />
-              </div>
-              <div>
-                <Label>Capacidade Máxima (clientes) *</Label>
-                <Input
-                  type="number"
-                  value={formData.capacidadeMaxima}
-                  onChange={(e) => setFormData({ ...formData, capacidadeMaxima: e.target.value })}
-                  required
-                  placeholder="500"
-                />
-              </div>
-              <div>
-                <Label>Mês de Abertura *</Label>
-                <Input
-                  type="number"
-                  value={formData.mesAbertura}
-                  onChange={(e) => setFormData({ ...formData, mesAbertura: e.target.value })}
-                  required
-                  placeholder="3"
-                />
-              </div>
-              <div>
-                <Label>Clientes no Mês 1 de Operação *</Label>
-                <Input
-                  type="number"
-                  value={formData.clientesInicio}
-                  onChange={(e) => setFormData({ ...formData, clientesInicio: e.target.value })}
-                  required
-                  placeholder="50"
-                />
-              </div>
-              <div>
-                <Label>Taxa de Crescimento Mensal (%) *</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.taxaCrescimento}
-                  onChange={(e) => setFormData({ ...formData, taxaCrescimento: e.target.value })}
-                  required
-                  placeholder="10"
-                />
-              </div>
-              <div>
-                <Label>Mês de Estabilização *</Label>
-                <Input
-                  type="number"
-                  value={formData.mesEstabilizacao}
-                  onChange={(e) => setFormData({ ...formData, mesEstabilizacao: e.target.value })}
-                  required
-                  placeholder="15"
-                />
-              </div>
-              <div>
-                <Label>Clientes no Steady State *</Label>
-                <Input
-                  type="number"
-                  value={formData.clientesSteadyState}
-                  onChange={(e) => setFormData({ ...formData, clientesSteadyState: e.target.value })}
-                  required
-                  placeholder="400"
-                />
-              </div>
+            <CardContent className="space-y-4">
+              {receitas.map((r, idx) => (
+                <div key={idx} className="grid grid-cols-4 gap-2 items-end">
+                  <div>
+                    <Label>Nome da Receita</Label>
+                    <Input
+                      placeholder="Ex: Mensalidade"
+                      value={r.nome}
+                      onChange={e => {
+                        const next = [...receitas];
+                        next[idx].nome = e.target.value;
+                        setReceitas(next);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label>Preço Unitário (R$)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="150.00"
+                      value={r.precoUnitario || ""}
+                      onChange={e => {
+                        const next = [...receitas];
+                        next[idx].precoUnitario = Number(e.target.value);
+                        setReceitas(next);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label>Qtd/Mês</Label>
+                    <Input
+                      type="number"
+                      placeholder="100"
+                      value={r.quantidadeMensal || ""}
+                      onChange={e => {
+                        const next = [...receitas];
+                        next[idx].quantidadeMensal = Number(e.target.value);
+                        setReceitas(next);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label>Crescimento % (opcional)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="5"
+                      value={r.crescimentoMensalPct ?? ""}
+                      onChange={e => {
+                        const next = [...receitas];
+                        next[idx].crescimentoMensalPct = e.target.value ? Number(e.target.value) : undefined;
+                        setReceitas(next);
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  setReceitas([...receitas, { nome: "", precoUnitario: 0, quantidadeMensal: 0 }])
+                }
+              >
+                + Adicionar Receita
+              </Button>
             </CardContent>
           </Card>
+
+          {/* Campos legados mantidos ocultos para retrocompatibilidade */}
+          <input type="hidden" value={formData.ticketMedio} />
+          <input type="hidden" value={formData.capacidadeMaxima} />
+          <input type="hidden" value={formData.mesAbertura} />
+          <input type="hidden" value={formData.clientesInicio} />
+          <input type="hidden" value={formData.taxaCrescimento} />
+          <input type="hidden" value={formData.mesEstabilizacao} />
+          <input type="hidden" value={formData.clientesSteadyState} />
 
           {/* Botões */}
           <div className="flex gap-4">

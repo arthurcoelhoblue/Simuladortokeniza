@@ -385,6 +385,10 @@ export const viabilityAnalysis = mysqlTable("viability_analysis", {
   // Rastreabilidade de origem cruzada (Patch 5)
   originSimulationId: int("originSimulationId"), // FK → simulations.id (nullable)
   
+  // Patch 6.1: Viabilidade Genérica - Múltiplas receitas e custos fixos
+  receitas: text("receitas"), // JSON array de ReceitaItem[]
+  custosFixos: text("custosFixos"), // JSON array de CustoFixoItem[]
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({

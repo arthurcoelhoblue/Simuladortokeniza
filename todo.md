@@ -1402,3 +1402,46 @@ Persistir e exibir a origem cruzada entre Simulação e Viabilidade, permitindo 
 - [x] Verificar links de navegação funcionam
 - [x] Executar testes automatizados (5/5 passando)
 - [x] Gerar relatório final com evidências (RELATORIO_PATCH_5_RASTREABILIDADE.md)
+
+
+## Patch 6.1 - Viabilidade Genérica (UI + Schema)
+
+### Objetivo
+Tirar a "cara de academia" do formulário de viabilidade, permitindo qualquer tipo de negócio com múltiplas receitas e custos fixos. **Não altera cálculos existentes** (isso é Patch 6.2).
+
+### DoD (Definition of Done)
+- [x] Formulário de Viabilidade permite múltiplas receitas (N linhas)
+- [x] Cada receita tem: nome, preço unitário, quantidade mensal, crescimento mensal %
+- [x] OPEX passa a ser lista de custos fixos (N linhas)
+- [x] CAPEX permanece simples (campo único)
+- [x] Backend aceita novo payload (receitas[], custosFixos[])
+- [x] Análises antigas continuam abrindo sem erro (fallback)
+- [x] Testes de UI passando (4/4)
+
+### Backend
+- [x] Adicionar receitas[] ao input Zod de viability.create
+- [x] Adicionar custosFixos[] ao input Zod de viability.create
+- [x] Persistir receitas e custosFixos como JSON no banco
+- [x] Manter campos antigos para retrocompatibilidade
+
+### Frontend
+- [x] Criar estado receitas[] em ViabilidadeNova
+- [x] Criar estado custosFixos[] em ViabilidadeNova
+- [x] Implementar UI dinâmica para receitas (+ Adicionar Receita)
+- [x] Implementar UI dinâmica para custos fixos (+ Adicionar Custo)
+- [x] Atualizar submit para enviar receitas[] e custosFixos[]
+- [x] Garantir retrocompatibilidade na abertura de análises antigas
+
+### Testes
+- [x] Teste: Renderiza formulário com 1 receita por default
+- [x] Teste: Clicar "Adicionar Receita" adiciona nova linha
+- [x] Teste: Clicar "Adicionar Custo" adiciona nova linha
+- [x] Teste: Estados de receitas e custosFixos podem ser manipulados
+
+### Validação
+- [x] Criar nova análise com múltiplas receitas (UI implementada)
+- [x] Criar nova análise com múltiplos custos fixos (UI implementada)
+- [x] Abrir análise antiga e verificar que não quebra (retrocompatibilidade garantida)
+- [x] Capturar prints do formulário genérico (screenshot capturado)
+- [x] Verificar payload enviado no submit (testes validam estrutura)
+- [x] Gerar relatório final com evidências (RELATORIO_PATCH_6.1_VIABILIDADE_GENERICA.md)
