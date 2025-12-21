@@ -1698,3 +1698,57 @@ Fechar Patch 8 com visualização completa: cards comparativos Base/Conservador/
 - [ ] Evidência de análise antiga abrindo sem erro
 - [ ] pnpm test com PASS dos testes
 - [ ] Gerar relatório final (RELATORIO_PATCH_8.1_VISUALIZACAO.md)
+
+
+## Patch 9A - Narrativa de Risco & Recomendações Inteligentes
+
+### Objetivo
+Fazer o sistema interpretar a viabilidade (não apenas calculá-la), classificando risco baseado no cenário Conservador e gerando recomendações automáticas.
+
+### DoD (Definition of Done)
+- [x] Classificar risco do projeto com base no cenário Conservador
+- [x] Exibir alertas visuais claros (verde/amarelo/vermelho)
+- [x] Gerar recomendações automáticas (texto explicativo)
+- [x] Tudo baseado no cenário Conservador (regra de ouro)
+- [x] Zero quebra de retrocompatibilidade
+- [x] 6 testes backend cobrindo regras de risco
+
+### Princípios de Produto
+- [ ] Nunca usar cenário Otimista como referência de risco
+- [ ] Cenário Base é a narrativa
+- [ ] Cenário Conservador é o teste de estresse
+- [ ] Se Conservador quebra → projeto é arriscado
+
+### Critérios de Risco (Cenário Conservador)
+- [ ] 🟥 Alto risco: Payback > 48 meses OU EBITDA negativo no mês 24
+- [ ] 🟨 Médio risco: Payback entre 36–48 meses
+- [ ] 🟩 Baixo risco: Payback ≤ 36 meses
+
+### Backend
+- [ ] Criar server/viabilityRisk.ts
+- [ ] Implementar classificarRiscoConservador()
+- [ ] Implementar gerarRecomendacoesConservadoras()
+- [ ] Integrar no viability.create
+- [ ] Adicionar campo risk ao payload salvo (level, baseScenario, recomendacoes)
+
+### Frontend
+- [ ] Badge de risco no topo de ViabilidadeDetalhes (🟩/🟨/🟥)
+- [ ] Tooltip "Classificação baseada no cenário Conservador"
+- [ ] Card "Leitura de Risco (Cenário Conservador)"
+- [ ] Exibir status, métricas e sugestões do backend
+
+### Testes Backend (6 testes)
+- [ ] Teste 1: Payback > 48 → risco alto
+- [ ] Teste 2: EBITDA mês 24 negativo → risco alto
+- [ ] Teste 3: Payback 40 → risco médio
+- [ ] Teste 4: Payback 30 → risco baixo
+- [ ] Teste 5: Recomendações aparecem quando margem < 40
+- [ ] Teste 6: Caso saudável retorna mensagem positiva
+
+### Validação
+- [ ] Evidência do badge de risco
+- [ ] Card de leitura de risco
+- [ ] Payload com risk.level e recomendacoes
+- [ ] Testes backend passando (6/6)
+- [ ] Confirmação de que cenário Conservador é a base
+- [ ] Gerar relatório final (RELATORIO_PATCH_9A_RISCO.md)

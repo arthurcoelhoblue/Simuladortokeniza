@@ -19,7 +19,10 @@ type ResultadoCenario = {
 };
 
 function parseCenarios(analysis: any): ResultadoCenario[] {
-  const rawFluxo = JSON.parse(analysis.fluxoCaixa);
+  // Parser resiliente: aceita objeto ou string JSON
+  const rawFluxo = typeof analysis.fluxoCaixa === 'string' 
+    ? JSON.parse(analysis.fluxoCaixa) 
+    : analysis.fluxoCaixa;
 
   // Novo formato: array de resultados com .scenario
   if (Array.isArray(rawFluxo) && rawFluxo[0]?.scenario) {
@@ -27,7 +30,9 @@ function parseCenarios(analysis: any): ResultadoCenario[] {
   }
 
   // Legado: fluxo simples
-  const rawIndicadores = analysis.indicadores ? JSON.parse(analysis.indicadores) : null;
+  const rawIndicadores = analysis.indicadores 
+    ? (typeof analysis.indicadores === 'string' ? JSON.parse(analysis.indicadores) : analysis.indicadores)
+    : null;
 
   return [{
     scenario: "Base",
@@ -141,7 +146,41 @@ export default function ViabilidadeDetalhes() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">{analysis.nome}</h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-3xl font-bold">{analysis.nome}</h1>
+                {/* Patch       {/* Patch 9A: Badge de Risco */}
+      {(() => {
+        // Parser resiliente: aceita objeto ou string JSON
+        let risk = null;
+        try {
+          if (analysis.risk) {
+            risk = typeof analysis.risk === 'string' ? JSON.parse(analysis.risk) : analysis.risk;
+          }
+        } catch (e) {
+          console.error('Erro ao parsear risk no badge:', e);
+          risk = null;
+        }
+        if (!risk) return null;
+        
+        const badgeConfig = {
+          baixo: { icon: "🟩", label: "Baixo Risco", className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" },
+          medio: { icon: "🟨", label: "Risco Moderado", className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" },
+          alto: { icon: "🟥", label: "Alto Risco", className: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
+        };
+        
+        const config = badgeConfig[risk.level as keyof typeof badgeConfig];
+        if (!config) return null;
+        
+        return (
+          <span 
+            className={`px-3 py-1 rounded-full text-sm font-medium ${config.className}`}
+            title="Classificação baseada no cenário Conservador"
+          >
+            {config.icon} {config.label}
+          </span>
+        );
+      })()}
+              </div>
               <p className="text-muted-foreground">
                 Criado em {new Date(analysis.createdAt).toLocaleDateString('pt-BR')}
               </p>
@@ -275,6 +314,84 @@ export default function ViabilidadeDetalhes() {
             </CardContent>
           </Card>
         )}
+
+        {/* Patch 9A: Card de Leitura de Risco */}
+        {(() => {
+          // Parser resiliente: aceita objeto ou string JSON
+          let risk = null;
+          try {
+            if (analysis.risk) {
+              risk = typeof analysis.risk === 'string' ? JSON.parse(analysis.risk) : analysis.risk;
+            }
+          } catch (e) {
+            console.error('Erro ao parsear risk:', e);
+            risk = null;
+          }
+          if (!risk || !risk.recomendacoes) return null;
+          
+          const badgeConfig = {
+            baixo: { icon: "🟩", label: "Baixo Risco", className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" },
+            medio: { icon: "🟨", label: "Risco Moderado", className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" },
+            alto: { icon: "🟥", label: "Alto Risco", className: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
+          };
+          
+          const config = badgeConfig[risk.level as keyof typeof badgeConfig];
+          if (!config) return null;
+          
+          // Extrair métricas do cenário Conservador
+          const cenarioConservador = cenarios.find(c => c.scenario === "Conservador");
+          const payback = cenarioConservador?.indicadores?.payback ?? null;
+          const mes12 = cenarioConservador?.fluxoCaixa[11] ?? cenarioConservador?.fluxoCaixa[cenarioConservador.fluxoCaixa.length - 1];
+          const margemMes12 = mes12?.margemBrutaPct ?? 0;
+          
+          return (
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  📌 Leitura de Risco (Cenário Conservador)
+                </CardTitle>
+                <CardDescription>
+                  Análise de risco baseada no cenário conservador
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">Status:</p>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.className}`}>
+                    {config.icon} {config.label}
+                  </span>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Payback estimado</p>
+                    <p className="text-lg font-semibold">
+                      {payback ? `${payback} meses` : "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Margem bruta (mês 12)</p>
+                    <p className="text-lg font-semibold">
+                      {margemMes12.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+                
+                <div>
+                  <p className="text-sm font-semibold mb-2">Sugestões:</p>
+                  <ul className="space-y-2">
+                    {risk.recomendacoes.map((rec: string, idx: number) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-muted-foreground">–</span>
+                        <span className="text-sm">{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })()}
 
         {/* Indicadores Principais */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">

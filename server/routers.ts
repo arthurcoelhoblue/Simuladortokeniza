@@ -1307,6 +1307,29 @@ export const appRouter = router({
         // Calcular fluxo de caixa e indicadores para todos os cenários
         const resultadosCenarios = calcularAnaliseViabilidadeCenarios(input, cenarios);
         
+        // Patch 9A: Classificar risco baseado no cenário Conservador
+        const { classificarRiscoCompleto } = await import("./viabilityRisk");
+        const cenarioConservador = resultadosCenarios.find(r => r.scenario === "Conservador");
+        
+        let riskClassification = null;
+        if (cenarioConservador) {
+          const mes12 = cenarioConservador.fluxoCaixa[11] ?? cenarioConservador.fluxoCaixa[cenarioConservador.fluxoCaixa.length - 1];
+          const mes24 = cenarioConservador.fluxoCaixa[23] ?? cenarioConservador.fluxoCaixa[cenarioConservador.fluxoCaixa.length - 1];
+          
+          riskClassification = classificarRiscoCompleto({
+            indicadores: {
+              paybackMeses: cenarioConservador.indicadores.payback,
+              ebitdaMes24: mes24?.ebitda ?? 0,
+            },
+            metricas: {
+              margemBrutaPctMes12: mes12?.margemBrutaPct ?? 0,
+              opexMensal: mes12?.opex ?? 0,
+              receitaMensal: mes12?.receitaBruta ?? 0,
+              paybackMeses: cenarioConservador.indicadores.payback,
+            },
+          });
+        }
+        
         // Usar cenário Base para determinar status
         const cenarioBase = resultadosCenarios.find(r => r.scenario === "Base")!;
         const status = cenarioBase.indicadores.viavel ? 'viavel' : 'inviavel';
@@ -1325,6 +1348,8 @@ export const appRouter = router({
           custosFixos: input.custosFixos ? JSON.stringify(input.custosFixos) : null,
           // Patch 7: Persistir custo variável global
           custoVariavelGlobalPct: input.custoVariavelGlobalPct ? input.custoVariavelGlobalPct.toString() : null,
+          // Patch 9A: Persistir classificação de risco
+          risk: riskClassification ? JSON.stringify(riskClassification) : null,
         });
         
         console.log(`✅ Análise de viabilidade criada: #${id} (${status})`);
