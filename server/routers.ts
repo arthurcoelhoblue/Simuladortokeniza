@@ -1423,9 +1423,20 @@ export const appRouter = router({
         // Merge com dados existentes
         const updated = { ...existing, ...data };
         
+        // Patch 6.2: Parse receitas e custosFixos se existirem (vem como JSON string do banco)
+        const inputParaCalculo = {
+          ...updated,
+          receitas: typeof updated.receitas === 'string' && updated.receitas
+            ? JSON.parse(updated.receitas)
+            : undefined,
+          custosFixos: typeof updated.custosFixos === 'string' && updated.custosFixos
+            ? JSON.parse(updated.custosFixos)
+            : undefined,
+        };
+        
         // Recalcular
         const { calcularAnaliseViabilidade } = await import("./viabilityCalculations");
-        const { fluxoCaixa, indicadores } = calcularAnaliseViabilidade(updated);
+        const { fluxoCaixa, indicadores } = calcularAnaliseViabilidade(inputParaCalculo);
         const status = indicadores.viavel ? 'viavel' : 'inviavel';
         
         // Atualizar no banco

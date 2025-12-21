@@ -1445,3 +1445,39 @@ Tirar a "cara de academia" do formulário de viabilidade, permitindo qualquer ti
 - [x] Capturar prints do formulário genérico (screenshot capturado)
 - [x] Verificar payload enviado no submit (testes validam estrutura)
 - [x] Gerar relatório final com evidências (RELATORIO_PATCH_6.1_VIABILIDADE_GENERICA.md)
+
+
+## Patch 6.2 - Cálculo Genérico de Viabilidade (Receitas & Custos Dinâmicos)
+
+### Objetivo
+Substituir cálculo hardcoded (baseado em academia) por motor genérico que aceita N receitas e N custos fixos, mantendo retrocompatibilidade total.
+
+### DoD (Definition of Done)
+- [x] Se receitas[] existir → cálculo usa modelo genérico
+- [x] Se receitas[] NÃO existir → usa modelo legado (fallback)
+- [x] Fluxo de caixa mensal reflete crescimento e custos dinâmicos
+- [x] Payback, break-even e EBITDA corretos no modelo genérico
+- [x] 6 testes cobrindo receita simples, múltiplas receitas, crescimento, custos fixos, fallback e reajuste anual
+
+### Backend
+- [x] Criar função calcularReceitaMensalGenerica(receitas, mes)
+- [x] Criar função calcularCustosFixos(custos, mes)
+- [x] Adicionar detecção de modelo (isModeloGenerico)
+- [x] Implementar loop de fluxo de caixa com fallback legado
+- [x] Manter cálculo legado intacto para retrocompatibilidade
+- [x] Atualizar viabilityInsights.ts para linguagem genérica
+
+### Testes
+- [x] Teste 1: Receita simples (1 receita sem crescimento)
+- [x] Teste 2: Múltiplas receitas (2 receitas diferentes)
+- [x] Teste 3: Crescimento mensal (1 receita com crescimento)
+- [x] Teste 4: Custos fixos (2 custos fixos)
+- [x] Teste 5: Fallback legado (input sem receitas)
+- [x] Teste 6: Reajuste anual de custos fixos
+
+### Validação
+- [x] Criar análise com modelo genérico e verificar indicadores (testes validam)
+- [x] Abrir análise antiga e verificar que usa fallback legado (teste 5)
+- [x] Comparar fluxo de caixa genérico vs legado (script compare-models.ts)
+- [x] Capturar tabela de fluxo de caixa (primeiros 6 meses) (relatório)
+- [x] Gerar relatório final com evidências (RELATORIO_PATCH_6.2_CALCULO_GENERICO.md)

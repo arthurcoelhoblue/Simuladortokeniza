@@ -3,6 +3,20 @@
  * Baseado na planilha de simulação de negócios tokenizados
  */
 
+// Patch 6.2: Tipos para modelo genérico
+export interface ReceitaItem {
+  nome: string;
+  precoUnitario: number;
+  quantidadeMensal: number;
+  crescimentoMensalPct?: number;
+}
+
+export interface CustoFixoItem {
+  nome: string;
+  valorMensal: number;
+  reajusteAnualPct?: number;
+}
+
 export interface ViabilityInput {
   // 1. CAPTAÇÃO
   valorCaptacao: number; // em centavos
@@ -42,6 +56,10 @@ export interface ViabilityInput {
   taxaCrescimento: number; // em basis points
   mesEstabilizacao: number;
   clientesSteadyState: number;
+  
+  // Patch 6.2: Modelo genérico (opcional)
+  receitas?: ReceitaItem[];
+  custosFixos?: CustoFixoItem[];
 }
 
 export interface MesFluxo {
@@ -109,6 +127,47 @@ function calcularOpexMensal(input: ViabilityInput): number {
     input.opexSeguros +
     input.opexOutros
   );
+}
+
+/**
+ * Patch 6.2: Calcula receita mensal genérica
+ * Aplica crescimento exponencial a cada receita
+ */
+function calcularReceitaMensalGenerica(
+  receitas: ReceitaItem[],
+  mes: number
+): number {
+  return receitas.reduce((total, r) => {
+    const crescimento = r.crescimentoMensalPct
+      ? Math.pow(1 + r.crescimentoMensalPct / 100, mes - 1)
+      : 1;
+
+    return (
+      total +
+      r.precoUnitario *
+        r.quantidadeMensal *
+        crescimento
+    );
+  }, 0);
+}
+
+/**
+ * Patch 6.2: Calcula custos fixos mensais
+ * Aplica reajuste anual quando aplicável
+ */
+function calcularCustosFixos(
+  custos: CustoFixoItem[],
+  mes: number
+): number {
+  return custos.reduce((total, c) => {
+    // Aplicar reajuste anual a cada 12 meses
+    const anosCompletos = Math.floor((mes - 1) / 12);
+    const reajuste = c.reajusteAnualPct && anosCompletos > 0
+      ? Math.pow(1 + c.reajusteAnualPct / 100, anosCompletos)
+      : 1;
+
+    return total + c.valorMensal * reajuste;
+  }, 0);
 }
 
 /**
@@ -198,14 +257,34 @@ export function calcularFluxoCaixa(input: ViabilityInput): MesFluxo[] {
   const fluxo: MesFluxo[] = [];
   const { valorInvestidores } = calcularValoresCaptacao(input);
   const capexTotal = calcularCapexTotal(input);
+  
+  // Patch 6.2: Detectar modelo genérico
+  const isModeloGenerico =
+    Array.isArray(input.receitas) && input.receitas.length > 0;
+  
+  // OPEX mensal (usado apenas no modelo legado)
   const opexMensal = calcularOpexMensal(input);
   
   let saldoAcumulado = input.valorCaptacao - capexTotal;
   
   for (let mes = 1; mes <= 60; mes++) {
-    const clientes = calcularClientes(input, mes);
-    const receitaBruta = clientes * input.ticketMedio;
-    const opex = mes >= input.mesAbertura ? opexMensal : 0;
+    let receitaBruta: number;
+    let opex: number;
+    
+    if (isModeloGenerico) {
+      // 🆕 Patch 6.2: Cálculo genérico
+      receitaBruta = Math.round(calcularReceitaMensalGenerica(input.receitas!, mes));
+      opex = Math.round(calcularCustosFixos(input.custosFixos ?? [], mes));
+    } else {
+      // 🔒 Fallback: Cálculo legado (academia)
+      const clientes = calcularClientes(input, mes);
+      receitaBruta = clientes * input.ticketMedio;
+      opex = mes >= input.mesAbertura ? opexMensal : 0;
+    }
+    
+    // Clientes (usado apenas para exibição, sempre calcular)
+    const clientes = isModeloGenerico ? 0 : calcularClientes(input, mes);
+    
     const ebitda = receitaBruta - opex;
     
     const { amortizacao, juros } = calcularParcela(

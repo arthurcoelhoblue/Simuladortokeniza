@@ -151,7 +151,7 @@ function analyzePayback(data: ViabilityAnalysisData, insights: FinancialInsight[
       category: 'viabilidade',
       title: '⚠️ Payback Longo',
       message: `Payback de ${payback} meses está no limite aceitável (36-48 meses). Considere otimizações.`,
-      recommendation: 'Aumente receitas (mais clientes ou ticket médio) ou reduza OPEX para acelerar retorno.'
+      recommendation: 'Aumente receitas (crescimento ou preços) ou reduza OPEX para acelerar retorno.'
     });
   } else {
     insights.push({
@@ -178,7 +178,7 @@ function analyzeBreakeven(data: ViabilityAnalysisData, insights: FinancialInsigh
       category: 'rentabilidade',
       title: '⚠️ Ponto de Equilíbrio Tardio',
       message: `Ponto de equilíbrio no mês ${pontoEquilibrioOperacional}, após estabilização (mês ${data.mesEstabilizacao}). Período de prejuízo prolongado.`,
-      recommendation: `Reduza OPEX ou acelere crescimento para atingir ${clientesNecessarios} clientes mais rápido.`,
+      recommendation: `Reduza OPEX ou acelere crescimento de receitas para atingir equilíbrio mais rápido.`,
       offenders: identifyOpexOffenders(data)
     });
   } else if (pontoEquilibrioOperacional > 6) {
@@ -230,7 +230,7 @@ function analyzeEbitdaMargin(data: ViabilityAnalysisData, insights: FinancialIns
       category: 'rentabilidade',
       title: '📉 Margem EBITDA Negativa',
       message: `Margem EBITDA de ${margemEbitdaMedia}% indica operação deficitária. Receitas não cobrem custos.`,
-      recommendation: 'URGENTE: Aumente ticket médio, reduza OPEX ou reavalie viabilidade do projeto.',
+      recommendation: 'URGENTE: Aumente receitas, reduza OPEX ou reavalie viabilidade do projeto.',
       offenders: identifyOpexOffenders(data)
     });
   } else if (margemEbitdaMedia < 15) {
@@ -244,7 +244,7 @@ function analyzeEbitdaMargin(data: ViabilityAnalysisData, insights: FinancialIns
       category: 'rentabilidade',
       title: '⚠️ Margem EBITDA Baixa',
       message: `Margem EBITDA de ${margemEbitdaMedia}% está abaixo do ideal (15-25%). Rentabilidade comprometida.`,
-      recommendation: 'Aumente ticket médio ou reduza custos operacionais para melhorar margem.',
+      recommendation: 'Aumente receitas ou reduza custos operacionais para melhorar margem.',
       offenders: identifyOpexOffenders(data),
       sensitivity: {
         variable: 'Ticket Médio',
