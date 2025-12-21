@@ -83,7 +83,7 @@ export default function NovaSimulacao() {
                 <Button 
                   className="w-full mt-6" 
                   size="lg"
-                  onClick={() => setLocation("/nova-simulacao/investidor")}
+                  onClick={() => setLocation("/new?modo=investidor")}
                 >
                   Continuar como Investidor
                 </Button>

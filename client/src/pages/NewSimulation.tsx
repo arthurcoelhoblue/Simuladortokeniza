@@ -30,7 +30,14 @@ const HelpTooltip = ({ content }: { content: string | React.ReactNode }) => (
 export default function NewSimulation() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
-  const [modo, setModo] = useState<'investidor' | 'captador'>('investidor');
+  
+  // Modo derivado da URL (não é mais um estado alterável)
+  const search = window.location.search;
+  const qs = new URLSearchParams(search);
+  const modoParam = qs.get("modo");
+  const modo = (modoParam === "captador" || modoParam === "investidor")
+    ? modoParam
+    : "investidor";
   
   // Sistema de scoring - captura de intenção
   const [origemSimulacao, setOrigemSimulacao] = useState<'manual' | 'oferta_tokeniza'>('manual');
@@ -163,42 +170,8 @@ export default function NewSimulation() {
           </p>
         </div>
 
-        {/* Toggle Modo Investidor / Captador */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center gap-4">
-              <button
-                type="button"
-                onClick={() => setModo('investidor')}
-                className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                  modo === 'investidor'
-                    ? 'bg-lime-500 text-white shadow-lg'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
-              >
-                💰 Modo Investidor
-              </button>
-              <button
-                type="button"
-                onClick={() => setModo('captador')}
-                className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                  modo === 'captador'
-                    ? 'bg-lime-500 text-white shadow-lg'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
-              >
-                🏢 Modo Captador
-              </button>
-            </div>
-            <p className="text-center text-sm text-muted-foreground mt-4">
-              {modo === 'investidor'
-                ? 'Simule o retorno do seu investimento'
-                : 'Simule os custos da sua captação'}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Captura de Intenção - Sistema de Scoring */}
+        {/* Captura de Intenção - Sistema de Scoring - APENAS PARA INVESTIDOR */}
+        {modo === 'investidor' && (
         <Card className="mb-6 border-lime-500/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -263,6 +236,7 @@ export default function NewSimulation() {
             )}
           </CardContent>
         </Card>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Dados da Oferta */}
