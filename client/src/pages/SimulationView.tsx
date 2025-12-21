@@ -92,7 +92,7 @@ export default function SimulationView() {
     if (!simulation || !cronograma) return;
 
     // Se for captador, abre modal ANTES de gerar PDF
-    if (simulation.modo === 'captador') {
+    if (simulation.modo === 'captador' || simulation.tipoSimulacao === 'financiamento') {
       setPendingPdfExport(true);
       setShowCaptadorModal(true);
       return;
@@ -686,7 +686,7 @@ export default function SimulationView() {
               <FileText className="w-4 h-4 mr-2" />
               Criar Proposta
             </Button>
-            {simulation.modo === 'captador' && (
+            {(simulation.modo === 'captador' || simulation.tipoSimulacao === 'financiamento') && (
               <Button
                 variant="default"
                 onClick={() => setLocation(`/captador/viabilidade/nova?fromSimulationId=${simulationId}`)}
@@ -719,7 +719,7 @@ export default function SimulationView() {
         </div>
 
         {/* Resumo Executivo */}
-        {simulation.modo === 'captador' ? (
+        {(simulation.modo === 'captador' || simulation.tipoSimulacao === 'financiamento') ? (
           // Visualização para Captador
           <>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

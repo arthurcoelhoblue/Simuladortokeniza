@@ -1201,3 +1201,11 @@
 - [x] Corrigir redirecionamento de /new para /nova-simulacao (4 arquivos corrigidos)
 - [x] Validar no browser que vai para tela seletora
 - [x] Criar checkpoint
+
+
+## Correção: Botão "Criar análise de viabilidade" não aparece
+
+- [x] Investigar schema para identificar campo que diferencia captador vs investidor
+- [x] Corrigir condição em SimulationView.tsx (usa modo OU tipoSimulacao como fallback)
+- [x] Validar no browser com simulação de captador (Simulação #1080001)
+- [x] Criar checkpoint
