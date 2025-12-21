@@ -263,6 +263,147 @@ export default function ViabilidadeDetalhes() {
           </Card>
         )}
 
+        {/* Patch 6.2: Visualização de Receitas e Custos Fixos */}
+        {analysis.receitas && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Receitas Mensais</CardTitle>
+              <CardDescription>Projeção de receitas para os próximos 12 meses</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-4">Receita</th>
+                      <th className="text-right py-2 px-4">Preço Unit.</th>
+                      <th className="text-right py-2 px-4">Qtd/Mês</th>
+                      <th className="text-right py-2 px-4">Crescimento</th>
+                      <th className="text-right py-2 px-4">Mês 1</th>
+                      <th className="text-right py-2 px-4">Mês 6</th>
+                      <th className="text-right py-2 px-4">Mês 12</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {JSON.parse(analysis.receitas).map((r: any, idx: number) => {
+                      const mes1 = r.precoUnitario * r.quantidadeMensal;
+                      const mes6 = r.precoUnitario * r.quantidadeMensal * Math.pow(1 + (r.crescimentoMensalPct || 0) / 100, 5);
+                      const mes12 = r.precoUnitario * r.quantidadeMensal * Math.pow(1 + (r.crescimentoMensalPct || 0) / 100, 11);
+                      
+                      return (
+                        <tr key={idx} className="border-b">
+                          <td className="py-2 px-4 font-medium">{r.nome}</td>
+                          <td className="text-right py-2 px-4">{formatCurrency(r.precoUnitario)}</td>
+                          <td className="text-right py-2 px-4">{r.quantidadeMensal}</td>
+                          <td className="text-right py-2 px-4">{r.crescimentoMensalPct ? `${r.crescimentoMensalPct}%` : '-'}</td>
+                          <td className="text-right py-2 px-4">{formatCurrency(mes1)}</td>
+                          <td className="text-right py-2 px-4">{formatCurrency(mes6)}</td>
+                          <td className="text-right py-2 px-4">{formatCurrency(mes12)}</td>
+                        </tr>
+                      );
+                    })}
+                    <tr className="font-bold">
+                      <td colSpan={4} className="py-2 px-4">Total</td>
+                      <td className="text-right py-2 px-4">
+                        {formatCurrency(
+                          JSON.parse(analysis.receitas).reduce((sum: number, r: any) => 
+                            sum + r.precoUnitario * r.quantidadeMensal, 0
+                          )
+                        )}
+                      </td>
+                      <td className="text-right py-2 px-4">
+                        {formatCurrency(
+                          JSON.parse(analysis.receitas).reduce((sum: number, r: any) => 
+                            sum + r.precoUnitario * r.quantidadeMensal * Math.pow(1 + (r.crescimentoMensalPct || 0) / 100, 5), 0
+                          )
+                        )}
+                      </td>
+                      <td className="text-right py-2 px-4">
+                        {formatCurrency(
+                          JSON.parse(analysis.receitas).reduce((sum: number, r: any) => 
+                            sum + r.precoUnitario * r.quantidadeMensal * Math.pow(1 + (r.crescimentoMensalPct || 0) / 100, 11), 0
+                          )
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {analysis.custosFixos && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Custos Fixos Mensais</CardTitle>
+              <CardDescription>Projeção de custos fixos para os próximos 12 meses</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-4">Custo</th>
+                      <th className="text-right py-2 px-4">Valor Mensal</th>
+                      <th className="text-right py-2 px-4">Reajuste Anual</th>
+                      <th className="text-right py-2 px-4">Mês 1</th>
+                      <th className="text-right py-2 px-4">Mês 6</th>
+                      <th className="text-right py-2 px-4">Mês 12</th>
+                      <th className="text-right py-2 px-4">Mês 24</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {JSON.parse(analysis.custosFixos).map((c: any, idx: number) => {
+                      const mes1 = c.valorMensal;
+                      const mes6 = c.valorMensal; // Ainda no primeiro ano
+                      const mes12 = c.valorMensal; // Ainda no primeiro ano
+                      const mes24 = c.valorMensal * Math.pow(1 + (c.reajusteAnualPct || 0) / 100, 1); // Primeiro reajuste
+                      
+                      return (
+                        <tr key={idx} className="border-b">
+                          <td className="py-2 px-4 font-medium">{c.nome}</td>
+                          <td className="text-right py-2 px-4">{formatCurrency(c.valorMensal)}</td>
+                          <td className="text-right py-2 px-4">{c.reajusteAnualPct ? `${c.reajusteAnualPct}%` : '-'}</td>
+                          <td className="text-right py-2 px-4">{formatCurrency(mes1)}</td>
+                          <td className="text-right py-2 px-4">{formatCurrency(mes6)}</td>
+                          <td className="text-right py-2 px-4">{formatCurrency(mes12)}</td>
+                          <td className="text-right py-2 px-4">{formatCurrency(mes24)}</td>
+                        </tr>
+                      );
+                    })}
+                    <tr className="font-bold">
+                      <td colSpan={3} className="py-2 px-4">Total</td>
+                      <td className="text-right py-2 px-4">
+                        {formatCurrency(
+                          JSON.parse(analysis.custosFixos).reduce((sum: number, c: any) => sum + c.valorMensal, 0)
+                        )}
+                      </td>
+                      <td className="text-right py-2 px-4">
+                        {formatCurrency(
+                          JSON.parse(analysis.custosFixos).reduce((sum: number, c: any) => sum + c.valorMensal, 0)
+                        )}
+                      </td>
+                      <td className="text-right py-2 px-4">
+                        {formatCurrency(
+                          JSON.parse(analysis.custosFixos).reduce((sum: number, c: any) => sum + c.valorMensal, 0)
+                        )}
+                      </td>
+                      <td className="text-right py-2 px-4">
+                        {formatCurrency(
+                          JSON.parse(analysis.custosFixos).reduce((sum: number, c: any) => 
+                            sum + c.valorMensal * Math.pow(1 + (c.reajusteAnualPct || 0) / 100, 1), 0
+                          )
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Gráficos */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <Card>

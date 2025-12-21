@@ -1481,3 +1481,24 @@ Substituir cálculo hardcoded (baseado em academia) por motor genérico que acei
 - [x] Comparar fluxo de caixa genérico vs legado (script compare-models.ts)
 - [x] Capturar tabela de fluxo de caixa (primeiros 6 meses) (relatório)
 - [x] Gerar relatório final com evidências (RELATORIO_PATCH_6.2_CALCULO_GENERICO.md)
+
+
+## Melhorias de UX - Viabilidade Genérica
+
+### 1. Botão Remover nas Linhas Dinâmicas
+- [x] Adicionar ícone de lixeira em cada linha de receita
+- [x] Adicionar ícone de lixeira em cada linha de custo fixo
+- [x] Implementar função de remoção no estado
+- [x] Garantir que pelo menos 1 linha permaneça
+
+### 2. Visualização de Receitas/Custos em Detalhes
+- [x] Criar seção "Receitas Mensais" em ViabilidadeDetalhes
+- [x] Criar seção "Custos Fixos Mensais" em ViabilidadeDetalhes
+- [x] Exibir tabelas com projeções de 12 meses
+- [x] Mostrar totalizadores mensais
+
+### 3. Templates de Negócio
+- [x] Criar biblioteca de templates (businessTemplates.ts)
+- [x] Implementar templates: Academia, Restaurante, SaaS, Clínica
+- [x] Adicionar card de seleção de templates no formulário
+- [x] Preencher automaticamente receitas e custos ao selecionar template

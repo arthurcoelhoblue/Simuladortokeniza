@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
+import { businessTemplates, getTemplateById } from "@/lib/businessTemplates";
 
 // Patch 6.1: Tipos para viabilidade genérica
 type ReceitaItem = {
@@ -388,7 +389,7 @@ export default function ViabilidadeNova() {
             </CardHeader>
             <CardContent className="space-y-4">
               {custosFixos.map((c, idx) => (
-                <div key={idx} className="grid grid-cols-3 gap-2 items-end">
+                <div key={idx} className="grid gap-2 items-end" style={{ gridTemplateColumns: 'repeat(3, 1fr) auto' }}>
                   <div>
                     <Label>Nome do Custo</Label>
                     <Input
@@ -429,6 +430,22 @@ export default function ViabilidadeNova() {
                       }}
                     />
                   </div>
+                  <div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        if (custosFixos.length > 1) {
+                          setCustosFixos(custosFixos.filter((_, i) => i !== idx));
+                        }
+                      }}
+                      disabled={custosFixos.length === 1}
+                      title={custosFixos.length === 1 ? "Pelo menos 1 custo é necessário" : "Remover custo"}
+                    >
+                      🗑️
+                    </Button>
+                  </div>
                 </div>
               ))}
 
@@ -453,6 +470,37 @@ export default function ViabilidadeNova() {
           <input type="hidden" value={formData.opexSeguros} />
           <input type="hidden" value={formData.opexOutros} />
 
+          {/* Patch 6.2: Seletor de Templates de Negócio */}
+          <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+            <CardHeader>
+              <CardTitle>🎯 Templates de Negócio</CardTitle>
+              <CardDescription>Comece rápido usando um template pré-configurado com receitas e custos típicos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-4 gap-4">
+                {businessTemplates.map(template => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    onClick={() => {
+                      setReceitas(template.receitas);
+                      setCustosFixos(template.custosFixos);
+                      toast.success(`Template "${template.nome}" aplicado!`);
+                    }}
+                    className="p-4 border rounded-lg hover:border-primary hover:bg-background transition-all text-left"
+                  >
+                    <div className="text-3xl mb-2">{template.icone}</div>
+                    <div className="font-semibold mb-1">{template.nome}</div>
+                    <div className="text-xs text-muted-foreground">{template.descricao}</div>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      {template.receitas.length} receitas • {template.custosFixos.length} custos
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Patch 6.1: Receitas Dinâmicas (Múltiplas Linhas) */}
           <Card>
             <CardHeader>
@@ -461,7 +509,7 @@ export default function ViabilidadeNova() {
             </CardHeader>
             <CardContent className="space-y-4">
               {receitas.map((r, idx) => (
-                <div key={idx} className="grid grid-cols-4 gap-2 items-end">
+                <div key={idx} className="grid gap-2 items-end" style={{ gridTemplateColumns: 'repeat(4, 1fr) auto' }}>
                   <div>
                     <Label>Nome da Receita</Label>
                     <Input
@@ -514,6 +562,22 @@ export default function ViabilidadeNova() {
                         setReceitas(next);
                       }}
                     />
+                  </div>
+                  <div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        if (receitas.length > 1) {
+                          setReceitas(receitas.filter((_, i) => i !== idx));
+                        }
+                      }}
+                      disabled={receitas.length === 1}
+                      title={receitas.length === 1 ? "Pelo menos 1 receita é necessária" : "Remover receita"}
+                    >
+                      🗑️
+                    </Button>
                   </div>
                 </div>
               ))}
