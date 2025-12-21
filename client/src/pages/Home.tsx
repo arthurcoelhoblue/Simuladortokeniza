@@ -315,11 +315,6 @@ export default function Home() {
                     <CardTitle className="flex items-center gap-2">
                       <FileText className="h-5 w-5" />
                       Simulação #{sim.id}
-                      {sim.modo === 'captador' && (
-                        <span className="text-xs bg-lime-500 text-black px-2 py-0.5 rounded-full font-medium">
-                          Captador
-                        </span>
-                      )}
                     </CardTitle>
                     <CardDescription>
                       {sim.descricaoOferta || (sim.modo === 'captador' ? 'Simulação de Captação' : 'Sem descrição')}

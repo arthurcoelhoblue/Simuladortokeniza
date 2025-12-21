@@ -1159,3 +1159,13 @@
 - [x] Revisar lista de funcionalidades do card Investidor (remover misturas)
 - [x] Garantir separação total entre as duas funções
 - [x] Criar checkpoint com correções
+
+
+## 🔧 Correção: Remover Badges e Separar Modos
+
+- [x] Remover badges "Captador/Investidor" dos cards na página "Minhas Simulações"
+- [x] Criar tela de seleção "Como quer simular?" (Modo Criador/Modo Captador) APENAS para Investidor
+- [x] Ajustar rota /nova-simulacao/captador para ir direto ao formulário (sem seleção de modo)
+- [x] Ajustar rota /nova-simulacao/investidor para mostrar seleção de modo primeiro
+- [x] Testar fluxos completos
+- [x] Criar checkpoint
