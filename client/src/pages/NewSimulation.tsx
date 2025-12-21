@@ -207,7 +207,7 @@ export default function NewSimulation() {
 
         {/* Captura de Intenção - Sistema de Scoring - APENAS PARA INVESTIDOR */}
         {modo === 'investidor' && (
-        <Card className="mb-6 border-lime-500/50">
+          <Card className="mb-6 border-lime-500/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               🎯 Como você quer simular?
@@ -270,7 +270,7 @@ export default function NewSimulation() {
               </div>
             )}
           </CardContent>
-        </Card>
+          </Card>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -681,29 +681,29 @@ export default function NewSimulation() {
             </Button>
           </div>
         </form>
+        
+        {/* Modal de Seleção de Ofertas */}
+        <OfferSelectionModal
+          open={showOfferModal}
+          onClose={() => setShowOfferModal(false)}
+          onSelectOffer={(offer) => {
+            // Preencher automaticamente os campos do formulário
+            setFormData(prev => ({
+              ...prev,
+              valorTotalOferta: ((offer.valorMinimo || 0) / 100).toString(),
+              valorInvestido: ((offer.valorMinimo || 0) / 100).toString(),
+              prazoMeses: offer.prazoMeses.toString(),
+              taxaJurosAa: offer.taxaAnual.toString(),
+            }));
+            
+            // Setar campos de scoring
+            setOfferId(offer.id);
+            setOrigemSimulacao('oferta_tokeniza');
+            
+            toast.success(`Oferta "${offer.nome}" selecionada! Campos preenchidos automaticamente.`);
+          }}
+        />
       </div>
-      
-      {/* Modal de Seleção de Ofertas */}
-      <OfferSelectionModal
-        open={showOfferModal}
-        onClose={() => setShowOfferModal(false)}
-        onSelectOffer={(offer) => {
-          // Preencher automaticamente os campos do formulário
-          setFormData(prev => ({
-            ...prev,
-            valorTotalOferta: ((offer.valorMinimo || 0) / 100).toString(),
-            valorInvestido: ((offer.valorMinimo || 0) / 100).toString(),
-            prazoMeses: offer.prazoMeses.toString(),
-            taxaJurosAa: offer.taxaAnual.toString(),
-          }));
-          
-          // Setar campos de scoring
-          setOfferId(offer.id);
-          setOrigemSimulacao('oferta_tokeniza');
-          
-          toast.success(`Oferta "${offer.nome}" selecionada! Campos preenchidos automaticamente.`);
-        }}
-      />
     </div>
   );
 }
