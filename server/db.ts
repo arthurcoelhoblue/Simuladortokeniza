@@ -709,3 +709,20 @@ export async function deleteViabilityAnalysis(id: number) {
 
   await db.delete(viabilityAnalysis).where(eq(viabilityAnalysis.id, id));
 }
+
+
+export async function updateUserProfile(userId: number, data: { name?: string; telefone?: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const updateData: Record<string, unknown> = {};
+  if (data.name !== undefined) updateData.name = data.name;
+  if (data.telefone !== undefined) updateData.telefone = data.telefone;
+
+  if (Object.keys(updateData).length === 0) return;
+
+  await db
+    .update(users)
+    .set(updateData)
+    .where(eq(users.id, userId));
+}

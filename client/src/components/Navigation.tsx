@@ -12,7 +12,7 @@ export default function Navigation() {
 
   const navItems = [
     { path: "/", label: "Início", icon: Home, public: true },
-    { path: "/new", label: "Nova Simulação", icon: Plus, public: false },
+    { path: "/nova-simulacao", label: "Nova Simulação", icon: Plus, public: false },
     { path: "/opportunities", label: "Oportunidades", icon: Target, public: false },
     { path: "/dashboard/leads", label: "Dashboard", icon: BarChart3, public: false, adminOnly: true },
     { path: "/propostas", label: "Propostas", icon: FileText, public: false, adminOnly: true },

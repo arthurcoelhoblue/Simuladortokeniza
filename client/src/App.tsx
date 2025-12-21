@@ -21,6 +21,7 @@ import ViabilidadeList from "./pages/ViabilidadeList";
 import ViabilidadeNova from "./pages/ViabilidadeNova";
 import ViabilidadeDetalhes from "./pages/ViabilidadeDetalhes";
 import ViabilidadeComparacao from "./pages/ViabilidadeComparacao";
+import NovaSimulacao from "./pages/NovaSimulacao";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -36,6 +37,9 @@ function Router() {
       <Route path="/captador/viabilidade/nova" component={ViabilidadeNova} />
       <Route path="/captador/viabilidade/:id" component={ViabilidadeDetalhes} />
       <Route path="/captador/viabilidade-comparacao" component={ViabilidadeComparacao} />
+       <Route path="/nova-simulacao" component={NovaSimulacao} />
+      <Route path="/nova-simulacao/captador" component={NewSimulation} />
+      <Route path="/nova-simulacao/investidor" component={NewSimulation} />
       <Route path={"/new"} component={NewSimulation} />
       <Route path="/simulation/:id" component={SimulationView} />
       <Route path="/dashboard/leads" component={DashboardLeads} />

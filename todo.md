@@ -1127,3 +1127,26 @@
 - [x] Usar puppeteer padrão que baixa Chrome automaticamente
 - [x] Testar geração de PDF após mudança
 - [x] Criar checkpoint final com correção permanente
+
+
+## 🔄 Nova Funcionalidade: Seleção de Tipo de Simulação ao Clicar "Nova Simulação"
+
+### Fase 1: Adicionar campos na tabela users
+- [x] Verificar se campo telefone já existe na tabela users (campo name já existe)
+- [x] Adicionar campo telefone VARCHAR(20) NULL na tabela users (se não existir)
+- [x] Criar função updateUserProfile no db.ts para atualizar nome e telefone
+
+### Fase 2: Tela de Seleção de Tipo de Simulação
+- [x] Criar página /nova-simulacao com 2 botões (Captador/Investidor)
+- [x] Atualizar menu "Nova Simulação" para redirecionar para /nova-simulacao
+- [x] Manter rotas existentes /nova-simulacao/captador e /nova-simulacao/investidor
+
+### Fase 3: Pré-preenchimento e Salvamento
+- [ ] Modificar formulários para pré-preencher nome e telefone do usuário logado
+- [ ] Adicionar campos nome e telefone nos formulários (se não existirem)
+- [ ] Adicionar lógica para salvar nome e telefone na tabela users ao submeter formulário
+- [ ] Testar fluxo: usuário sem dados → preenche → salva → próxima simulação pré-preenchida
+
+### Fase 4: Testes e Checkpoint
+- [ ] Testar fluxo completo no navegador
+- [ ] Criar checkpoint final
