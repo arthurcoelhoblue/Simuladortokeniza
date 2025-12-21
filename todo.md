@@ -1666,3 +1666,35 @@ Permitir análise de viabilidade em 3 cenários simultâneos (Base, Conservador,
 - [x] Multiplicadores aplicados no loop mensal
 - [x] Resultados persistidos como JSON
 - [x] Gerar relatório final (RELATORIO_PATCH_8_CENARIOS.md)
+
+
+## Patch 8.1 - Visualização de Cenários em ViabilidadeDetalhes (✅ CONCLUÍDO)
+
+### Objetivo
+Fechar Patch 8 com visualização completa: cards comparativos Base/Conservador/Otimista + selector de cenário ativo + testes frontend.
+
+### DoD (Definition of Done)
+- [ ] ViabilidadeDetalhes mostra cards comparativos com Payback, EBITDA mês 12, Margem bruta mês 12
+- [ ] Selector (Tabs/Buttons) "Visualizando: Base/Conservador/Otimista"
+- [ ] Tabela/summary principal reflete cenário selecionado
+- [ ] Retrocompat: análises antigas (fluxoCaixa simples) exibem apenas "Base"
+- [ ] 3 testes frontend passando (render cards, trocar tab, legado)
+
+### Frontend
+- [ ] Implementar parser resiliente parseCenarios()
+- [ ] Adicionar estado cenarioAtivo e atual
+- [ ] Renderizar cards comparativos quando cenarios.length > 1
+- [ ] Implementar selector de cenário (Tabs ou Buttons)
+- [ ] Atualizar tabelas/gráficos para usar atual.fluxoCaixa e atual.indicadores
+
+### Testes Frontend (3 testes)
+- [ ] Teste 1: Renderiza cards para 3 cenários
+- [ ] Teste 2: Trocar tab muda cenário ativo
+- [ ] Teste 3: Legado não quebra (fluxo simples)
+
+### Validação
+- [ ] Print/descrição dos cards comparativos
+- [ ] Evidência do toggle mudando dados exibidos
+- [ ] Evidência de análise antiga abrindo sem erro
+- [ ] pnpm test com PASS dos testes
+- [ ] Gerar relatório final (RELATORIO_PATCH_8.1_VISUALIZACAO.md)

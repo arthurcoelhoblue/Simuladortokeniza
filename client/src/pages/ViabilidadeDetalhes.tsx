@@ -9,6 +9,32 @@ import FluxoCaixaChart from "@/components/charts/FluxoCaixaChart";
 import EbitdaChart from "@/components/charts/EbitdaChart";
 import ClientesChart from "@/components/charts/ClientesChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useState } from "react";
+
+type ResultadoCenario = {
+  scenario: "Base" | "Conservador" | "Otimista";
+  fluxoCaixa: any[];
+  indicadores: any;
+  config?: any;
+};
+
+function parseCenarios(analysis: any): ResultadoCenario[] {
+  const rawFluxo = JSON.parse(analysis.fluxoCaixa);
+
+  // Novo formato: array de resultados com .scenario
+  if (Array.isArray(rawFluxo) && rawFluxo[0]?.scenario) {
+    return rawFluxo as ResultadoCenario[];
+  }
+
+  // Legado: fluxo simples
+  const rawIndicadores = analysis.indicadores ? JSON.parse(analysis.indicadores) : null;
+
+  return [{
+    scenario: "Base",
+    fluxoCaixa: rawFluxo,
+    indicadores: rawIndicadores,
+  }];
+}
 
 export default function ViabilidadeDetalhes() {
   const { id } = useParams();
@@ -19,6 +45,11 @@ export default function ViabilidadeDetalhes() {
     { id: parseInt(id!) },
     { enabled: !!id && !!user }
   );
+
+  // Parser de cenários e estado de seleção
+  const cenarios = analysis ? parseCenarios(analysis) : [];
+  const [cenarioAtivo, setCenarioAtivo] = useState<"Base" | "Conservador" | "Otimista">("Base");
+  const atual = cenarios.find(c => c.scenario === cenarioAtivo) ?? cenarios[0];
   
   const generatePDF = trpc.viability.generatePDF.useMutation({
     onSuccess: (data) => {
@@ -67,7 +98,12 @@ export default function ViabilidadeDetalhes() {
     );
   }
 
-  const { indicadores, fluxoCaixa, insights } = analysis;
+  const { insights: rawInsights } = analysis;
+
+  // Usar indicadores e fluxoCaixa do cenário ativo
+  const indicadores = atual?.indicadores ?? JSON.parse(analysis.indicadores ?? '{}');
+  const fluxoCaixa = atual?.fluxoCaixa ?? JSON.parse(analysis.fluxoCaixa ?? '[]');
+  const insights = typeof rawInsights === 'string' ? JSON.parse(rawInsights) : (rawInsights ?? []);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -169,6 +205,76 @@ export default function ViabilidadeDetalhes() {
             </Alert>
           )}
         </div>
+
+        {/* Selector de Cenário */}
+        {cenarios.length > 1 && (
+          <div className="mb-6">
+            <p className="text-sm text-muted-foreground mb-2">Visualizando cenário:</p>
+            <div className="flex gap-2">
+              {cenarios.map((c) => (
+                <Button
+                  key={c.scenario}
+                  variant={c.scenario === cenarioAtivo ? "default" : "outline"}
+                  onClick={() => setCenarioAtivo(c.scenario)}
+                >
+                  {c.scenario}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Cards Comparativos de Cenários */}
+        {cenarios.length > 1 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Comparação de Cenários
+              </CardTitle>
+              <CardDescription>
+                Análise de sensibilidade com 3 cenários diferentes
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-4">
+                {cenarios.map((cenario) => {
+                  const payback = cenario.indicadores?.paybackMeses ?? null;
+                  const ebitdaMes12 = cenario.fluxoCaixa[11]?.ebitda ?? cenario.fluxoCaixa[cenario.fluxoCaixa.length - 1]?.ebitda ?? 0;
+                  const margemMes12 = cenario.fluxoCaixa[11]?.margemBrutaPct ?? cenario.fluxoCaixa[cenario.fluxoCaixa.length - 1]?.margemBrutaPct ?? 0;
+
+                  return (
+                    <Card key={cenario.scenario} className={cenario.scenario === cenarioAtivo ? "border-primary" : ""}>
+                      <CardHeader>
+                        <CardTitle className="text-lg">{cenario.scenario}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Payback</p>
+                          <p className="text-lg font-semibold">
+                            {payback ? `${payback} meses` : "N/A"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">EBITDA Mês 12</p>
+                          <p className="text-lg font-semibold">
+                            {formatCurrency(ebitdaMes12)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Margem Bruta Mês 12</p>
+                          <p className="text-lg font-semibold">
+                            {margemMes12.toFixed(1)}%
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Indicadores Principais */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
