@@ -1193,3 +1193,11 @@
 - [x] Validar pré-preenchimento em ambas direções (Fluxo 1 validado com 7 campos pré-preenchidos)
 - [x] Gerar relatório com evidências (screenshots, URLs, testes)
 - [x] Criar checkpoint do Patch 2
+
+
+## Correção: Botão "Nova Simulação" no Header
+
+- [x] Identificar arquivo do header/navegação
+- [x] Corrigir redirecionamento de /new para /nova-simulacao (4 arquivos corrigidos)
+- [x] Validar no browser que vai para tela seletora
+- [x] Criar checkpoint

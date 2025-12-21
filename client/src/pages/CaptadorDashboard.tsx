@@ -71,7 +71,7 @@ export default function CaptadorDashboard() {
           </Card>
 
           {/* Simulação de Custos */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/new')}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/nova-simulacao')}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-blue-500/10">

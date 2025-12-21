@@ -48,7 +48,7 @@ export default function InvestidorDashboard() {
         {/* Cards de Ações Principais */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Simulação de Retornos */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/new')}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/nova-simulacao')}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-green-500/10">

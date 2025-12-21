@@ -295,7 +295,7 @@ export default function Home() {
                 Dashboard de Leads
               </Button>
             )}
-            <Button size="lg" onClick={() => setLocation("/new")}>
+            <Button size="lg" onClick={() => setLocation("/nova-simulacao")}>
               <Plus className="mr-2 h-5 w-5" />
               Nova Simulação
             </Button>
@@ -376,7 +376,7 @@ export default function Home() {
               <p className="text-muted-foreground mb-4">
                 Crie sua primeira simulação para começar a analisar investimentos tokenizados.
               </p>
-              <Button onClick={() => setLocation("/new")}>
+              <Button onClick={() => setLocation("/nova-simulacao")}>
                 <Plus className="mr-2 h-4 w-4" />
                 Criar Primeira Simulação
               </Button>
