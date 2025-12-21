@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { trpc } from "@/lib/trpc";
 import { ArrowLeft, Calculator, HelpCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 
@@ -38,6 +38,15 @@ export default function NewSimulation() {
   const modo = (modoParam === "captador" || modoParam === "investidor")
     ? modoParam
     : "investidor";
+  
+  // Pegar fromViabilityId para pré-preenchimento
+  const fromViabilityId = qs.get("fromViabilityId");
+  
+  // Buscar viabilidade se fromViabilityId existir (apenas modo captador)
+  const viabilityQuery = trpc.viability.getById.useQuery(
+    { id: parseInt(fromViabilityId!) },
+    { enabled: modo === "captador" && !!fromViabilityId }
+  );
   
   // Sistema de scoring - captura de intenção
   const [origemSimulacao, setOrigemSimulacao] = useState<'manual' | 'oferta_tokeniza'>('manual');
@@ -108,6 +117,24 @@ export default function NewSimulation() {
       toast.error(error.message || "Erro ao criar simulação");
     },
   });
+
+  // Pré-preenchimento a partir de análise de viabilidade (modo captador)
+  useEffect(() => {
+    if (!viabilityQuery.data) return;
+    const v = viabilityQuery.data;
+
+    setFormData(prev => ({
+      ...prev,
+      descricaoOferta: v.nome || "",
+      valorTotalOferta: ((v.valorCaptacao || 0) / 100).toString(),
+      prazoMeses: (v.prazoMeses || 24).toString(),
+      taxaJurosAa: ((v.taxaJurosMensal || 185) * 12).toString(), // converter mensal para anual
+      taxaEstruturacao: ((v.feeFixo || 2500000) / 100).toString(),
+      feePercentualCaptacao: ((v.taxaSucesso || 500) / 100).toString(),
+    }));
+
+    toast.success("Pré-preenchido a partir da análise de viabilidade");
+  }, [viabilityQuery.data]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

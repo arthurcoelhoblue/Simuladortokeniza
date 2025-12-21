@@ -1169,3 +1169,27 @@
 - [x] Ajustar rota /nova-simulacao/investidor para mostrar seleção de modo primeiro
 - [x] Testar fluxos completos
 - [x] Criar checkpoint
+
+## Patch 2: Integração Bidirecional Simulação ↔ Viabilidade
+
+### 1. Botões de Navegação Bidirecional
+- [x] Adicionar botão "Criar análise de viabilidade" em SimulationView (modo captador)
+- [x] Adicionar botão "Criar simulação de captação" em ViabilidadeDetalhes
+
+### 2. Pré-preenchimento Automático
+- [x] Implementar pré-preenchimento em ViabilidadeNova (fromSimulationId)
+- [x] Implementar pré-preenchimento em NewSimulation (fromViabilityId)
+- [x] Adicionar toast de confirmação após pré-preenchimento
+
+### 3. Testes Automatizados
+- [ ] Criar bidirectional-integration.test.tsx
+- [ ] Teste: SimulationView captador mostra botão e navega corretamente
+- [ ] Teste: ViabilidadeDetalhes mostra botão e navega corretamente
+- [ ] Teste: ViabilidadeNova com fromSimulationId dispara prefill
+- [ ] Teste: NewSimulation captador com fromViabilityId dispara prefill
+
+### 4. Validação e Relatório
+- [x] Validar navegação bidirecional no browser (Fluxo 1: Simulação → Viabilidade validado)
+- [x] Validar pré-preenchimento em ambas direções (Fluxo 1 validado com 7 campos pré-preenchidos)
+- [x] Gerar relatório com evidências (screenshots, URLs, testes)
+- [x] Criar checkpoint do Patch 2

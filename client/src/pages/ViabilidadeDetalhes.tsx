@@ -120,6 +120,13 @@ export default function ViabilidadeDetalhes() {
             >
               {generatePDF.isPending ? 'Gerando PDF...' : 'Exportar PDF'}
             </Button>
+            <Button
+              variant="default"
+              onClick={() => setLocation(`/new?modo=captador&fromViabilityId=${id}`)}
+            >
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Criar simulação de captação
+            </Button>
           </div>
         </div>
 

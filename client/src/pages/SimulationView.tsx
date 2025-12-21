@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Copy, Download, FileText, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, Download, FileText, Trash2, TrendingUp } from "lucide-react";
 import { useLocation, useRoute } from "wouter";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -686,6 +686,15 @@ export default function SimulationView() {
               <FileText className="w-4 h-4 mr-2" />
               Criar Proposta
             </Button>
+            {simulation.modo === 'captador' && (
+              <Button
+                variant="default"
+                onClick={() => setLocation(`/captador/viabilidade/nova?fromSimulationId=${simulationId}`)}
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Criar análise de viabilidade
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={() => duplicateMutation.mutate({ id: simulationId })}

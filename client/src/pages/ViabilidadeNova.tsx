@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 
@@ -14,6 +14,16 @@ import { useLocation } from "wouter";
  */
 export default function ViabilidadeNova() {
   const [, setLocation] = useLocation();
+  
+  // Pegar query param fromSimulationId
+  const qs = new URLSearchParams(window.location.search);
+  const fromSimulationId = qs.get("fromSimulationId");
+  
+  // Buscar simulação se fromSimulationId existir
+  const simulationQuery = trpc.simulations.getById.useQuery(
+    { id: parseInt(fromSimulationId!) },
+    { enabled: !!fromSimulationId }
+  );
   const [formData, setFormData] = useState({
     nome: "",
     // Captação
@@ -61,6 +71,24 @@ export default function ViabilidadeNova() {
       toast.error(`Erro: ${error.message}`);
     },
   });
+
+  // Pré-preenchimento a partir de simulação
+  useEffect(() => {
+    if (!simulationQuery.data) return;
+    const s = simulationQuery.data;
+
+    setFormData(prev => ({
+      ...prev,
+      nome: s.descricaoOferta || "",
+      valorCaptacao: ((s.valorTotalOferta || 0) / 100).toString(),
+      prazoMeses: (s.prazoMeses || 48).toString(),
+      taxaJurosMensal: ((s.taxaMensal || 185) / 100).toString(),
+      feeFixo: ((s.taxaSetupFixaBrl || 2500000) / 100).toString(),
+      taxaSucesso: ((s.feeSucessoPercentSobreCaptacao || 500) / 100).toString(),
+    }));
+
+    toast.success("Pré-preenchido a partir da simulação");
+  }, [simulationQuery.data]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
