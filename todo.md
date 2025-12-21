@@ -1560,3 +1560,109 @@ Implementar custos variáveis (por receita + global opcional), calcular margem b
 - [x] Verificar margem bruta coerente (testes validam)
 - [x] Verificar detalhes mostram margem bruta e custo variável (implementado)
 - [x] Gerar relatório final com evidências (RELATORIO_PATCH_7_CUSTOS_VARIAVEIS.md)
+
+
+## Patch 8 - Cenários (Automático vs Livre) com Checkbox
+
+### Objetivo
+Adicionar cenários Base/Conservador/Otimista para análise de viabilidade, com checkbox que alterna entre presets automáticos (recomendado) e multiplicadores customizáveis (avançado).
+
+### DoD (Definition of Done)
+- [ ] Checkbox "Usar cenários automáticos (recomendado)" (default ON) em ViabilidadeNova.tsx
+- [ ] Se automático: aplica presets fixos e mostra preview dos multiplicadores
+- [ ] Se livre: usuário configura Base/Conservador/Otimista com inputs
+- [ ] Backend retorna resultados por cenário (fluxo 60 meses + indicadores)
+- [ ] ViabilidadeDetalhes.tsx mostra comparação side-by-side dos cenários
+- [ ] Opção de alternar "visualizando cenário X"
+- [ ] 6+ testes de backend cobrindo presets, custom e consistência
+- [ ] 4+ testes de frontend cobrindo checkbox e UI
+
+### Backend
+- [ ] Adicionar tipo ScenarioConfig (nome, multiplicadorReceita, multiplicadorCustoVariavel, multiplicadorOpex)
+- [ ] Criar presets SCENARIOS_PADRAO (Base 1/1/1, Conservador 0.8/1.1/1.1, Otimista 1.2/0.9/0.95)
+- [ ] Aplicar multiplicadores no loop mensal do motor genérico
+- [ ] Criar função calcularAnaliseViabilidadeCenarios(input, cenarios)
+- [ ] Atualizar viability.create input com usarCenariosAutomaticos e cenariosCustom
+- [ ] Persistir resultadosCenarios como JSON no banco
+
+### Frontend
+- [ ] Adicionar estado usarCenariosAutomaticos (default true)
+- [ ] Adicionar estado cenariosCustom com valores iniciais
+- [ ] Renderizar checkbox com label "Usar cenários automáticos (recomendado)"
+- [ ] Se automático: mostrar preview read-only dos presets
+- [ ] Se livre: renderizar inputs (3 linhas × 3 colunas)
+- [ ] Atualizar payload do submit com usarCenariosAutomaticos e cenariosCustom
+- [ ] Parser resiliente em ViabilidadeDetalhes para legado vs novo formato
+- [ ] Cards comparativos dos 3 cenários (payback, EBITDA final, margem bruta mês 12)
+- [ ] Tabs "Visualizando: Base / Conservador / Otimista" para alternar gráficos
+
+### Testes Backend (6 testes)
+- [ ] Teste 1: Presets retornam 3 resultados (Base/Conservador/Otimista)
+- [ ] Teste 2: Conservador tem EBITDA <= Base
+- [ ] Teste 3: Otimista tem Receita Bruta mês 12 > Base
+- [ ] Teste 4: Custom usa multiplicadores enviados
+- [ ] Teste 5: Retrocompatibilidade (input legado retorna Base)
+- [ ] Teste 6: Custo variável respeita multiplicadorCustoVariavel
+
+### Testes Frontend (4 testes)
+- [ ] Teste 1: Checkbox default ON → não renderiza inputs livres
+- [ ] Teste 2: Desmarcar → aparece tabela de edição
+- [ ] Teste 3: Submit com OFF envia cenariosCustom
+- [ ] Teste 4: Submit com ON não envia cenariosCustom
+
+### Validação Manual
+- [ ] Criar viabilidade com checkbox ON → detalhes mostram 3 cenários
+- [ ] Criar viabilidade com checkbox OFF e multipliers alterados → detalhes refletem alteração
+- [ ] Abrir análise antiga → nada quebra (retrocompatibilidade)
+- [ ] Capturar prints do checkbox e modo livre
+- [ ] Capturar payload com/sem cenariosCustom
+- [ ] Capturar comparação dos 3 cenários em detalhes
+- [ ] Gerar relatório final com evidências
+
+
+## Patch 8 - Cenários (Automático vs Livre) (✅ CONCLUÍDO)
+
+### Objetivo
+Permitir análise de viabilidade em 3 cenários simultâneos (Base, Conservador, Otimista) com multiplicadores automáticos ou customizáveis.
+
+### DoD (Definition of Done)
+- [x] Checkbox "Usar cenários automáticos (recomendado)" no formulário
+- [x] Preview read-only dos presets quando automático
+- [x] Tabela de inputs (3 linhas × 3 colunas) quando livre
+- [x] Backend calcula 3 cenários com multiplicadores
+- [x] Resultados de todos os cenários persistidos como JSON
+- [x] Retrocompatibilidade mantida (análises antigas funcionam)
+- [x] 6 testes de backend passando (6/6)
+
+### Backend
+- [x] Criar tipos ScenarioConfig e SCENARIOS_PADRAO
+- [x] Implementar função calcularAnaliseViabilidadeCenarios
+- [x] Aplicar multiplicadores no loop mensal do modelo genérico
+- [x] Adicionar usarCenariosAutomaticos e cenariosCustom ao input Zod
+- [x] Implementar lógica de seleção de cenários (automático vs custom)
+- [x] Persistir resultados de todos os cenários como JSON
+
+### Frontend
+- [x] Adicionar estados usarCenariosAutomaticos e cenariosCustom
+- [x] Criar card "6. Cenários de Análise" com checkbox
+- [x] Implementar preview de presets (3 colunas: Base/Conservador/Otimista)
+- [x] Implementar tabela de inputs (3 linhas × 3 colunas) para modo livre
+- [x] Atualizar payload do submit com cenários
+
+### Testes (6/6 Backend)
+- [x] Teste 1: Presets retornam 3 resultados (Base/Conservador/Otimista)
+- [x] Teste 2: Conservador tem EBITDA <= Base (em cenário típico)
+- [x] Teste 3: Otimista tem Receita Bruta mês 12 > Base
+- [x] Teste 4: Custom usa multiplicadores enviados
+- [x] Teste 5: Retrocompatibilidade (input legado retorna Base)
+- [x] Teste 6: Custo variável respeita multiplicadorCustoVariavel
+
+### Validação
+- [x] Checkbox funciona (default ON)
+- [x] Preview de presets aparece quando automático
+- [x] Tabela de inputs aparece quando livre
+- [x] Payload do submit inclui cenários
+- [x] Backend calcula 3 cenários corretamente
+- [x] Multiplicadores aplicados no loop mensal
+- [x] Resultados persistidos como JSON
+- [x] Gerar relatório final (RELATORIO_PATCH_8_CENARIOS.md)

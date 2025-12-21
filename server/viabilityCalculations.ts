@@ -18,6 +18,21 @@ export interface CustoFixoItem {
   reajusteAnualPct?: number;
 }
 
+// Patch 8: Tipos para cenários
+export type ScenarioConfig = {
+  nome: "Base" | "Conservador" | "Otimista";
+  multiplicadorReceita: number;        // aplica na receita bruta
+  multiplicadorCustoVariavel: number;  // aplica no custo variável
+  multiplicadorOpex: number;           // aplica nos custos fixos
+};
+
+// Patch 8: Presets de cenários
+export const SCENARIOS_PADRAO: ScenarioConfig[] = [
+  { nome: "Base",        multiplicadorReceita: 1,   multiplicadorCustoVariavel: 1,   multiplicadorOpex: 1 },
+  { nome: "Conservador", multiplicadorReceita: 0.8, multiplicadorCustoVariavel: 1.1, multiplicadorOpex: 1.1 },
+  { nome: "Otimista",    multiplicadorReceita: 1.2, multiplicadorCustoVariavel: 0.9, multiplicadorOpex: 0.95 },
+];
+
 export interface ViabilityInput {
   // 1. CAPTAÇÃO
   valorCaptacao: number; // em centavos
@@ -63,6 +78,8 @@ export interface ViabilityInput {
   custosFixos?: CustoFixoItem[];
   // Patch 7: Custo variável global (opcional)
   custoVariavelGlobalPct?: number | null; // 0-100%
+  // Patch 8: Cenário (opcional, default Base)
+  scenario?: ScenarioConfig;
 }
 
 export interface MesFluxo {
@@ -312,17 +329,25 @@ export function calcularFluxoCaixa(input: ViabilityInput): MesFluxo[] {
     let opex: number;
     
     if (isModeloGenerico) {
-      // 🆕 Patch 6.2 + 7: Cálculo genérico com custo variável
+      // 🆕 Patch 6.2 + 7 + 8: Cálculo genérico com custo variável + cenários
       const resultado = calcularCustoVariavelMensal(
         input.receitas!,
         mes,
         input.custoVariavelGlobalPct
       );
-      receitaBruta = Math.round(resultado.receitaBruta);
-      custoVariavel = Math.round(resultado.custoVariavel);
+      
+      // Patch 8: Aplicar multiplicadores de cenário
+      const scenario = input.scenario ?? SCENARIOS_PADRAO[0]; // Default: Base
+      
+      const receitaBrutaBase = Math.round(resultado.receitaBruta);
+      const custoVariavelBase = Math.round(resultado.custoVariavel);
+      const opexBase = Math.round(calcularCustosFixos(input.custosFixos ?? [], mes));
+      
+      receitaBruta = Math.round(receitaBrutaBase * scenario.multiplicadorReceita);
+      custoVariavel = Math.round(custoVariavelBase * scenario.multiplicadorCustoVariavel);
       receitaLiquida = receitaBruta - custoVariavel;
       margemBrutaPct = receitaBruta > 0 ? (receitaLiquida / receitaBruta) * 100 : 0;
-      opex = Math.round(calcularCustosFixos(input.custosFixos ?? [], mes));
+      opex = Math.round(opexBase * scenario.multiplicadorOpex);
     } else {
       // 🔒 Fallback: Cálculo legado (academia) - sem custo variável
       const clientes = calcularClientes(input, mes);
@@ -448,4 +473,31 @@ export function calcularAnaliseViabilidade(input: ViabilityInput): {
   const indicadores = calcularIndicadores(input, fluxoCaixa);
   
   return { fluxoCaixa, indicadores };
+}
+
+/**
+ * Patch 8: Calcula análise de viabilidade para múltiplos cenários
+ * Retorna array com resultados de cada cenário (Base, Conservador, Otimista)
+ */
+export function calcularAnaliseViabilidadeCenarios(
+  input: ViabilityInput,
+  cenarios: ScenarioConfig[]
+): Array<{
+  scenario: string;
+  fluxoCaixa: MesFluxo[];
+  indicadores: Indicadores;
+  config: ScenarioConfig;
+}> {
+  return cenarios.map((scenario) => {
+    const { fluxoCaixa, indicadores } = calcularAnaliseViabilidade({
+      ...input,
+      scenario,
+    });
+    return {
+      scenario: scenario.nome,
+      fluxoCaixa,
+      indicadores,
+      config: scenario,
+    };
+  });
 }

@@ -89,6 +89,22 @@ export default function ViabilidadeNova() {
     { nome: "", valorMensal: 0 },
   ]);
 
+  // Patch 8: Estados para cenários
+  const [usarCenariosAutomaticos, setUsarCenariosAutomaticos] = useState(true);
+  
+  type CenarioCustom = {
+    nome: "Base" | "Conservador" | "Otimista";
+    multiplicadorReceita: number;
+    multiplicadorCustoVariavel: number;
+    multiplicadorOpex: number;
+  };
+  
+  const [cenariosCustom, setCenariosCustom] = useState<CenarioCustom[]>([
+    { nome: "Base", multiplicadorReceita: 1, multiplicadorCustoVariavel: 1, multiplicadorOpex: 1 },
+    { nome: "Conservador", multiplicadorReceita: 0.85, multiplicadorCustoVariavel: 1.1, multiplicadorOpex: 1.1 },
+    { nome: "Otimista", multiplicadorReceita: 1.15, multiplicadorCustoVariavel: 0.95, multiplicadorOpex: 0.95 },
+  ]);
+
   const createMutation = trpc.viability.create.useMutation({
     onSuccess: (data) => {
       toast.success("Análise criada com sucesso!");
@@ -178,6 +194,9 @@ export default function ViabilidadeNova() {
       custoVariavelGlobalPct: formData.custoVariavelGlobalPct
         ? parseFloat(formData.custoVariavelGlobalPct)
         : null,
+      // Patch 8: Adicionar cenários
+      usarCenariosAutomaticos,
+      ...(usarCenariosAutomaticos ? {} : { cenariosCustom }),
       ...(fromSimulationId && { originSimulationId: parseInt(fromSimulationId) }),
     };
 
@@ -505,6 +524,126 @@ export default function ViabilidadeNova() {
                   </p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Patch 8: Cenários */}
+          <Card>
+            <CardHeader>
+              <CardTitle>6. Cenários de Análise</CardTitle>
+              <CardDescription>
+                Analise sua viabilidade em 3 cenários: Base, Conservador e Otimista
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Checkbox */}
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="usarCenariosAutomaticos"
+                  checked={usarCenariosAutomaticos}
+                  onChange={e => setUsarCenariosAutomaticos(e.target.checked)}
+                  className="h-4 w-4"
+                />
+                <Label htmlFor="usarCenariosAutomaticos" className="text-sm font-medium">
+                  Usar cenários automáticos (recomendado)
+                </Label>
+              </div>
+
+              {/* Preview de presets (se automático) */}
+              {usarCenariosAutomaticos && (
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-sm font-medium mb-3">Multiplicadores Automáticos:</p>
+                  <div className="grid grid-cols-3 gap-4 text-xs">
+                    <div>
+                      <p className="font-semibold">Base</p>
+                      <p>Receita: 1.0x</p>
+                      <p>Custo Var.: 1.0x</p>
+                      <p>OPEX: 1.0x</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold">Conservador</p>
+                      <p>Receita: 0.8x</p>
+                      <p>Custo Var.: 1.1x</p>
+                      <p>OPEX: 1.1x</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold">Otimista</p>
+                      <p>Receita: 1.2x</p>
+                      <p>Custo Var.: 0.9x</p>
+                      <p>OPEX: 0.95x</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Inputs customizáveis (se livre) */}
+              {!usarCenariosAutomaticos && (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Configure os multiplicadores para cada cenário:</p>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2">Cenário</th>
+                          <th className="text-center py-2">Receita</th>
+                          <th className="text-center py-2">Custo Var.</th>
+                          <th className="text-center py-2">OPEX</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cenariosCustom.map((cenario, idx) => (
+                          <tr key={cenario.nome} className="border-b">
+                            <td className="py-2 font-medium">{cenario.nome}</td>
+                            <td className="py-2">
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={cenario.multiplicadorReceita}
+                                onChange={e => {
+                                  const novo = [...cenariosCustom];
+                                  novo[idx].multiplicadorReceita = parseFloat(e.target.value) || 0;
+                                  setCenariosCustom(novo);
+                                }}
+                                className="h-8 text-center"
+                              />
+                            </td>
+                            <td className="py-2">
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={cenario.multiplicadorCustoVariavel}
+                                onChange={e => {
+                                  const novo = [...cenariosCustom];
+                                  novo[idx].multiplicadorCustoVariavel = parseFloat(e.target.value) || 0;
+                                  setCenariosCustom(novo);
+                                }}
+                                className="h-8 text-center"
+                              />
+                            </td>
+                            <td className="py-2">
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={cenario.multiplicadorOpex}
+                                onChange={e => {
+                                  const novo = [...cenariosCustom];
+                                  novo[idx].multiplicadorOpex = parseFloat(e.target.value) || 0;
+                                  setCenariosCustom(novo);
+                                }}
+                                className="h-8 text-center"
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 

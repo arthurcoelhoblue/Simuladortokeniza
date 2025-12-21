@@ -1283,22 +1283,41 @@ export const appRouter = router({
             reajusteAnualPct: z.number().optional(),
           })
         ).optional(),
+        // Patch 8: Cenários
+        usarCenariosAutomaticos: z.boolean().optional(),
+        cenariosCustom: z.array(
+          z.object({
+            nome: z.enum(["Base", "Conservador", "Otimista"]),
+            multiplicadorReceita: z.number().positive(),
+            multiplicadorCustoVariavel: z.number().positive(),
+            multiplicadorOpex: z.number().positive(),
+          })
+        ).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { calcularAnaliseViabilidade } = await import("./viabilityCalculations");
+        const { calcularAnaliseViabilidadeCenarios, SCENARIOS_PADRAO } = await import("./viabilityCalculations");
         
-        // Calcular fluxo de caixa e indicadores
-        const { fluxoCaixa, indicadores } = calcularAnaliseViabilidade(input);
+        // Patch 8: Determinar cenários a usar
+        const cenarios = input.usarCenariosAutomaticos !== false
+          ? SCENARIOS_PADRAO
+          : (input.cenariosCustom && input.cenariosCustom.length > 0
+              ? input.cenariosCustom
+              : SCENARIOS_PADRAO);
         
-        // Determinar status
-        const status = indicadores.viavel ? 'viavel' : 'inviavel';
+        // Calcular fluxo de caixa e indicadores para todos os cenários
+        const resultadosCenarios = calcularAnaliseViabilidadeCenarios(input, cenarios);
+        
+        // Usar cenário Base para determinar status
+        const cenarioBase = resultadosCenarios.find(r => r.scenario === "Base")!;
+        const status = cenarioBase.indicadores.viavel ? 'viavel' : 'inviavel';
         
         // Salvar no banco
         const id = await db.createViabilityAnalysis({
           ...input,
           userId: ctx.user.id,
-          fluxoCaixa: JSON.stringify(fluxoCaixa),
-          indicadores: JSON.stringify(indicadores),
+          // Patch 8: Salvar resultados de todos os cenários como JSON
+          fluxoCaixa: JSON.stringify(resultadosCenarios),
+          indicadores: JSON.stringify(resultadosCenarios.map(r => ({ scenario: r.scenario, indicadores: r.indicadores }))),
           status,
           originSimulationId: input.originSimulationId ?? null,
           // Patch 6.1: Persistir receitas e custosFixos como JSON
@@ -1310,7 +1329,7 @@ export const appRouter = router({
         
         console.log(`✅ Análise de viabilidade criada: #${id} (${status})`);
         
-        return { id, status, indicadores };
+        return { id, status, indicadores: cenarioBase.indicadores };
       }),
     
     // Listar análises do usuário
