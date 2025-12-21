@@ -1,0 +1,21 @@
+{
+  "query": "SELECT id, userId, modo, tipoSimulacao, origemSimulacao, valorTotalOferta, valorInvestido, descricaoOferta, createdAt \nFROM simulations \nWHERE id = 1170001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, userId, modo, tipoSimulacao, origemSimulacao, valorTotalOferta, valorInvestido, descricaoOferta, createdAt \nFROM simulations \nWHERE id = 1170001;",
+  "rows": [
+    {
+      "id": "1170001",
+      "userId": "4440001",
+      "modo": "investidor",
+      "tipoSimulacao": "investimento",
+      "origemSimulacao": "manual",
+      "valorTotalOferta": "500000000",
+      "valorInvestido": "NULL",
+      "descricaoOferta": "NULL",
+      "createdAt": "2025-12-21 16:37:02"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tmodo\ttipoSimulacao\torigemSimulacao\tvalorTotalOferta\tvalorInvestido\tdescricaoOferta\tcreatedAt\n1170001\t4440001\tinvestidor\tinvestimento\tmanual\t500000000\tNULL\tNULL\t2025-12-21 16:37:02\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

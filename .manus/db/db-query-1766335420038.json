@@ -1,0 +1,19 @@
+{
+  "query": "SELECT s.id, s.userId, u.name as userName, s.modo, s.tipoSimulacao, s.descricaoOferta, s.createdAt \nFROM simulations s \nLEFT JOIN users u ON s.userId = u.id \nWHERE s.id = 1170001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT s.id, s.userId, u.name as userName, s.modo, s.tipoSimulacao, s.descricaoOferta, s.createdAt \nFROM simulations s \nLEFT JOIN users u ON s.userId = u.id \nWHERE s.id = 1170001;",
+  "rows": [
+    {
+      "id": "1170001",
+      "userId": "4440001",
+      "userName": "Arthur Coelho",
+      "modo": "investidor",
+      "tipoSimulacao": "investimento",
+      "descricaoOferta": "NULL",
+      "createdAt": "2025-12-21 16:37:02"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tuserName\tmodo\ttipoSimulacao\tdescricaoOferta\tcreatedAt\n1170001\t4440001\tArthur Coelho\tinvestidor\tinvestimento\tNULL\t2025-12-21 16:37:02\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

@@ -1227,3 +1227,30 @@
 - [x] Validar botão "vem tornar seu sonho realidade" aparece na simulação de captador
 - [x] Gerar relatório completo do Patch 1.1
 - [x] Criar checkpoint
+
+
+## 🐛 BUG CRÍTICO: Simulação criada como investidor mesmo escolhendo captador
+
+**Reportado por:** Arthur Coelho  
+**Data:** 21/12/2025  
+**Simulação afetada:** #1170001
+
+### Descrição
+Usuário clicou em "Sou Captador" na tela seletora, mas a simulação foi salva como **investidor** (mostra "Investido: R$ 5.000.000,00" em vez de "Valor a Captar").
+
+### Checklist de Investigação
+- [x] Verificar dados da simulação #1170001 no banco (modo, tipoSimulacao, valorInvestido vs valorTotalOferta)
+- [x] Verificar se guarda de redirecionamento está funcionando (NewSimulation.tsx linha 39-44)
+- [x] Verificar se modo está sendo lido corretamente da URL
+- [x] Investigar código de criação no backend (server/routers.ts linha 309)
+- [x] Verificar se tipoSimulacao está sendo derivado corretamente do modo
+- [x] Identificar onde o modo está sendo perdido ou sobrescrito
+- [x] Corrigir bug (linha 161-166: prioridade input.modo > input.tipoSimulacao)
+- [x] Testar criação de nova simulação de captador via `/new?modo=captador` (aguardando teste manual do usuário)
+- [x] Validar que campos corretos são salvos (modo='captador', tipoSimulacao='financiamento') (aguardando teste manual)
+- [x] Criar checkpoint
+
+### Causa Raiz
+**Problema:** Schema Zod tinha `.default("investimento")` no campo `tipoSimulacao`, então o valor nunca era `undefined` e a lógica de fallback `input.modo === 'captador'` nunca era executada.
+
+**Solução:** Invertida prioridade da lógica - agora verifica `input.modo` PRIMEIRO, e só usa `input.tipoSimulacao` como fallback se `modo` não estiver presente.

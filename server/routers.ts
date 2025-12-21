@@ -158,7 +158,12 @@ export const appRouter = router({
 
         try {
           // VALIDAÇÃO CONTEXTUAL: investimento vs financiamento
-          const tipoSimulacao = input.tipoSimulacao || (input.modo === 'captador' ? 'financiamento' : 'investimento');
+          // PRIORIDADE: input.modo > input.tipoSimulacao (corrige bug de default do Zod)
+          const tipoSimulacao = input.modo === 'captador' 
+            ? 'financiamento' 
+            : input.modo === 'investidor' 
+              ? 'investimento' 
+              : input.tipoSimulacao;
           const valorAporte = input.valorAporte || input.valorInvestido;
           const valorDesejado = input.valorDesejado || input.valorTotalOferta;
           const sistemaAmortizacao = input.sistemaAmortizacao || (input.amortizacaoMetodo === 'bullet' ? 'BULLET' : 'LINEAR');
