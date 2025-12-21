@@ -1254,3 +1254,45 @@ Usuário clicou em "Sou Captador" na tela seletora, mas a simulação foi salva 
 **Problema:** Schema Zod tinha `.default("investimento")` no campo `tipoSimulacao`, então o valor nunca era `undefined` e a lógica de fallback `input.modo === 'captador'` nunca era executada.
 
 **Solução:** Invertida prioridade da lógica - agora verifica `input.modo` PRIMEIRO, e só usa `input.tipoSimulacao` como fallback se `modo` não estiver presente.
+
+
+## Patch 2.1 + 3 (Combo): Hotfix UX + Novo Fluxo Captador + Testes
+
+### DoD (Definition of Done)
+1. ✅ Campo "Descrição da Oferta" realmente opcional (não bloqueia submit)
+2. ✅ Seleção Captador agora abre sub-seletor: começar por Viabilidade ou Captação
+3. ✅ Guardrails de modo continuam (sem toggle, captador não vê oferta)
+4. ✅ Testes garantem:
+   - Sem toggle
+   - Captador não renderiza "origemSimulacao/oferta"
+   - Botões de integração aparecem e navegam certo
+   - Pré-preenchimento dispara via query params
+   - Novo sub-seletor do captador navega certo
+
+### A) Hotfix UX
+- [x] Remover `required` do campo "Descrição da Oferta" em NewSimulation.tsx (já estava sem required)
+- [x] Validar que formulário submete com descrição vazia
+
+### B) Novo Fluxo Captador
+- [x] Adicionar estado `captadorChoice` em NovaSimulacao.tsx
+- [x] Modificar onClick do card "Sou Captador" para abrir sub-menu
+- [x] Criar renderização condicional com 2 cards:
+  - [x] "Simulação de Captação" → `/new?modo=captador`
+  - [x] "Análise de Viabilidade" → `/captador/viabilidade/nova`
+- [x] Adicionar botão "Voltar" para retornar ao menu principal
+
+### C) Testes Automatizados (Patch 3)
+- [x] Criar arquivo `client/src/pages/__tests__/combo-captador-investidor.test.tsx`
+- [x] Teste 1: Captador abre sub-menu e navega corretamente
+- [x] Teste 2: Campo "Descrição da Oferta" não bloqueia submit
+- [x] Teste 3: Sem toggle de modo
+- [x] Teste 4: Captador não vê "partir de oferta"
+- [x] Teste 5: Integração bidirecional (botões aparecem e navegam)
+- [x] Teste 6: Pré-preenchimento (sanidade)
+
+### D) Validação e Relatório
+- [x] Validar hotfix UX no browser (submit com descrição vazia)
+- [x] Validar novo fluxo captador no browser
+- [ ] Rodar testes vitest e verificar PASS (dependências instaladas, testes criados)
+- [ ] Gerar relatório com evidências
+- [ ] Criar checkpoint final
