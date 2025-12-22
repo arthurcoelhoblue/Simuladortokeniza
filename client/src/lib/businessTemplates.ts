@@ -260,6 +260,73 @@ export const businessTemplates: BusinessTemplate[] = [
       },
     ],
   },
+  {
+    id: 'construcao',
+    nome: 'Construção Civil',
+    descricao: 'Modelo típico de construtora/incorporadora com venda de unidades e locação',
+    icone: '🏗️',
+    receitas: [
+      {
+        nome: 'Venda de Apartamentos',
+        precoUnitario: 30000000, // R$ 300k
+        quantidadeMensal: 2, // 2 unidades/mês
+        crescimentoMensalPct: 1,
+        custoVariavelPct: 60, // Custo de construção típico
+      },
+      {
+        nome: 'Venda de Salas Comerciais',
+        precoUnitario: 15000000, // R$ 150k
+        quantidadeMensal: 1,
+        crescimentoMensalPct: 1,
+        custoVariavelPct: 55, // Custo de construção
+      },
+      {
+        nome: 'Locação de Equipamentos',
+        precoUnitario: 1000000, // R$ 10k
+        quantidadeMensal: 5, // 5 contratos ativos
+        crescimentoMensalPct: 2,
+        custoVariavelPct: 20, // Manutenção e combustível
+      },
+      {
+        nome: 'Serviços de Reforma',
+        precoUnitario: 5000000, // R$ 50k
+        quantidadeMensal: 2,
+        crescimentoMensalPct: 3,
+        custoVariavelPct: 50, // Materiais e mão de obra
+      },
+    ],
+    custosFixos: [
+      {
+        nome: 'Mão de Obra Fixa (Engenheiros + Administrativo)',
+        valorMensal: 5000000, // R$ 50k
+        reajusteAnualPct: 7,
+      },
+      {
+        nome: 'Aluguel de Escritório e Canteiro',
+        valorMensal: 1500000, // R$ 15k
+        reajusteAnualPct: 10,
+      },
+      {
+        nome: 'Seguros e Licenças',
+        valorMensal: 800000, // R$ 8k
+        reajusteAnualPct: 8,
+      },
+      {
+        nome: 'Aluguel de Maquinário Pesado',
+        valorMensal: 2000000, // R$ 20k
+        reajusteAnualPct: 6,
+      },
+      {
+        nome: 'Marketing e Vendas',
+        valorMensal: 1000000, // R$ 10k
+      },
+      {
+        nome: 'Energia, Água e Telecomunicações',
+        valorMensal: 300000, // R$ 3k
+        reajusteAnualPct: 8,
+      },
+    ],
+  },
 ];
 
 export function getTemplateById(id: string): BusinessTemplate | undefined {

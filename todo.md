@@ -1752,3 +1752,22 @@ Fazer o sistema interpretar a viabilidade (não apenas calculá-la), classifican
 - [ ] Testes backend passando (6/6)
 - [ ] Confirmação de que cenário Conservador é a base
 - [ ] Gerar relatório final (RELATORIO_PATCH_9A_RISCO.md)
+
+## BUG: Erro NaN no Template Clínica Médica
+
+- [x] Identificar origem dos valores NaN no template Clínica Médica
+- [x] Corrigir template para enviar valores numéricos válidos (0 ao invés de NaN)
+- [ ] Validar criação de análise via browser
+- [ ] Criar checkpoint com correção
+
+## Auditoria de Templates de Negócio
+- [ ] Verificar template Academia (campos OPEX vazios?)
+- [ ] Verificar template Restaurante (campos OPEX vazios?)
+- [ ] Verificar template SaaS B2B (campos OPEX vazios?)
+- [ ] Verificar template Clínica Médica (já validado, OK)
+- [ ] Corrigir templates com campos undefined/vazios
+
+## Template Construção Civil
+- [x] Criar template com receitas típicas (venda de unidades, locação de equipamentos)
+- [x] Adicionar custos fixos típicos (mão de obra, aluguel de maquinário, seguros)
+- [x] Validar template via browser

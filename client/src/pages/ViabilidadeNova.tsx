@@ -133,6 +133,17 @@ export default function ViabilidadeNova() {
     toast.success("Pré-preenchido a partir da simulação");
   }, [simulationQuery.data]);
 
+  // Helper para converter string vazia ou inválida em 0
+  const parseFloatSafe = (value: string): number => {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  const parseIntSafe = (value: string): number => {
+    const parsed = parseInt(value);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -147,27 +158,27 @@ export default function ViabilidadeNova() {
       prazoMeses: parseInt(formData.prazoMeses),
       carenciaMeses: parseInt(formData.carenciaMeses),
       modeloPagamento: formData.modeloPagamento,
-      capexObras: Math.round(parseFloat(formData.capexObras) * 100),
-      capexEquipamentos: Math.round(parseFloat(formData.capexEquipamentos) * 100),
-      capexLicencas: Math.round(parseFloat(formData.capexLicencas) * 100),
-      capexMarketing: Math.round(parseFloat(formData.capexMarketing) * 100),
-      capexCapitalGiro: Math.round(parseFloat(formData.capexCapitalGiro) * 100),
-      capexOutros: Math.round(parseFloat(formData.capexOutros) * 100),
-      opexAluguel: Math.round(parseFloat(formData.opexAluguel) * 100),
-      opexPessoal: Math.round(parseFloat(formData.opexPessoal) * 100),
-      opexRoyalties: Math.round(parseFloat(formData.opexRoyalties) * 100),
-      opexMarketing: Math.round(parseFloat(formData.opexMarketing) * 100),
-      opexUtilidades: Math.round(parseFloat(formData.opexUtilidades) * 100),
-      opexManutencao: Math.round(parseFloat(formData.opexManutencao) * 100),
-      opexSeguros: Math.round(parseFloat(formData.opexSeguros) * 100),
-      opexOutros: Math.round(parseFloat(formData.opexOutros) * 100),
-      ticketMedio: Math.round(parseFloat(formData.ticketMedio) * 100),
-      capacidadeMaxima: parseInt(formData.capacidadeMaxima),
-      mesAbertura: parseInt(formData.mesAbertura),
-      clientesInicio: parseInt(formData.clientesInicio),
-      taxaCrescimento: Math.round(parseFloat(formData.taxaCrescimento) * 100),
-      mesEstabilizacao: parseInt(formData.mesEstabilizacao),
-      clientesSteadyState: parseInt(formData.clientesSteadyState),
+      capexObras: Math.round(parseFloatSafe(formData.capexObras) * 100),
+      capexEquipamentos: Math.round(parseFloatSafe(formData.capexEquipamentos) * 100),
+      capexLicencas: Math.round(parseFloatSafe(formData.capexLicencas) * 100),
+      capexMarketing: Math.round(parseFloatSafe(formData.capexMarketing) * 100),
+      capexCapitalGiro: Math.round(parseFloatSafe(formData.capexCapitalGiro) * 100),
+      capexOutros: Math.round(parseFloatSafe(formData.capexOutros) * 100),
+      opexAluguel: Math.round(parseFloatSafe(formData.opexAluguel) * 100),
+      opexPessoal: Math.round(parseFloatSafe(formData.opexPessoal) * 100),
+      opexRoyalties: Math.round(parseFloatSafe(formData.opexRoyalties) * 100),
+      opexMarketing: Math.round(parseFloatSafe(formData.opexMarketing) * 100),
+      opexUtilidades: Math.round(parseFloatSafe(formData.opexUtilidades) * 100),
+      opexManutencao: Math.round(parseFloatSafe(formData.opexManutencao) * 100),
+      opexSeguros: Math.round(parseFloatSafe(formData.opexSeguros) * 100),
+      opexOutros: Math.round(parseFloatSafe(formData.opexOutros) * 100),
+      ticketMedio: Math.round(parseFloatSafe(formData.ticketMedio) * 100),
+      capacidadeMaxima: parseIntSafe(formData.capacidadeMaxima),
+      mesAbertura: parseIntSafe(formData.mesAbertura),
+      clientesInicio: parseIntSafe(formData.clientesInicio),
+      taxaCrescimento: Math.round(parseFloatSafe(formData.taxaCrescimento) * 100),
+      mesEstabilizacao: parseIntSafe(formData.mesEstabilizacao),
+      clientesSteadyState: parseIntSafe(formData.clientesSteadyState),
     };
 
     // Patch 6.1: Adicionar receitas e custosFixos ao payload
