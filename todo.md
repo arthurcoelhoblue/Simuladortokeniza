@@ -1771,3 +1771,29 @@ Fazer o sistema interpretar a viabilidade (não apenas calculá-la), classifican
 - [x] Criar template com receitas típicas (venda de unidades, locação de equipamentos)
 - [x] Adicionar custos fixos típicos (mão de obra, aluguel de maquinário, seguros)
 - [x] Validar template via browser
+
+##- [x] Patch 9B: Gráfico Multi-Cenário + Seed de Validação Parte A - Seed Demo (9A.1 embutido)
+- [x] Criar endpoint viability.seedDemo (dev-only, protectedProcedure)
+- [x] Endpoint cria análise "Demo Patch 9B" com receitas/custos genéricos
+- [x] Garantir que cenários são calculados automaticamente
+- [x] Garantir que risk é preenchido (Patch 9A)
+- [x] Adicionar botão "Criar análise demo (dev)" na UI (só em dev)
+- [x] Botão redireciona para /captador/viabilidade/{id} após criar
+
+### Parte B - Gráfico Multi-Cenário
+- [x] Criar componente MultiScenarioEbitdaChart.tsx
+- [x] Gráfico com 3 linhas (Base/Conservador/Otimista)
+- [x] Eixo X: 1-60 meses, Eixo Y: EBITDA
+- [x] Marcadores de payback por cenário
+- [x] Integrar gráfico em ViabilidadeDetalhes abaixo do card de risco
+- [x] Retrocompatibilidade: análise antiga (sem cenários) mostra 1 linha
+
+### Testes
+- [x] Backend: viability-seed-demo.test.ts (retorna id, risk preenchido, 3 cenários) - 2/2 testes passando
+- [x] Frontend: viabilidade-multiscenario-chart.test.tsx (parseCenarios, 60 pontos, legado) - 6/6 testes passando
+
+### Validação E2E
+- [x] Clicar botão seed e abrir análise nova (#30001)
+- [x] Badge + card de risco visíveis (🟩 Baixo Risco)
+- [x] Gráfico com 3 linhas (cores diferentes: azul/vermelho/verde)
+- [x] Marcadores de payback abaixo do gráfico (1 meses cada)

@@ -2,9 +2,10 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { Plus } from "lucide-react";
+import { Plus, Beaker } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { toast } from "sonner";
 
 /**
  * Página de listagem de análises de viabilidade
@@ -14,6 +15,17 @@ export default function ViabilidadeList() {
   const [, setLocation] = useLocation();
   
   const { data: analyses, isLoading } = trpc.viability.list.useQuery();
+  const seedDemo = trpc.viability.seedDemo.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Análise demo criada: #${data.id}`);
+      setLocation(`/captador/viabilidade/${data.id}`);
+    },
+    onError: (error) => {
+      toast.error(`Erro ao criar demo: ${error.message}`);
+    },
+  });
+  
+  const isDev = import.meta.env.DEV;
 
   // Redirecionar se não for captador
   useEffect(() => {
@@ -44,10 +56,23 @@ export default function ViabilidadeList() {
               Valide a viabilidade financeira dos seus projetos
             </p>
           </div>
-          <Button onClick={() => setLocation('/captador/viabilidade/nova')} size="lg">
-            <Plus className="mr-2 h-5 w-5" />
-            Nova Análise
-          </Button>
+          <div className="flex gap-2">
+            {isDev && (
+              <Button 
+                onClick={() => seedDemo.mutate()} 
+                variant="outline" 
+                size="lg"
+                disabled={seedDemo.isPending}
+              >
+                <Beaker className="mr-2 h-5 w-5" />
+                {seedDemo.isPending ? 'Criando...' : 'Demo (dev)'}
+              </Button>
+            )}
+            <Button onClick={() => setLocation('/captador/viabilidade/nova')} size="lg">
+              <Plus className="mr-2 h-5 w-5" />
+              Nova Análise
+            </Button>
+          </div>
         </div>
 
         {/* Lista de Análises */}

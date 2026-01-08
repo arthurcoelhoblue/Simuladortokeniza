@@ -8,6 +8,7 @@ import { useLocation, useParams } from "wouter";
 import FluxoCaixaChart from "@/components/charts/FluxoCaixaChart";
 import EbitdaChart from "@/components/charts/EbitdaChart";
 import ClientesChart from "@/components/charts/ClientesChart";
+import MultiScenarioEbitdaChart from "@/components/charts/MultiScenarioEbitdaChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useState } from "react";
 
@@ -392,6 +393,32 @@ export default function ViabilidadeDetalhes() {
             </Card>
           );
         })()}
+
+        {/* Patch 9B: Gráfico Multi-Cenário */}
+        {cenarios.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                📈 Sensibilidade (EBITDA por cenário)
+              </CardTitle>
+              <CardDescription>
+                Comparação de EBITDA entre cenários Base, Conservador e Otimista ao longo de 60 meses
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MultiScenarioEbitdaChart 
+                series={cenarios.map(c => ({
+                  scenario: c.scenario,
+                  paybackMeses: c.indicadores?.payback ?? null,
+                  points: c.fluxoCaixa.map((row: any, idx: number) => ({
+                    mes: idx + 1,
+                    ebitda: row.ebitda ?? 0,
+                  })),
+                }))}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Indicadores Principais */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">

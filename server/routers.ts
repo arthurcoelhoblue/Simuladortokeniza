@@ -1228,6 +1228,143 @@ export const appRouter = router({
 
   // Router de Análise de Viabilidade
   viability: router({
+    // Seed demo (dev-only) - Patch 9B
+    seedDemo: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        if (process.env.NODE_ENV === "production") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Endpoint disponível apenas em desenvolvimento" });
+        }
+        
+        const inputDemo = {
+          nome: "Demo Patch 9B - Construção Civil",
+          valorCaptacao: 200000000, // R$ 2M
+          coInvestimento: 1000, // 10%
+          feeFixo: 5000000, // R$ 50k
+          taxaSucesso: 500, // 5%
+          taxaJurosMensal: 150, // 1.5%
+          prazoMeses: 60,
+          carenciaMeses: 6,
+          modeloPagamento: "SAC" as const,
+          capexObras: 80000000, // R$ 800k
+          capexEquipamentos: 30000000, // R$ 300k
+          capexLicencas: 5000000, // R$ 50k
+          capexMarketing: 10000000, // R$ 100k
+          capexCapitalGiro: 15000000, // R$ 150k
+          capexOutros: 10000000, // R$ 100k
+          opexAluguel: 0,
+          opexPessoal: 0,
+          opexRoyalties: 0,
+          opexMarketing: 0,
+          opexUtilidades: 0,
+          opexManutencao: 0,
+          opexSeguros: 0,
+          opexOutros: 0,
+          ticketMedio: 30000000, // R$ 300k (legado, não usado)
+          capacidadeMaxima: 100,
+          mesAbertura: 1,
+          clientesInicio: 1,
+          taxaCrescimento: 100, // 1%
+          mesEstabilizacao: 12,
+          clientesSteadyState: 10,
+          originSimulationId: null,
+          receitas: [
+            {
+              nome: "Venda de Apartamentos",
+              precoUnitario: 30000000, // R$ 300k
+              quantidadeMensal: 2,
+              crescimentoMensalPct: 1,
+              custoVariavelPct: 60,
+            },
+            {
+              nome: "Venda de Salas Comerciais",
+              precoUnitario: 15000000, // R$ 150k
+              quantidadeMensal: 1,
+              crescimentoMensalPct: 1,
+              custoVariavelPct: 55,
+            },
+            {
+              nome: "Locação de Equipamentos",
+              precoUnitario: 1000000, // R$ 10k
+              quantidadeMensal: 5,
+              crescimentoMensalPct: 2,
+              custoVariavelPct: 20,
+            },
+          ],
+          custosFixos: [
+            {
+              nome: "Mão de Obra Fixa",
+              valorMensal: 5000000, // R$ 50k
+              reajusteAnualPct: 7,
+            },
+            {
+              nome: "Aluguel de Escritório",
+              valorMensal: 1500000, // R$ 15k
+              reajusteAnualPct: 10,
+            },
+            {
+              nome: "Seguros e Licenças",
+              valorMensal: 800000, // R$ 8k
+              reajusteAnualPct: 8,
+            },
+            {
+              nome: "Aluguel de Maquinário",
+              valorMensal: 2000000, // R$ 20k
+              reajusteAnualPct: 6,
+            },
+          ],
+          custoVariavelGlobalPct: null,
+          usarCenariosAutomaticos: true,
+        };
+        
+        // Reutilizar pipeline do create
+        const { calcularAnaliseViabilidadeCenarios, SCENARIOS_PADRAO } = await import("./viabilityCalculations");
+        const cenarios = SCENARIOS_PADRAO;
+        const resultadosCenarios = calcularAnaliseViabilidadeCenarios(inputDemo, cenarios);
+        
+        // Classificar risco (Patch 9A)
+        const { classificarRiscoCompleto } = await import("./viabilityRisk");
+        const cenarioConservador = resultadosCenarios.find(r => r.scenario === "Conservador");
+        
+        let riskClassification = null;
+        if (cenarioConservador) {
+          const mes12 = cenarioConservador.fluxoCaixa[11] ?? cenarioConservador.fluxoCaixa[cenarioConservador.fluxoCaixa.length - 1];
+          const mes24 = cenarioConservador.fluxoCaixa[23] ?? cenarioConservador.fluxoCaixa[cenarioConservador.fluxoCaixa.length - 1];
+          
+          riskClassification = classificarRiscoCompleto({
+            indicadores: {
+              paybackMeses: cenarioConservador.indicadores.payback,
+              ebitdaMes24: mes24?.ebitda ?? 0,
+            },
+            metricas: {
+              margemBrutaPctMes12: mes12?.margemBrutaPct ?? 0,
+              opexMensal: mes12?.opex ?? 0,
+              receitaMensal: mes12?.receitaBruta ?? 0,
+              paybackMeses: cenarioConservador.indicadores.payback,
+            },
+          });
+        }
+        
+        const cenarioBase = resultadosCenarios.find(r => r.scenario === "Base")!;
+        const status = cenarioBase.indicadores.viavel ? 'viavel' : 'inviavel';
+        
+        // Salvar no banco
+        const id = await db.createViabilityAnalysis({
+          ...inputDemo,
+          userId: ctx.user.id,
+          fluxoCaixa: JSON.stringify(resultadosCenarios),
+          indicadores: JSON.stringify(resultadosCenarios.map(r => ({ scenario: r.scenario, indicadores: r.indicadores }))),
+          status,
+          originSimulationId: null,
+          receitas: JSON.stringify(inputDemo.receitas),
+          custosFixos: JSON.stringify(inputDemo.custosFixos),
+          custoVariavelGlobalPct: null,
+          risk: riskClassification ? JSON.stringify(riskClassification) : null,
+        });
+        
+        console.log(`🧪 [DEV] Análise demo criada: #${id} (${status})`);
+        
+        return { id, status };
+      }),
     // Criar nova análise
     create: protectedProcedure
       .input(z.object({
