@@ -30,11 +30,15 @@ import Opportunities from "./pages/Opportunities";
 import InvestidorDashboard from "./pages/InvestidorDashboard";
 import NovaSimulacao from "./pages/NovaSimulacao";
 import SelecionarModoInvestidor from "./pages/SelecionarModoInvestidor";
+import MeusInvestimentos from "./pages/MeusInvestimentos";
+import HistoricoInvestidor from "./pages/HistoricoInvestidor";
+import OnboardingTour from "./components/OnboardingTour";
 
 function Router() {
   return (
     <>
       <Navigation />
+      <OnboardingTour />
       <Switch>
         {/* ========== ROTAS PÚBLICAS ========== */}
         <Route path="/" component={Home} />
@@ -77,6 +81,12 @@ function Router() {
         
         {/* Ofertas disponíveis */}
         <Route path="/investidor/ofertas" component={Opportunities} />
+        
+        {/* Meus Investimentos */}
+        <Route path="/investidor/investimentos" component={MeusInvestimentos} />
+        
+        {/* Histórico de Transações */}
+        <Route path="/investidor/historico" component={HistoricoInvestidor} />
         
         {/* ========== ROTAS LEGADAS (redirecionamentos) ========== */}
         {/* Manter compatibilidade com URLs antigas */}

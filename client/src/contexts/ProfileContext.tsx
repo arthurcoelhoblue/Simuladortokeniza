@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 
 /**
@@ -28,26 +29,53 @@ interface ProfileProviderProps {
 /**
  * Provider que gerencia o perfil ativo do usuário
  * 
- * O perfil é persistido em localStorage para manter a escolha entre sessões.
+ * O perfil é persistido tanto em localStorage (para acesso rápido) quanto
+ * no banco de dados (para sincronização entre dispositivos).
  * O mesmo usuário pode alternar entre Captador e Investidor a qualquer momento.
  */
 export function ProfileProvider({ children }: ProfileProviderProps) {
   const [activeProfile, setActiveProfile] = useState<ProfileType | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user, isAuthenticated } = useAuth();
+  
+  // Mutation para salvar perfil no banco
+  const selecionarPerfilMutation = trpc.auth.selecionarPerfil.useMutation();
 
-  // Carregar perfil do localStorage ao iniciar
+  // Carregar perfil ao iniciar - prioriza banco, depois localStorage
   useEffect(() => {
-    const savedProfile = localStorage.getItem("activeProfile") as ProfileType | null;
-    if (savedProfile && (savedProfile === "captador" || savedProfile === "investidor")) {
-      setActiveProfile(savedProfile);
-    }
-    setLoading(false);
-  }, []);
+    const loadProfile = () => {
+      // Se usuário está autenticado e tem perfil salvo no banco, usar esse
+      if (isAuthenticated && user?.perfil) {
+        setActiveProfile(user.perfil as ProfileType);
+        localStorage.setItem("activeProfile", user.perfil);
+        setLoading(false);
+        return;
+      }
+      
+      // Senão, tentar carregar do localStorage
+      const savedProfile = localStorage.getItem("activeProfile") as ProfileType | null;
+      if (savedProfile && (savedProfile === "captador" || savedProfile === "investidor")) {
+        setActiveProfile(savedProfile);
+      }
+      setLoading(false);
+    };
 
-  // Função para alternar perfil
+    loadProfile();
+  }, [isAuthenticated, user?.perfil]);
+
+  // Função para alternar perfil - salva em localStorage E no banco
   const switchProfile = (profile: ProfileType) => {
     setActiveProfile(profile);
     localStorage.setItem("activeProfile", profile);
+    
+    // Salvar no banco se usuário estiver autenticado
+    if (isAuthenticated) {
+      selecionarPerfilMutation.mutate({ perfil: profile }, {
+        onError: (error) => {
+          console.error("[ProfileContext] Erro ao salvar perfil no banco:", error);
+        },
+      });
+    }
   };
 
   // Função para verificar perfil ativo

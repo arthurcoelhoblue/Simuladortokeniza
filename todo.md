@@ -1887,3 +1887,26 @@ Separar completamente as funcionalidades de Captador e Investidor em áreas dist
 - [x] Validar navegação unificada em todas as páginas
 - [x] Dropdown de perfil visível em todas as páginas
 - [x] Troca de perfil funcionando (Captador ↔ Investidor)
+
+
+## Melhorias do Sistema de Perfil
+
+### 1. Persistir Perfil no Banco
+- [x] Campo `perfil` ENUM('captador', 'investidor') já existe na tabela users
+- [x] Endpoint `auth.selecionarPerfil` já existe para salvar preferência
+- [x] Atualizar ProfileContext para sincronizar com banco
+- [x] Carregar perfil do banco no login (se existir)
+
+### 2. Páginas do Investidor
+- [x] Criar página MeusInvestimentos.tsx com lista de investimentos
+- [x] Criar página HistoricoInvestidor.tsx com histórico de transações
+- [x] Registrar rotas no App.tsx
+- [x] Adicionar dados mockados para demonstração
+
+### 3. Onboarding por Perfil
+- [x] Criar componente OnboardingTour.tsx
+- [x] Implementar tour para Captador (4 passos)
+- [x] Implementar tour para Investidor (4 passos)
+- [x] Persistir flag `onboarding_{perfil}_completed` no localStorage
+- [x] Mostrar tour apenas na primeira vez
+- [x] Integrar OnboardingTour no App.tsx
