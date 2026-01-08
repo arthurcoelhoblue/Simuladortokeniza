@@ -1,28 +1,97 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useProfile } from "@/contexts/ProfileContext";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
-import { BarChart3, FileText, Home, LogOut, Plus, Target } from "lucide-react";
+import { 
+  BarChart3, 
+  FileText, 
+  Home, 
+  LogOut, 
+  Plus, 
+  Target, 
+  Building2, 
+  TrendingUp,
+  Calculator,
+  Users,
+  Briefcase,
+  PieChart,
+  Wallet,
+  History
+} from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "./ui/button";
+import ProfileSwitcher from "./ProfileSwitcher";
+
+interface NavItem {
+  path: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  public?: boolean;
+  adminOnly?: boolean;
+}
+
+// Itens de navegação para Captador
+const captadorNavItems: NavItem[] = [
+  { path: "/captador/dashboard", label: "Dashboard", icon: Home },
+  { path: "/captador/viabilidade", label: "Viabilidade", icon: Calculator },
+  { path: "/captador/simulacoes/nova", label: "Nova Captação", icon: Plus },
+  { path: "/captador/oportunidades", label: "Oportunidades", icon: Target },
+  { path: "/captador/propostas", label: "Propostas", icon: FileText, adminOnly: true },
+  { path: "/captador/leads", label: "Leads", icon: Users, adminOnly: true },
+];
+
+// Itens de navegação para Investidor
+const investidorNavItems: NavItem[] = [
+  { path: "/investidor/dashboard", label: "Dashboard", icon: Home },
+  { path: "/investidor/ofertas", label: "Ofertas", icon: Briefcase },
+  { path: "/investidor/simulacoes/nova", label: "Simular", icon: Calculator },
+  { path: "/investidor/investimentos", label: "Investimentos", icon: Wallet },
+  { path: "/investidor/historico", label: "Histórico", icon: History },
+];
+
+// Itens públicos (sem perfil selecionado)
+const publicNavItems: NavItem[] = [
+  { path: "/", label: "Início", icon: Home, public: true },
+];
 
 export default function Navigation() {
   const { user, loading, isAuthenticated, logout } = useAuth();
+  const { activeProfile } = useProfile();
   const [location, setLocation] = useLocation();
 
   const isAdmin = user?.email === "arthur@blueconsult.com.br" || user?.email === "arthurcsantos@gmail.com";
 
-  const navItems = [
-    { path: "/", label: "Início", icon: Home, public: true },
-    { path: "/nova-simulacao", label: "Nova Simulação", icon: Plus, public: false },
-    { path: "/opportunities", label: "Oportunidades", icon: Target, public: false },
-    { path: "/dashboard/leads", label: "Dashboard", icon: BarChart3, public: false, adminOnly: true },
-    { path: "/propostas", label: "Propostas", icon: FileText, public: false, adminOnly: true },
-  ];
+  // Determinar quais itens de navegação mostrar baseado no perfil ativo
+  const getNavItems = (): NavItem[] => {
+    if (!isAuthenticated) {
+      return publicNavItems;
+    }
+
+    if (activeProfile === "captador") {
+      return captadorNavItems;
+    }
+
+    if (activeProfile === "investidor") {
+      return investidorNavItems;
+    }
+
+    // Sem perfil selecionado, mostrar apenas início
+    return publicNavItems;
+  };
+
+  const navItems = getNavItems();
 
   const visibleItems = navItems.filter((item) => {
     if (item.adminOnly && !isAdmin) return false;
     if (!item.public && !isAuthenticated) return false;
     return true;
   });
+
+  // Verificar se a rota atual pertence ao perfil ativo
+  const isRouteActive = (path: string) => {
+    if (path === "/" && location === "/") return true;
+    if (path !== "/" && location.startsWith(path)) return true;
+    return location === path;
+  };
 
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -34,14 +103,14 @@ export default function Navigation() {
             className="flex items-center gap-2 font-semibold text-lg hover:opacity-80 transition-opacity"
           >
             {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-8 w-8" />}
-            <span>{APP_TITLE}</span>
+            <span className="hidden sm:inline">{APP_TITLE}</span>
           </button>
 
           {/* Nav Links */}
           <div className="hidden md:flex items-center gap-1">
             {visibleItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location === item.path;
+              const isActive = isRouteActive(item.path);
               return (
                 <Button
                   key={item.path}
@@ -58,20 +127,26 @@ export default function Navigation() {
           </div>
         </div>
 
-        {/* Auth Section */}
-        <div className="flex items-center gap-4">
+        {/* Auth Section + Profile Switcher */}
+        <div className="flex items-center gap-3">
           {loading ? (
             <span className="text-sm text-muted-foreground">Carregando...</span>
           ) : isAuthenticated && user ? (
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">
+            <>
+              {/* Profile Switcher */}
+              <ProfileSwitcher />
+              
+              {/* User info */}
+              <span className="hidden lg:inline text-sm text-muted-foreground">
                 {user.name || user.email}
               </span>
-              <Button variant="outline" size="sm" onClick={logout}>
-                <LogOut className="w-4 h-4 mr-2" />
-                Sair
+              
+              {/* Logout */}
+              <Button variant="ghost" size="sm" onClick={logout}>
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline ml-2">Sair</span>
               </Button>
-            </div>
+            </>
           ) : (
             <Button size="sm" onClick={() => (window.location.href = getLoginUrl())}>
               Entrar
@@ -85,7 +160,7 @@ export default function Navigation() {
         <div className="container flex items-center gap-1 py-2 overflow-x-auto">
           {visibleItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location === item.path;
+            const isActive = isRouteActive(item.path);
             return (
               <Button
                 key={item.path}

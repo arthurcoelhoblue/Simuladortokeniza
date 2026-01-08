@@ -1,47 +1,33 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useProfile, ProfileType } from "@/contexts/ProfileContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_LOGO, APP_TITLE } from "@/const";
-import { trpc } from "@/lib/trpc";
-import { Building2, TrendingUp } from "lucide-react";
-import { useEffect } from "react";
+import { Building2, TrendingUp, ArrowRight } from "lucide-react";
 import { useLocation } from "wouter";
-import { toast } from "sonner";
 
 /**
- * Página de seleção de perfil após login
- * Permite usuário escolher entre Captador ou Investidor
+ * Página de seleção de perfil
+ * 
+ * Permite o usuário escolher entre Captador ou Investidor.
+ * O mesmo usuário pode ter ambos os perfis e alternar a qualquer momento.
+ * O perfil selecionado é armazenado em localStorage (não no banco).
  */
 export default function SelecionarPerfil() {
   const { user, loading } = useAuth();
+  const { activeProfile, switchProfile } = useProfile();
   const [, setLocation] = useLocation();
-  const utils = trpc.useUtils();
 
-  const selecionarPerfilMutation = trpc.auth.selecionarPerfil.useMutation({
-    onSuccess: (data) => {
-      toast.success(`Perfil ${data.perfil === 'captador' ? 'Captador' : 'Investidor'} selecionado!`);
-      utils.auth.me.invalidate();
-      
-      // Redirecionar para módulo correto
-      if (data.perfil === 'captador') {
-        setLocation('/captador/dashboard');
-      } else {
-        setLocation('/investidor/dashboard');
-      }
-    },
-    onError: (error) => {
-      toast.error(`Erro ao selecionar perfil: ${error.message}`);
-    },
-  });
-
-  // Se já tem perfil, redirecionar
-  useEffect(() => {
-    if (user?.perfil === 'captador') {
+  const handleSelectProfile = (perfil: ProfileType) => {
+    switchProfile(perfil);
+    
+    // Redirecionar para dashboard do perfil selecionado
+    if (perfil === 'captador') {
       setLocation('/captador/dashboard');
-    } else if (user?.perfil === 'investidor') {
+    } else {
       setLocation('/investidor/dashboard');
     }
-  }, [user, setLocation]);
+  };
 
   if (loading) {
     return (
@@ -54,22 +40,9 @@ export default function SelecionarPerfil() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Acesso Negado</CardTitle>
-            <CardDescription>Você precisa estar logado para acessar esta página.</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Header */}
+      {/* Header simplificado */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-3">
@@ -78,9 +51,11 @@ export default function SelecionarPerfil() {
             )}
             <span className="text-xl font-bold">{APP_TITLE}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">{user.name || user.email}</span>
-          </div>
+          {user && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">{user.name || user.email}</span>
+            </div>
+          )}
         </div>
       </header>
 
@@ -89,9 +64,14 @@ export default function SelecionarPerfil() {
         <div className="w-full max-w-5xl">
           {/* Título */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-3">Bem-vindo ao {APP_TITLE}</h1>
+            <h1 className="text-4xl font-bold mb-3">
+              {activeProfile ? 'Trocar Perfil' : `Bem-vindo ao ${APP_TITLE}`}
+            </h1>
             <p className="text-xl text-muted-foreground">
-              Como você deseja utilizar a plataforma?
+              {activeProfile 
+                ? 'Selecione o perfil que deseja usar agora'
+                : 'Como você deseja utilizar a plataforma?'
+              }
             </p>
           </div>
 
@@ -99,9 +79,19 @@ export default function SelecionarPerfil() {
           <div className="grid md:grid-cols-2 gap-8">
             {/* Card Captador */}
             <Card 
-              className="relative overflow-hidden border-2 hover:border-primary transition-all cursor-pointer group hover:shadow-lg"
-              onClick={() => selecionarPerfilMutation.mutate({ perfil: 'captador' })}
+              className={`relative overflow-hidden border-2 transition-all cursor-pointer group hover:shadow-lg ${
+                activeProfile === 'captador' 
+                  ? 'border-primary ring-2 ring-primary/20' 
+                  : 'hover:border-primary'
+              }`}
+              onClick={() => handleSelectProfile('captador')}
             >
+              {activeProfile === 'captador' && (
+                <div className="absolute top-4 right-4 px-2 py-1 text-xs font-medium rounded-full bg-primary text-primary-foreground">
+                  Ativo
+                </div>
+              )}
+              
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -z-10 group-hover:scale-150 transition-transform" />
               
               <CardHeader className="pb-4">
@@ -110,9 +100,9 @@ export default function SelecionarPerfil() {
                     <Building2 className="h-8 w-8 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl">Sou Captador</CardTitle>
+                    <CardTitle className="text-2xl">Captador</CardTitle>
                     <CardDescription className="text-base">
-                      Quero captar recursos via tokenização
+                      Capte recursos via tokenização
                     </CardDescription>
                   </div>
                 </div>
@@ -120,7 +110,7 @@ export default function SelecionarPerfil() {
 
               <CardContent className="space-y-3">
                 <p className="text-muted-foreground">
-                  Acesse ferramentas para:
+                  Ferramentas disponíveis:
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
@@ -142,24 +132,31 @@ export default function SelecionarPerfil() {
                 </ul>
 
                 <Button 
-                  className="w-full mt-6" 
+                  className="w-full mt-6 gap-2" 
                   size="lg"
-                  disabled={selecionarPerfilMutation.isPending}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    selecionarPerfilMutation.mutate({ perfil: 'captador' });
-                  }}
+                  variant={activeProfile === 'captador' ? 'default' : 'outline'}
                 >
-                  {selecionarPerfilMutation.isPending ? 'Selecionando...' : 'Continuar como Captador'}
+                  {activeProfile === 'captador' ? 'Perfil Ativo' : 'Entrar como Captador'}
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </CardContent>
             </Card>
 
             {/* Card Investidor */}
             <Card 
-              className="relative overflow-hidden border-2 hover:border-green-500 transition-all cursor-pointer group hover:shadow-lg"
-              onClick={() => selecionarPerfilMutation.mutate({ perfil: 'investidor' })}
+              className={`relative overflow-hidden border-2 transition-all cursor-pointer group hover:shadow-lg ${
+                activeProfile === 'investidor' 
+                  ? 'border-green-500 ring-2 ring-green-500/20' 
+                  : 'hover:border-green-500'
+              }`}
+              onClick={() => handleSelectProfile('investidor')}
             >
+              {activeProfile === 'investidor' && (
+                <div className="absolute top-4 right-4 px-2 py-1 text-xs font-medium rounded-full bg-green-600 text-white">
+                  Ativo
+                </div>
+              )}
+              
               <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-bl-full -z-10 group-hover:scale-150 transition-transform" />
               
               <CardHeader className="pb-4">
@@ -168,9 +165,9 @@ export default function SelecionarPerfil() {
                     <TrendingUp className="h-8 w-8 text-green-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl">Sou Investidor</CardTitle>
+                    <CardTitle className="text-2xl">Investidor</CardTitle>
                     <CardDescription className="text-base">
-                      Quero investir em ativos tokenizados
+                      Invista em ativos tokenizados
                     </CardDescription>
                   </div>
                 </div>
@@ -178,7 +175,7 @@ export default function SelecionarPerfil() {
 
               <CardContent className="space-y-3">
                 <p className="text-muted-foreground">
-                  Acesse ferramentas para:
+                  Ferramentas disponíveis:
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
@@ -200,15 +197,16 @@ export default function SelecionarPerfil() {
                 </ul>
 
                 <Button 
-                  className="w-full mt-6 bg-green-600 hover:bg-green-700" 
+                  className={`w-full mt-6 gap-2 ${
+                    activeProfile === 'investidor' 
+                      ? 'bg-green-600 hover:bg-green-700' 
+                      : 'border-green-600 text-green-600 hover:bg-green-600 hover:text-white'
+                  }`}
                   size="lg"
-                  disabled={selecionarPerfilMutation.isPending}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    selecionarPerfilMutation.mutate({ perfil: 'investidor' });
-                  }}
+                  variant={activeProfile === 'investidor' ? 'default' : 'outline'}
                 >
-                  {selecionarPerfilMutation.isPending ? 'Selecionando...' : 'Continuar como Investidor'}
+                  {activeProfile === 'investidor' ? 'Perfil Ativo' : 'Entrar como Investidor'}
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </CardContent>
             </Card>
@@ -216,7 +214,7 @@ export default function SelecionarPerfil() {
 
           {/* Nota */}
           <p className="text-center text-sm text-muted-foreground mt-8">
-            Você poderá trocar de perfil a qualquer momento nas configurações da sua conta.
+            💡 Você pode alternar entre os perfis a qualquer momento pelo menu superior
           </p>
         </div>
       </main>

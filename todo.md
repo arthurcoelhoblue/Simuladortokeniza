@@ -1812,3 +1812,61 @@ Substituir recomendações baseadas em regras por análise personalizada usando 
 - [x] Fallback para recomendações baseadas em regras se LLM falhar (implementado no backend)
 - [x] Criar testes backend (10/10 passando)
 - [x] Validar E2E via browser (análise #60001 criada com sucesso)
+
+
+## Separação Captador vs Investidor
+
+### Objetivo
+Separar completamente as funcionalidades de Captador e Investidor em áreas distintas do sistema, permitindo uso independente de cada perfil.
+
+**IMPORTANTE**: O mesmo usuário pode atuar como Captador E Investidor simultaneamente, alternando entre perfis a qualquer momento.
+
+### Arquitetura Proposta
+
+**Perfil Captador** (quem cria ofertas/análises):
+- [ ] Dashboard próprio: /captador/dashboard
+- [ ] Análise de Viabilidade: /captador/viabilidade/*
+- [ ] Criar Ofertas: /captador/ofertas/*
+- [ ] Simulações de Captação: /captador/simulacoes/*
+- [ ] Propostas: /captador/propostas/*
+- [ ] Dashboard de Leads: /captador/leads
+
+**Perfil Investidor** (quem investe):
+- [ ] Dashboard próprio: /investidor/dashboard
+- [ ] Explorar Ofertas: /investidor/ofertas
+- [ ] Minhas Simulações: /investidor/simulacoes/*
+- [ ] Meus Investimentos: /investidor/investimentos
+- [ ] Histórico: /investidor/historico
+
+### Implementação
+
+**Fase 1: Navegação baseada em perfil**
+- [x] Criar contexto de perfil (ProfileContext) - armazenado em localStorage
+- [x] Criar componente de seleção de perfil (ProfileSelector)
+- [x] Criar componente de troca rápida (ProfileSwitcher)
+- [x] Atualizar Navigation com menus dinâmicos por perfil
+- [x] Atualizar página SelecionarPerfil
+
+**Fase 1.1: Correções**
+- [x] Corrigir dashboards para usar ProfileContext ao invés de user.perfil
+- [x] Corrigir erro de cenarioBase duplicado no routers.ts
+
+**Fase 2: Layouts específicos**
+- [x] CaptadorLayout: menu de captador (via Navigation dinâmica)
+- [x] InvestidorLayout: menu de investidor (via Navigation dinâmica)
+- [x] Navegação dinâmica baseada no perfil ativo
+
+**Fase 3: Guards de rota**
+- [ ] Verificar perfil do usuário antes de acessar rotas
+- [ ] Redirecionar para dashboard correto se perfil não corresponder
+- [ ] Permitir troca de perfil via menu
+
+**Fase 4: Migração de funcionalidades**
+- [ ] Mover páginas existentes para estrutura correta
+- [ ] Atualizar imports e referências
+- [ ] Garantir que cada área funcione independentemente
+
+**Fase 5: Testes**
+- [ ] Testar fluxo completo de Captador
+- [ ] Testar fluxo completo de Investidor
+- [ ] Testar troca de perfil

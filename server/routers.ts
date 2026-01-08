@@ -1344,8 +1344,8 @@ export const appRouter = router({
           });
         }
         
-        const cenarioBase = resultadosCenarios.find(r => r.scenario === "Base")!;
-        const status = cenarioBase.indicadores.viavel ? 'viavel' : 'inviavel';
+        const cenarioBaseSeed = resultadosCenarios.find(r => r.scenario === "Base")!;
+        const status = cenarioBaseSeed.indicadores.viavel ? 'viavel' : 'inviavel';
         
         // Salvar no banco
         const id = await db.createViabilityAnalysis({

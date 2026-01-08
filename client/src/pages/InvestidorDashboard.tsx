@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useProfile } from "@/contexts/ProfileContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, Briefcase, Search, TrendingUp } from "lucide-react";
@@ -10,14 +11,15 @@ import { useLocation } from "wouter";
  */
 export default function InvestidorDashboard() {
   const { user, loading } = useAuth();
+  const { activeProfile } = useProfile();
   const [, setLocation] = useLocation();
 
-  // Redirecionar se não for investidor
+  // Redirecionar se o perfil ativo não for investidor
   useEffect(() => {
-    if (user && user.perfil !== 'investidor') {
+    if (!loading && activeProfile && activeProfile !== 'investidor') {
       setLocation('/selecionar-perfil');
     }
-  }, [user, setLocation]);
+  }, [activeProfile, loading, setLocation]);
 
   if (loading) {
     return (
@@ -48,7 +50,7 @@ export default function InvestidorDashboard() {
         {/* Cards de Ações Principais */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Simulação de Retornos */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/nova-simulacao')}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/investidor/simulacoes/nova')}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-green-500/10">
@@ -71,7 +73,7 @@ export default function InvestidorDashboard() {
           </Card>
 
           {/* Oportunidades */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/opportunities')}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/investidor/ofertas')}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-blue-500/10">
@@ -117,7 +119,7 @@ export default function InvestidorDashboard() {
           </Card>
 
           {/* Portfólio */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation('/investidor/investimentos')}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-orange-500/10">

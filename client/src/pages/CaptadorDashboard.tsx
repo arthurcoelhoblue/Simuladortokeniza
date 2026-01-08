@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useProfile } from "@/contexts/ProfileContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, Building2, Calculator, FileText, TrendingUp } from "lucide-react";
@@ -10,14 +11,15 @@ import { useLocation } from "wouter";
  */
 export default function CaptadorDashboard() {
   const { user, loading } = useAuth();
+  const { activeProfile } = useProfile();
   const [, setLocation] = useLocation();
 
-  // Redirecionar se não for captador
+  // Redirecionar se o perfil ativo não for captador
   useEffect(() => {
-    if (user && user.perfil !== 'captador') {
+    if (!loading && activeProfile && activeProfile !== 'captador') {
       setLocation('/selecionar-perfil');
     }
-  }, [user, setLocation]);
+  }, [activeProfile, loading, setLocation]);
 
   if (loading) {
     return (
