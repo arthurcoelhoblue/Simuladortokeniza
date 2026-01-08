@@ -7,6 +7,7 @@ import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { calcularSimulacao, SimulationInput } from "./calculator";
 import * as db from "./db";
 import { generatePDFHTML } from "./pdfExport";
+import { notifyOwner } from "./_core/notification";
 
 /**
  * Lista de emails com acesso administrativo
@@ -1803,6 +1804,67 @@ export const appRouter = router({
         console.log(`📝 PDF gerado: ${fileName} -> ${url}`);
         
         return { pdfUrl: url };
+      }),
+  }),
+
+  // ==================== LEADS ====================
+  leads: router({
+    // Criar ou atualizar lead (deduplicação por email/whatsapp)
+    createOrUpdate: publicProcedure
+      .input(z.object({
+        nomeCompleto: z.string().min(3),
+        email: z.string().email(),
+        whatsapp: z.string().min(10),
+        empresa: z.string().optional(),
+        canalOrigem: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        // Tentar encontrar lead existente por email ou whatsapp
+        let existingLead = await db.getLeadByEmail(input.email);
+        if (!existingLead) {
+          existingLead = await db.getLeadByWhatsapp(input.whatsapp);
+        }
+
+        if (existingLead) {
+          // Lead já existe, retornar ID existente
+          console.log("📋 Lead existente encontrado:", existingLead.id);
+          return { id: existingLead.id, isNew: false };
+        }
+
+        // Criar novo lead
+        const leadId = await db.createLead({
+          nomeCompleto: input.nomeCompleto,
+          email: input.email,
+          whatsapp: input.whatsapp,
+          canalOrigem: input.canalOrigem || "simulador_web",
+        });
+
+        console.log("✅ Novo lead criado:", leadId);
+
+        // Notificar owner sobre novo lead
+        try {
+          await notifyOwner({
+            title: `🎯 Novo Lead Capturado: ${input.nomeCompleto}`,
+            content: `**Novo lead no Simulador Tokeniza!**\n\n` +
+              `👤 **Nome:** ${input.nomeCompleto}\n` +
+              `📧 **Email:** ${input.email}\n` +
+              `📱 **WhatsApp:** ${input.whatsapp}\n` +
+              `🏢 **Empresa:** ${input.empresa || "Não informada"}\n` +
+              `📍 **Origem:** ${input.canalOrigem || "simulador_web"}\n\n` +
+              `Acesse o dashboard de leads para mais detalhes.`,
+          });
+        } catch (error) {
+          console.warn("[Leads] Falha ao notificar owner:", error);
+        }
+
+        return { id: leadId, isNew: true };
+      }),
+
+    // Buscar lead por ID
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return db.getLeadById(input.id);
       }),
   }),
 });

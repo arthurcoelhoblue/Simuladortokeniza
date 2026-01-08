@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ConversionCTA } from "@/components/ConversionCTA";
 
 export default function SimulationView() {
   const [, params] = useRoute("/simulation/:id");
@@ -964,6 +965,34 @@ export default function SimulationView() {
             </div>
           </CardContent>
         </Card>
+
+        {/* CTA de Conversão - Quero Investir (apenas para modo investidor) */}
+        {simulation.modo === 'investidor' && (
+          <div className="mt-8">
+            <ConversionCTA 
+              variant="investidor" 
+              context={{
+                simulationId: simulation.id,
+                offerName: simulation.descricaoOferta || "Simulação personalizada",
+                investmentAmount: simulation.valorAporte,
+                expectedReturn: simulation.tirAnual || 0,
+              }}
+            />
+          </div>
+        )}
+
+        {/* CTA de Conversão - Quero Tokenizar (apenas para modo captador) */}
+        {(simulation.modo === 'captador' || simulation.tipoSimulacao === 'financiamento') && (
+          <div className="mt-8">
+            <ConversionCTA 
+              variant="captador" 
+              context={{
+                simulationId: simulation.id,
+                projectName: simulation.descricaoOferta || "Projeto de captação",
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Modal para Captador */}

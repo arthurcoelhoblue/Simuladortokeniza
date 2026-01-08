@@ -1910,3 +1910,83 @@ Separar completamente as funcionalidades de Captador e Investidor em áreas dist
 - [x] Persistir flag `onboarding_{perfil}_completed` no localStorage
 - [x] Mostrar tour apenas na primeira vez
 - [x] Integrar OnboardingTour no App.tsx
+
+
+## FASE 1: Captura de Leads Obrigatória (Isca Digital)
+
+### 1.1 Componente LeadCaptureForm
+- [x] Criar componente LeadCaptureForm.tsx
+- [x] Campos: nome, email, telefone (WhatsApp), empresa (opcional)
+- [x] Validação de email (formato válido)
+- [x] Validação de telefone (formato brasileiro)
+- [x] Checkbox de aceite dos termos de uso e LGPD
+- [x] Link para política de privacidade
+- [x] Design responsivo e atraente
+
+### 1.2 Integração com Fluxos de Simulação
+- [x] Investidor: Exibir LeadCaptureForm antes de /investidor/simulacoes/nova
+- [x] Captador: Exibir LeadCaptureForm antes de /captador/viabilidade/nova
+- [x] Criar contexto LeadContext para gerenciar dados do lead
+- [x] Criar componente RequireLeadCapture para proteger páginas
+- [x] Criar página LeadCapturePage.tsx
+- [ ] Captador: Exibir LeadCaptureForm antes de /captador/simulacoes/nova
+- [ ] Salvar lead na tabela leads existente
+- [ ] Associar leadId à simulação/análise criada
+- [ ] Pré-preencher dados se usuário já é lead conhecido
+
+### 1.3 Validações e LGPD
+- [ ] Validação de email com regex robusto
+- [ ] Validação de telefone brasileiro (11 dígitos)
+- [ ] Checkbox obrigatório de aceite LGPD
+- [ ] Criar página /termos com termos de uso
+- [ ] Criar página /privacidade com política de privacidade
+- [ ] Salvar timestamp de aceite no banco
+
+### 1.4 Email Automático com Resultados
+- [ ] Criar template de email para Investidor (resultados da simulação)
+- [ ] Criar template de email para Captador (resultados da análise)
+- [ ] Integrar com serviço de email (notifyOwner ou similar)
+- [ ] Enviar email automaticamente após simulação/análise
+- [ ] Incluir CTA no email (Quero Investir / Quero Tokenizar)
+
+### 1.5 CTAs de Conversão
+- [ ] Botão "Quero Investir" após simulação do Investidor
+- [ ] Botão "Quero Tokenizar" após análise do Captador
+- [ ] Criar oportunidade no sistema ao clicar no CTA
+- [ ] Integrar com Pipedrive (se configurado)
+- [ ] Exibir modal de confirmação/agradecimento
+
+### 1.6 Testes e Validação
+- [ ] Testar fluxo Investidor: captura → simulação → email → CTA
+- [ ] Testar fluxo Captador: captura → análise → email → CTA
+- [ ] Validar criação de leads no banco
+- [ ] Validar envio de emails
+- [ ] Validar criação de oportunidades
+
+
+## Atualização 08/01/2026 - Integração ConversionCTA e RequireLeadCapture
+
+### Componentes Criados/Atualizados
+- [x] ConversionCTA.tsx - Componente de CTA de conversão (Quero Investir / Quero Tokenizar)
+- [x] RequireLeadCapture.tsx - Wrapper para proteger rotas que requerem captura de lead
+- [x] LeadCaptureForm.tsx - Formulário de captura de leads com validação
+- [x] LeadCapturePage.tsx - Página intermediária de captura de leads
+- [x] LeadContext.tsx - Contexto para gerenciar estado do lead capturado
+
+### Integração SimulationView
+- [x] Adicionar ConversionCTA na página SimulationView.tsx
+- [x] CTA "Quero Investir" para modo investidor
+- [x] CTA "Quero Tokenizar" para modo captador/financiamento
+- [x] Corrigir campo valorInvestido para valorAporte
+
+### Fluxo de Captura de Leads
+- [x] Rota /capturar-lead registrada no App.tsx
+- [x] LeadProvider integrado no App.tsx
+- [x] Redirecionamento automático para captura antes de simulações
+- [x] Persistência de lead no localStorage (24h)
+- [x] Integração com backend via tRPC leads.createOrUpdate
+
+### Testes Realizados
+- [x] Verificar redirecionamento para captura de lead ao clicar em "Simular Agora"
+- [x] Verificar formulário de captura de lead com validações
+- [x] Verificar fluxo de preenchimento e submissão do formulário

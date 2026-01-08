@@ -11,6 +11,7 @@ import ClientesChart from "@/components/charts/ClientesChart";
 import MultiScenarioEbitdaChart from "@/components/charts/MultiScenarioEbitdaChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useState } from "react";
+import { ConversionCTA } from "@/components/ConversionCTA";
 
 type ResultadoCenario = {
   scenario: "Base" | "Conservador" | "Otimista";
@@ -861,6 +862,20 @@ export default function ViabilidadeDetalhes() {
             </div>
           </CardContent>
         </Card>
+
+        {/* CTA de Conversão - Quero Tokenizar */}
+        {analysis.status === "viavel" && (
+          <div className="mt-8">
+            <ConversionCTA 
+              variant="captador" 
+              context={{
+                analysisId: analysis.id,
+                projectName: analysis.nome,
+                viabilityStatus: analysis.status,
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

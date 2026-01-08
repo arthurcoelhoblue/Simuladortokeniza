@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { businessTemplates, getTemplateById } from "@/lib/businessTemplates";
+import { RequireLeadCapture } from "@/components/RequireLeadCapture";
 
 // Patch 6.1: Tipos para viabilidade genérica
 type ReceitaItem = {
@@ -215,7 +216,8 @@ export default function ViabilidadeNova() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <RequireLeadCapture variant="captador">
+      <div className="min-h-screen bg-background">
       <div className="container py-8 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Nova Análise de Viabilidade</h1>
@@ -822,7 +824,8 @@ export default function ViabilidadeNova() {
             </Button>
           </div>
         </form>
+        </div>
       </div>
-    </div>
+    </RequireLeadCapture>
   );
 }

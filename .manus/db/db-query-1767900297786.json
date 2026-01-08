@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, modo, tipoSimulacao, descricaoOferta FROM simulations ORDER BY id DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, modo, tipoSimulacao, descricaoOferta FROM simulations ORDER BY id DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "1200050",
+      "modo": "investidor",
+      "tipoSimulacao": "financiamento",
+      "descricaoOferta": "NULL"
+    },
+    {
+      "id": "1200049",
+      "modo": "investidor",
+      "tipoSimulacao": "investimento",
+      "descricaoOferta": "Teste oportunidade"
+    },
+    {
+      "id": "1200048",
+      "modo": "investidor",
+      "tipoSimulacao": "investimento",
+      "descricaoOferta": "NULL"
+    },
+    {
+      "id": "1200046",
+      "modo": "investidor",
+      "tipoSimulacao": "financiamento",
+      "descricaoOferta": "NULL"
+    },
+    {
+      "id": "1200045",
+      "modo": "investidor",
+      "tipoSimulacao": "investimento",
+      "descricaoOferta": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tmodo\ttipoSimulacao\tdescricaoOferta\n1200050\tinvestidor\tfinanciamento\tNULL\n1200049\tinvestidor\tinvestimento\tTeste oportunidade\n1200048\tinvestidor\tinvestimento\tNULL\n1200046\tinvestidor\tfinanciamento\tNULL\n1200045\tinvestidor\tinvestimento\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1005
+}

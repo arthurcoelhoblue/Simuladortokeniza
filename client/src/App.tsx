@@ -6,6 +6,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ProfileProvider } from "./contexts/ProfileContext";
+import { LeadProvider } from "./contexts/LeadContext";
 
 // Páginas compartilhadas
 import Home from "./pages/Home";
@@ -33,6 +34,7 @@ import SelecionarModoInvestidor from "./pages/SelecionarModoInvestidor";
 import MeusInvestimentos from "./pages/MeusInvestimentos";
 import HistoricoInvestidor from "./pages/HistoricoInvestidor";
 import OnboardingTour from "./components/OnboardingTour";
+import LeadCapturePage from "./pages/LeadCapturePage";
 
 function Router() {
   return (
@@ -43,6 +45,7 @@ function Router() {
         {/* ========== ROTAS PÚBLICAS ========== */}
         <Route path="/" component={Home} />
         <Route path="/selecionar-perfil" component={SelecionarPerfil} />
+        <Route path="/capturar-lead" component={LeadCapturePage} />
         
         {/* ========== ROTAS DO CAPTADOR ========== */}
         {/* Dashboard principal do captador */}
@@ -116,10 +119,12 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark" switchable>
         <ProfileProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
+          <LeadProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </LeadProvider>
         </ProfileProvider>
       </ThemeProvider>
     </ErrorBoundary>

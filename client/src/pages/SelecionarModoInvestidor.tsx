@@ -2,11 +2,13 @@ import { User, Building2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { RequireLeadCapture } from "@/components/RequireLeadCapture";
 
 export default function SelecionarModoInvestidor() {
   const [, setLocation] = useLocation();
 
   return (
+    <RequireLeadCapture variant="investidor">
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
@@ -97,5 +99,6 @@ export default function SelecionarModoInvestidor() {
         </div>
       </div>
     </div>
+    </RequireLeadCapture>
   );
 }
