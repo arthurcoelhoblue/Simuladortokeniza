@@ -1796,4 +1796,19 @@ Fazer o sistema interpretar a viabilidade (não apenas calculá-la), classifican
 - [x] Clicar botão seed e abrir análise nova (#30001)
 - [x] Badge + card de risco visíveis (🟩 Baixo Risco)
 - [x] Gráfico com 3 linhas (cores diferentes: azul/vermelho/verde)
-- [x] Marcadores de payback abaixo do gráfico (1 meses cada)
+- [x] Marcadores de payback abaixo do gráfico (1 meses cada- [x] Patch 9C: Recomendações com IA (LLM)
+
+### Objetivo
+Substituir recomendações baseadas em regras por análise personalizada usando LLM
+
+### Tarefas
+- [x] Analisar estrutura atual de recomendações (viabilityRisk.ts)
+- [x] Estudar integração LLM disponível (server/_core/llm.ts)
+- [x] Criar função generateAIRecommendations no backend
+- [x] Definir prompt estruturado com contexto financeiro
+- [x] Integrar no fluxo de criação de análise (viability.create)
+- [x] Atualizar schema do banco para armazenar recomendações IA (reutiliza campo risk JSON)
+- [x] Atualizar frontend para exibir recomendações IA (card redesenhado)
+- [x] Fallback para recomendações baseadas em regras se LLM falhar (implementado no backend)
+- [x] Criar testes backend (10/10 passando)
+- [x] Validar E2E via browser (análise #60001 criada com sucesso)

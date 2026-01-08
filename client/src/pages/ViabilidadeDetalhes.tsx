@@ -316,7 +316,7 @@ export default function ViabilidadeDetalhes() {
           </Card>
         )}
 
-        {/* Patch 9A: Card de Leitura de Risco */}
+        {/* Patch 9A/9C: Card de Leitura de Risco com Recomendações IA */}
         {(() => {
           // Parser resiliente: aceita objeto ou string JSON
           let risk = null;
@@ -345,24 +345,56 @@ export default function ViabilidadeDetalhes() {
           const mes12 = cenarioConservador?.fluxoCaixa[11] ?? cenarioConservador?.fluxoCaixa[cenarioConservador.fluxoCaixa.length - 1];
           const margemMes12 = mes12?.margemBrutaPct ?? 0;
           
+          // Patch 9C: Campos adicionais da IA
+          const analiseResumida = risk.analiseResumida as string | undefined;
+          const pontosFortesCount = risk.pontosFortesCount as number | undefined;
+          const pontosAtencaoCount = risk.pontosAtencaoCount as number | undefined;
+          const geradoPorIA = risk.geradoPorIA as boolean | undefined;
+          
           return (
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  📌 Leitura de Risco (Cenário Conservador)
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    🧠 Análise de Risco Inteligente
+                  </CardTitle>
+                  {geradoPorIA && (
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 flex items-center gap-1">
+                      ✨ Gerado por IA
+                    </span>
+                  )}
+                </div>
                 <CardDescription>
-                  Análise de risco baseada no cenário conservador
+                  Análise baseada no cenário conservador
+                  {geradoPorIA === false && " (regras automáticas)"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Status:</p>
+                {/* Resumo da IA */}
+                {analiseResumida && (
+                  <div className="p-4 rounded-lg bg-muted/50 border border-border">
+                    <p className="text-sm italic">"{analiseResumida}"</p>
+                  </div>
+                )}
+                
+                {/* Status e contadores */}
+                <div className="flex flex-wrap items-center gap-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.className}`}>
                     {config.icon} {config.label}
                   </span>
+                  {pontosFortesCount !== undefined && pontosFortesCount > 0 && (
+                    <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300">
+                      ✅ {pontosFortesCount} ponto{pontosFortesCount > 1 ? 's' : ''} forte{pontosFortesCount > 1 ? 's' : ''}
+                    </span>
+                  )}
+                  {pontosAtencaoCount !== undefined && pontosAtencaoCount > 0 && (
+                    <span className="px-3 py-1 rounded-full text-sm font-medium bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                      ⚠️ {pontosAtencaoCount} ponto{pontosAtencaoCount > 1 ? 's' : ''} de atenção
+                    </span>
+                  )}
                 </div>
                 
+                {/* Métricas do Conservador */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Payback estimado</p>
@@ -378,12 +410,15 @@ export default function ViabilidadeDetalhes() {
                   </div>
                 </div>
                 
+                {/* Recomendações */}
                 <div>
-                  <p className="text-sm font-semibold mb-2">Sugestões:</p>
+                  <p className="text-sm font-semibold mb-2">
+                    {geradoPorIA ? '💡 Recomendações Personalizadas:' : 'Sugestões:'}
+                  </p>
                   <ul className="space-y-2">
                     {risk.recomendacoes.map((rec: string, idx: number) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-muted-foreground">–</span>
+                      <li key={idx} className="flex items-start gap-2 p-2 rounded-md bg-muted/30">
+                        <span className="text-primary font-bold">{idx + 1}.</span>
                         <span className="text-sm">{rec}</span>
                       </li>
                     ))}

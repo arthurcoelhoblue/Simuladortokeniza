@@ -1447,13 +1447,15 @@ export const appRouter = router({
         // Patch 9A: Classificar risco baseado no cenário Conservador
         const { classificarRiscoCompleto } = await import("./viabilityRisk");
         const cenarioConservador = resultadosCenarios.find(r => r.scenario === "Conservador");
+        const cenarioBase = resultadosCenarios.find(r => r.scenario === "Base");
+        const cenarioOtimista = resultadosCenarios.find(r => r.scenario === "Otimista");
         
         let riskClassification = null;
         if (cenarioConservador) {
           const mes12 = cenarioConservador.fluxoCaixa[11] ?? cenarioConservador.fluxoCaixa[cenarioConservador.fluxoCaixa.length - 1];
           const mes24 = cenarioConservador.fluxoCaixa[23] ?? cenarioConservador.fluxoCaixa[cenarioConservador.fluxoCaixa.length - 1];
           
-          riskClassification = classificarRiscoCompleto({
+          const baseRisk = classificarRiscoCompleto({
             indicadores: {
               paybackMeses: cenarioConservador.indicadores.payback,
               ebitdaMes24: mes24?.ebitda ?? 0,
@@ -1465,11 +1467,53 @@ export const appRouter = router({
               paybackMeses: cenarioConservador.indicadores.payback,
             },
           });
+          
+          // Patch 9C: Gerar recomendações com IA
+          const { generateAIRecommendations } = await import("./viabilityAIRecommendations");
+          const mes12Base = cenarioBase?.fluxoCaixa[11] ?? mes12;
+          const mes12Otimista = cenarioOtimista?.fluxoCaixa[11] ?? mes12;
+          
+          // Calcular custo variável médio
+          const custoVariavelPct = input.receitas && input.receitas.length > 0
+            ? input.receitas.reduce((acc, r) => acc + (r.custoVariavelPct ?? 0), 0) / input.receitas.length
+            : (input.custoVariavelGlobalPct ?? 30);
+          
+          const aiResult = await generateAIRecommendations({
+            nomeProjeto: input.nome,
+            riskLevel: baseRisk.level,
+            paybackMeses: cenarioConservador.indicadores.payback,
+            ebitdaMes12: mes12?.ebitda ?? 0,
+            ebitdaMes24: mes24?.ebitda ?? 0,
+            margemBrutaPctMes12: mes12?.margemBrutaPct ?? 0,
+            ebitdaBase: mes12Base?.ebitda ?? 0,
+            ebitdaConservador: mes12?.ebitda ?? 0,
+            ebitdaOtimista: mes12Otimista?.ebitda ?? 0,
+            receitaMensal: mes12?.receitaBruta ?? 0,
+            opexMensal: mes12?.opex ?? 0,
+            custoVariavelPct,
+            valorCaptacao: input.valorCaptacao,
+            taxaJurosMensal: input.taxaJurosMensal,
+            prazoMeses: input.prazoMeses,
+            modeloPagamento: input.modeloPagamento,
+            quantidadeReceitas: input.receitas?.length ?? 1,
+            receitaPrincipal: input.receitas?.[0]?.nome,
+            quantidadeCustosFixos: input.custosFixos?.length ?? 1,
+            custoPrincipal: input.custosFixos?.[0]?.nome,
+          });
+          
+          // Combinar classificação base com recomendações IA
+          riskClassification = {
+            ...baseRisk,
+            recomendacoes: aiResult.recomendacoes,
+            analiseResumida: aiResult.analiseResumida,
+            pontosFortesCount: aiResult.pontosFortesCount,
+            pontosAtencaoCount: aiResult.pontosAtencaoCount,
+            geradoPorIA: aiResult.geradoPorIA,
+          };
         }
         
         // Usar cenário Base para determinar status
-        const cenarioBase = resultadosCenarios.find(r => r.scenario === "Base")!;
-        const status = cenarioBase.indicadores.viavel ? 'viavel' : 'inviavel';
+        const status = cenarioBase?.indicadores.viavel ? 'viavel' : 'inviavel';
         
         // Salvar no banco
         const id = await db.createViabilityAnalysis({
@@ -1491,7 +1535,7 @@ export const appRouter = router({
         
         console.log(`✅ Análise de viabilidade criada: #${id} (${status})`);
         
-        return { id, status, indicadores: cenarioBase.indicadores };
+        return { id, status, indicadores: cenarioBase?.indicadores ?? null };
       }),
     
     // Listar análises do usuário
