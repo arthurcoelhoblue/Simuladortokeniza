@@ -1447,8 +1447,8 @@ export const appRouter = router({
         // Patch 9A: Classificar risco baseado no cenário Conservador
         const { classificarRiscoCompleto } = await import("./viabilityRisk");
         const cenarioConservador = resultadosCenarios.find(r => r.scenario === "Conservador");
-        const cenarioBase = resultadosCenarios.find(r => r.scenario === "Base");
-        const cenarioOtimista = resultadosCenarios.find(r => r.scenario === "Otimista");
+        const cenarioBaseCreate = resultadosCenarios.find(r => r.scenario === "Base");
+        const cenarioOtimistaCreate = resultadosCenarios.find(r => r.scenario === "Otimista");
         
         let riskClassification = null;
         if (cenarioConservador) {
@@ -1470,8 +1470,8 @@ export const appRouter = router({
           
           // Patch 9C: Gerar recomendações com IA
           const { generateAIRecommendations } = await import("./viabilityAIRecommendations");
-          const mes12Base = cenarioBase?.fluxoCaixa[11] ?? mes12;
-          const mes12Otimista = cenarioOtimista?.fluxoCaixa[11] ?? mes12;
+          const mes12Base = cenarioBaseCreate?.fluxoCaixa[11] ?? mes12;
+          const mes12Otimista = cenarioOtimistaCreate?.fluxoCaixa[11] ?? mes12;
           
           // Calcular custo variável médio
           const custoVariavelPct = input.receitas && input.receitas.length > 0
@@ -1513,7 +1513,7 @@ export const appRouter = router({
         }
         
         // Usar cenário Base para determinar status
-        const status = cenarioBase?.indicadores.viavel ? 'viavel' : 'inviavel';
+        const status = cenarioBaseCreate?.indicadores.viavel ? 'viavel' : 'inviavel';
         
         // Salvar no banco
         const id = await db.createViabilityAnalysis({
@@ -1535,7 +1535,7 @@ export const appRouter = router({
         
         console.log(`✅ Análise de viabilidade criada: #${id} (${status})`);
         
-        return { id, status, indicadores: cenarioBase?.indicadores ?? null };
+        return { id, status, indicadores: cenarioBaseCreate?.indicadores ?? null };
       }),
     
     // Listar análises do usuário

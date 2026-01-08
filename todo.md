@@ -1870,3 +1870,20 @@ Separar completamente as funcionalidades de Captador e Investidor em áreas dist
 - [ ] Testar fluxo completo de Captador
 - [ ] Testar fluxo completo de Investidor
 - [ ] Testar troca de perfil
+
+
+## Migração de Páginas Legadas para Navegação Unificada
+- [ ] Identificar páginas com header próprio (legado)
+- [ ] Remover headers duplicados das páginas
+- [ ] Garantir que todas usem Navigation global do App.tsx
+- [ ] Validar dropdown de perfil em todas as páginas
+
+
+## Migração de Páginas Legadas para Navigation Unificada
+- [x] Identificar páginas com header próprio (Home.tsx, SelecionarPerfil.tsx)
+- [x] Home.tsx: redireciona usuários autenticados para dashboard do perfil ativo
+- [x] SelecionarPerfil.tsx: removido header duplicado
+- [x] Corrigido erro cenarioBase duplicado no routers.ts
+- [x] Validar navegação unificada em todas as páginas
+- [x] Dropdown de perfil visível em todas as páginas
+- [x] Troca de perfil funcionando (Captador ↔ Investidor)

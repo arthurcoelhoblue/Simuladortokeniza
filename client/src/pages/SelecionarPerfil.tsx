@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useProfile, ProfileType } from "@/contexts/ProfileContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APP_LOGO, APP_TITLE } from "@/const";
+import { APP_TITLE } from "@/const";
 import { Building2, TrendingUp, ArrowRight } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -42,24 +42,7 @@ export default function SelecionarPerfil() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Header simplificado */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
-            {APP_LOGO && (
-              <img src={APP_LOGO} alt={APP_TITLE} className="h-8 w-8 object-contain" />
-            )}
-            <span className="text-xl font-bold">{APP_TITLE}</span>
-          </div>
-          {user && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{user.name || user.email}</span>
-            </div>
-          )}
-        </div>
-      </header>
-
-      {/* Content */}
+      {/* Content - Navigation global já é renderizado pelo App.tsx */}
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-5xl">
           {/* Título */}
