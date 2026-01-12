@@ -1,4 +1,4 @@
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -8,6 +8,8 @@ import { calcularSimulacao, SimulationInput } from "./calculator";
 import * as db from "./db";
 import { generatePDFHTML } from "./pdfExport";
 import { notifyOwner } from "./_core/notification";
+import * as auth from "./auth";
+import { sdk } from "./_core/sdk";
 
 /**
  * Lista de emails com acesso administrativo
@@ -37,6 +39,110 @@ export const appRouter = router({
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    
+    // Registro de novo usuário com email e senha
+    register: publicProcedure
+      .input(z.object({
+        email: z.string().email("Email inválido"),
+        password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
+        name: z.string().min(2, "Nome deve ter no mínimo 2 caracteres"),
+        telefone: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Verificar se email já está em uso
+        const existingUser = await auth.getUserByEmail(input.email);
+        if (existingUser) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Este email já está cadastrado. Tente fazer login.",
+          });
+        }
+        
+        // Criar usuário
+        const user = await auth.createUserWithPassword({
+          email: input.email,
+          password: input.password,
+          name: input.name,
+          telefone: input.telefone,
+        });
+        
+        // Criar sessão JWT
+        const sessionToken = await sdk.createSessionToken(user.openId, {
+          name: user.name || "",
+        });
+        
+        // Definir cookie
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+        
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          },
+        };
+      }),
+    
+    // Login com email e senha
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().email("Email inválido"),
+        password: z.string().min(1, "Senha é obrigatória"),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Buscar usuário por email
+        const user = await auth.getUserByEmail(input.email);
+        
+        if (!user) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Email ou senha incorretos.",
+          });
+        }
+        
+        // Verificar se usuário tem senha (pode ser usuário OAuth)
+        if (!user.passwordHash) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Esta conta foi criada com login social. Use o método de login original.",
+          });
+        }
+        
+        // Verificar senha
+        const isValidPassword = await auth.verifyPassword(input.password, user.passwordHash);
+        
+        if (!isValidPassword) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Email ou senha incorretos.",
+          });
+        }
+        
+        // Atualizar último login
+        await auth.updateLastSignedIn(user.id);
+        
+        // Criar sessão JWT
+        const sessionToken = await sdk.createSessionToken(user.openId, {
+          name: user.name || "",
+        });
+        
+        // Definir cookie
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+        
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            perfil: user.perfil,
+          },
+        };
+      }),
+    
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
@@ -44,6 +150,66 @@ export const appRouter = router({
         success: true,
       } as const;
     }),
+    
+    // Solicitar reset de senha
+    forgotPassword: publicProcedure
+      .input(z.object({
+        email: z.string().email("Email inválido"),
+      }))
+      .mutation(async ({ input }) => {
+        const user = await auth.getUserByEmail(input.email);
+        
+        // Sempre retornar sucesso para não revelar se email existe
+        if (!user) {
+          return { success: true };
+        }
+        
+        // Gerar token de reset
+        const token = await auth.setPasswordResetToken(user.id);
+        
+        // TODO: Enviar email com link de reset
+        // Por enquanto, apenas logamos o token para teste
+        console.log(`[Auth] Password reset token for ${input.email}: ${token}`);
+        
+        // Notificar owner sobre solicitação de reset (para debug)
+        await notifyOwner({
+          title: "Solicitação de Reset de Senha",
+          content: `Usuário ${input.email} solicitou reset de senha.\nToken: ${token}`,
+        });
+        
+        return { success: true };
+      }),
+    
+    // Redefinir senha com token
+    resetPassword: publicProcedure
+      .input(z.object({
+        token: z.string().min(1, "Token é obrigatório"),
+        password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
+      }))
+      .mutation(async ({ input }) => {
+        const user = await auth.getUserByResetToken(input.token);
+        
+        if (!user) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Token inválido ou expirado.",
+          });
+        }
+        
+        // Verificar se token não expirou
+        if (user.passwordResetExpires && user.passwordResetExpires < new Date()) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Token expirado. Solicite um novo reset de senha.",
+          });
+        }
+        
+        // Atualizar senha
+        await auth.updateUserPassword(user.id, input.password);
+        
+        return { success: true };
+      }),
+    
     selecionarPerfil: protectedProcedure
       .input(z.object({ perfil: z.enum(['captador', 'investidor']) }))
       .mutation(async ({ ctx, input }) => {

@@ -19,6 +19,14 @@ export const users = mysqlTable("users", {
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   perfil: mysqlEnum("perfil", ["captador", "investidor"]),
+  
+  // Campos para autenticação própria
+  passwordHash: varchar("passwordHash", { length: 255 }),
+  emailVerified: int("emailVerified").notNull().default(0), // 0 = false, 1 = true
+  emailVerificationToken: varchar("emailVerificationToken", { length: 255 }),
+  passwordResetToken: varchar("passwordResetToken", { length: 255 }),
+  passwordResetExpires: timestamp("passwordResetExpires"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

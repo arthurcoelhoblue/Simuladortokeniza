@@ -2,7 +2,8 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useProfile } from "@/contexts/ProfileContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getLoginUrl } from "@/const";
+import { getLoginUrl, getRegisterUrl } from "@/const";
+import { Link } from "wouter";
 import { Calculator, FileText, TrendingUp, Shield, Zap, BarChart3 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -68,12 +69,12 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="text-lg px-8" asChild>
-                <a href={getLoginUrl()}>
+              <Link href={getRegisterUrl()}>
+                <Button size="lg" className="text-lg px-8">
                   <Calculator className="mr-2 h-5 w-5" />
                   Começar Gratuitamente
-                </a>
-              </Button>
+                </Button>
+              </Link>
               <Button size="lg" variant="outline" className="text-lg px-8" asChild>
                 <a href="https://tokeniza.com.br" target="_blank" rel="noopener noreferrer">
                   Conheça a Tokeniza

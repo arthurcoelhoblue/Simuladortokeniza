@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useProfile } from "@/contexts/ProfileContext";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
+import { APP_LOGO, APP_TITLE, getLoginUrl, getRegisterUrl } from "@/const";
+import { Link } from "wouter";
 import { 
   BarChart3, 
   FileText, 
@@ -148,9 +149,18 @@ export default function Navigation() {
               </Button>
             </>
           ) : (
-            <Button size="sm" onClick={() => (window.location.href = getLoginUrl())}>
-              Entrar
-            </Button>
+            <div className="flex items-center gap-2">
+              <Link href={getLoginUrl()}>
+                <Button variant="ghost" size="sm">
+                  Entrar
+                </Button>
+              </Link>
+              <Link href={getRegisterUrl()}>
+                <Button size="sm">
+                  Criar Conta
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
       </div>

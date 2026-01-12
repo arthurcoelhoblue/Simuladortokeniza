@@ -1990,3 +1990,59 @@ Separar completamente as funcionalidades de Captador e Investidor em áreas dist
 - [x] Verificar redirecionamento para captura de lead ao clicar em "Simular Agora"
 - [x] Verificar formulário de captura de lead com validações
 - [x] Verificar fluxo de preenchimento e submissão do formulário
+
+
+## Sistema de Autenticação Próprio (Substituir Login Manus)
+
+### 1. Schema e Banco de Dados
+- [ ] Adicionar campo passwordHash VARCHAR(255) na tabela users
+- [ ] Adicionar campo emailVerified BOOLEAN DEFAULT false
+- [ ] Adicionar campo emailVerificationToken VARCHAR(255) NULL
+- [ ] Adicionar campo passwordResetToken VARCHAR(255) NULL
+- [ ] Adicionar campo passwordResetExpires DATETIME NULL
+- [ ] Executar migração do banco de dados
+
+### 2. Backend - Endpoints de Autenticação
+- [ ] Criar endpoint auth.register (email, senha, nome)
+- [ ] Criar endpoint auth.login (email, senha)
+- [ ] Atualizar endpoint auth.logout
+- [ ] Criar endpoint auth.forgotPassword (email)
+- [ ] Criar endpoint auth.resetPassword (token, novaSenha)
+- [ ] Implementar hash de senha com bcrypt
+- [ ] Implementar geração de JWT para sessão
+- [ ] Validar força da senha (mínimo 8 caracteres)
+
+### 3. Frontend - Páginas de Autenticação
+- [ ] Criar página /login com formulário de login
+- [ ] Criar página /cadastro com formulário de registro
+- [ ] Criar página /esqueci-senha para recuperação
+- [ ] Criar página /redefinir-senha para nova senha
+- [ ] Implementar validação de formulários
+- [ ] Adicionar feedback visual (loading, erros, sucesso)
+- [ ] Redirecionar após login/cadastro bem-sucedido
+
+### 4. Integração e Proteção de Rotas
+- [ ] Atualizar AuthContext para usar novo sistema
+- [ ] Remover dependência do OAuth Manus
+- [ ] Proteger rotas que requerem autenticação
+- [ ] Manter sessão persistente com cookie JWT
+
+### 5. Testes
+- [ ] Testar cadastro de novo usuário
+- [ ] Testar login com credenciais válidas
+- [ ] Testar login com credenciais inválidas
+- [ ] Testar logout
+- [ ] Testar recuperação de senha
+
+
+### Atualização 12/01/2026 - Autenticação Própria Implementada
+- [x] Schema do banco atualizado com campos passwordHash, emailVerified, verificationToken
+- [x] Endpoint de registro (localAuth.register) criado
+- [x] Endpoint de login (localAuth.login) criado  
+- [x] Endpoint de logout funcional
+- [x] Página de Login (/login) criada com design consistente
+- [x] Página de Cadastro (/cadastro) criada com validação de senha
+- [x] Página de Esqueci Senha (/esqueci-senha) criada
+- [x] Navegação atualizada com botões Entrar/Criar Conta
+- [x] getLoginUrl() atualizado para usar /login interno
+- [x] Fluxo completo testado: cadastro -> logout -> login -> dashboard

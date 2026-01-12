@@ -36,6 +36,11 @@ import HistoricoInvestidor from "./pages/HistoricoInvestidor";
 import OnboardingTour from "./components/OnboardingTour";
 import LeadCapturePage from "./pages/LeadCapturePage";
 
+// Páginas de Autenticação
+import Login from "./pages/Login";
+import Cadastro from "./pages/Cadastro";
+import EsqueciSenha from "./pages/EsqueciSenha";
+
 function Router() {
   return (
     <>
@@ -44,6 +49,9 @@ function Router() {
       <Switch>
         {/* ========== ROTAS PÚBLICAS ========== */}
         <Route path="/" component={Home} />
+        <Route path="/login" component={Login} />
+        <Route path="/cadastro" component={Cadastro} />
+        <Route path="/esqueci-senha" component={EsqueciSenha} />
         <Route path="/selecionar-perfil" component={SelecionarPerfil} />
         <Route path="/capturar-lead" component={LeadCapturePage} />
         

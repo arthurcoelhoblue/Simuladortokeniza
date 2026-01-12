@@ -6,8 +6,18 @@ export const APP_LOGO =
   import.meta.env.VITE_APP_LOGO ||
   "/tokeniza-logo.svg";
 
-// Generate login URL at runtime so redirect URI reflects the current origin.
+// URL de login próprio do sistema
 export const getLoginUrl = () => {
+  return "/login";
+};
+
+// URL de cadastro
+export const getRegisterUrl = () => {
+  return "/cadastro";
+};
+
+// URL legada do OAuth Manus (mantida para compatibilidade)
+export const getManusLoginUrl = () => {
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;
   const redirectUri = `${window.location.origin}/api/oauth/callback`;
