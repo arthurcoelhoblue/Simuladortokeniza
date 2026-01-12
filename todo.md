@@ -2046,3 +2046,72 @@ Separar completamente as funcionalidades de Captador e Investidor em áreas dist
 - [x] Navegação atualizada com botões Entrar/Criar Conta
 - [x] getLoginUrl() atualizado para usar /login interno
 - [x] Fluxo completo testado: cadastro -> logout -> login -> dashboard
+
+
+## Correções de UX e Funcionalidade - 12/01/2026
+
+### Navegação e Links
+- [ ] Link "Ofertas" na barra superior deve mostrar ofertas da Tokeniza, não leads
+- [ ] Botão "Comparação de Ativos" não leva a lugar nenhum - corrigir
+- [ ] "Oportunidades" está levando para tela errada
+
+### Tela de Simulação
+- [ ] Mover banner de termos de uso/privacidade para última linha (está no meio)
+- [ ] Não pedir nome/email/WhatsApp no simulador - usar dados do cadastro
+
+### Telas a Remover/Ajustar
+- [ ] Remover tela "Meus Investimentos" (não busca dados da Tokeniza)
+- [ ] Histórico deve mostrar simulações feitas, não transações
+- [ ] Remover "Meu Portfólio" (mesma tela de investimentos)
+
+### Modo Captador
+- [ ] "Simulação de Custos" deve ir direto para simulação de captação (não perguntar captador/investidor)
+- [ ] "Comparação de Cenários" deve comparar 3 análises de viabilidade diferentes (não cenários otimista/realista/pessimista)
+
+### Sistema de Permissões
+- [ ] "Propostas Comerciais" só visível para administradores
+- [ ] Aba "Leads" só visível para administradores
+- [ ] Criar painel de configuração de permissões para super admin
+- [ ] Super admin pode definir quem tem acesso a Propostas Comerciais
+- [ ] Super admin pode definir quem tem acesso a Leads
+
+### Validação de Dados
+- [ ] Tornar email e WhatsApp obrigatórios no cadastro
+- [ ] Implementar validação de WhatsApp via SMS/mensageria
+- [ ] Validar formato de email e telefone
+
+### Integrações
+- [ ] Verificar e exibir status da integração Pipedrive
+- [ ] Criar indicador visual de conexão com Pipedrive
+
+
+### Atualização 12/01/2026 - Correções de UX e Funcionalidades
+
+**Navegação e Telas:**
+- [x] Link "Ofertas" agora mostra ofertas da Tokeniza (OfertasTokeniza.tsx)
+- [x] Removido link "Investimentos" da navegação do investidor
+- [x] Histórico do investidor agora mostra simulações feitas (não transações mockadas)
+- [x] "Simulação de Custos" vai direto para análise de viabilidade
+- [x] "Comparação de Cenários" renomeado para "Comparação de Análises de Viabilidade"
+
+**Sistema de Permissões:**
+- [x] Verificação de admin pelo campo role do banco de dados
+- [x] Super admins definidos por email (arthur@blueconsult.com.br, arthurcsantos@gmail.com)
+- [x] Propostas Comerciais e Leads restritos a admins
+- [x] Painel de gerenciamento de permissões (/admin/permissoes)
+- [x] Endpoint admin.listUsers para listar usuários
+- [x] Endpoint admin.updateUserRole para alterar permissões
+
+**Validação de WhatsApp:**
+- [x] Serviço de verificação via Twilio WhatsApp (whatsappVerification.ts)
+- [x] Endpoints auth.sendWhatsAppCode e auth.verifyWhatsAppCode
+- [x] Componente WhatsAppVerification.tsx para UI
+- [x] Telefone obrigatório no cadastro
+
+**Integração Pipedrive:**
+- [x] Endpoint pipedrive.checkStatus para verificar conexão
+- [x] Componente PipedriveStatus.tsx para indicador visual
+
+**Captura de Leads:**
+- [x] RequireLeadCapture atualizado para usar dados do usuário logado
+- [x] Se usuário logado tem nome, email e telefone, cria lead automaticamente

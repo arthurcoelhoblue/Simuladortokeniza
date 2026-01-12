@@ -12,11 +12,14 @@ import { Redirect } from "wouter";
  */
 export default function DashboardLeads() {
   const { user, loading: authLoading } = useAuth();
-  const isArthur = user?.email === "arthur@blueconsult.com.br";
+  // Verificar se usuário é admin pelo campo role ou por emails específicos
+  const isAdmin = user?.role === "admin" || 
+    user?.email === "arthur@blueconsult.com.br" || 
+    user?.email === "arthurcsantos@gmail.com";
 
   // Carregar métricas
   const { data, isLoading, error } = trpc.dashboard.getLeadMetrics.useQuery(undefined, {
-    enabled: isArthur, // Só executar query se for Arthur
+    enabled: isAdmin, // Só executar query se for admin
   });
 
   // Controle de acesso visual
@@ -31,7 +34,7 @@ export default function DashboardLeads() {
     );
   }
 
-  if (!isArthur) {
+  if (!isAdmin) {
     return <Redirect to="/" />;
   }
 

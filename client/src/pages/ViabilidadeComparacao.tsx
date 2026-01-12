@@ -74,9 +74,9 @@ export default function ViabilidadeComparacao() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">Comparação de Cenários</h1>
+              <h1 className="text-3xl font-bold">Comparação de Análises de Viabilidade</h1>
               <p className="text-muted-foreground">
-                Compare até 3 análises de viabilidade lado a lado
+                Compare até 3 análises de viabilidade diferentes lado a lado
               </p>
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function ViabilidadeComparacao() {
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Cenário 1</label>
+                <label className="text-sm font-medium mb-2 block">Análise 1</label>
                 <Select onValueChange={(value) => handleSelectAnalysis(0, value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione uma análise" />
@@ -107,7 +107,7 @@ export default function ViabilidadeComparacao() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Cenário 2</label>
+                <label className="text-sm font-medium mb-2 block">Análise 2</label>
                 <Select onValueChange={(value) => handleSelectAnalysis(1, value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione uma análise" />
@@ -123,7 +123,7 @@ export default function ViabilidadeComparacao() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Cenário 3 (Opcional)</label>
+                <label className="text-sm font-medium mb-2 block">Análise 3 (Opcional)</label>
                 <Select onValueChange={(value) => handleSelectAnalysis(2, value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione uma análise" />

@@ -47,8 +47,15 @@ export default function Cadastro() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !telefone) {
       toast.error("Preencha todos os campos obrigatórios");
+      return;
+    }
+    
+    // Validar telefone (mínimo 10 dígitos)
+    const telefoneLimpo = telefone.replace(/\D/g, "");
+    if (telefoneLimpo.length < 10) {
+      toast.error("Telefone inválido. Digite DDD + número");
       return;
     }
     

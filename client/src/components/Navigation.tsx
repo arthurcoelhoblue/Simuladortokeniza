@@ -34,7 +34,7 @@ interface NavItem {
 const captadorNavItems: NavItem[] = [
   { path: "/captador/dashboard", label: "Dashboard", icon: Home },
   { path: "/captador/viabilidade", label: "Viabilidade", icon: Calculator },
-  { path: "/captador/simulacoes/nova", label: "Nova Captação", icon: Plus },
+  { path: "/captador/viabilidade/nova", label: "Simulação de Custos", icon: Calculator },
   { path: "/captador/oportunidades", label: "Oportunidades", icon: Target },
   { path: "/captador/propostas", label: "Propostas", icon: FileText, adminOnly: true },
   { path: "/captador/leads", label: "Leads", icon: Users, adminOnly: true },
@@ -45,7 +45,7 @@ const investidorNavItems: NavItem[] = [
   { path: "/investidor/dashboard", label: "Dashboard", icon: Home },
   { path: "/investidor/ofertas", label: "Ofertas", icon: Briefcase },
   { path: "/investidor/simulacoes/nova", label: "Simular", icon: Calculator },
-  { path: "/investidor/investimentos", label: "Investimentos", icon: Wallet },
+  // Removido: Investimentos não busca dados da Tokeniza
   { path: "/investidor/historico", label: "Histórico", icon: History },
 ];
 
@@ -59,7 +59,10 @@ export default function Navigation() {
   const { activeProfile } = useProfile();
   const [location, setLocation] = useLocation();
 
-  const isAdmin = user?.email === "arthur@blueconsult.com.br" || user?.email === "arthurcsantos@gmail.com";
+  // Verificar se usuário é admin pelo campo role do banco ou por emails específicos (super admins)
+  const isAdmin = user?.role === "admin" || 
+    user?.email === "arthur@blueconsult.com.br" || 
+    user?.email === "arthurcsantos@gmail.com";
 
   // Determinar quais itens de navegação mostrar baseado no perfil ativo
   const getNavItems = (): NavItem[] => {

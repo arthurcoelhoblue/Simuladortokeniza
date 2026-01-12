@@ -26,6 +26,7 @@ import NovaProposta from "./pages/NovaProposta";
 import EditarProposta from "./pages/EditarProposta";
 import PropostaDetalhes from "./pages/PropostaDetalhes";
 import Opportunities from "./pages/Opportunities";
+import OfertasTokeniza from "./pages/OfertasTokeniza";
 
 // Páginas do Investidor
 import InvestidorDashboard from "./pages/InvestidorDashboard";
@@ -40,6 +41,9 @@ import LeadCapturePage from "./pages/LeadCapturePage";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import EsqueciSenha from "./pages/EsqueciSenha";
+
+// Páginas de Administração
+import AdminPermissoes from "./pages/AdminPermissoes";
 
 function Router() {
   return (
@@ -78,6 +82,9 @@ function Router() {
         {/* Dashboard de Leads */}
         <Route path="/captador/leads" component={DashboardLeads} />
         
+        {/* Administração */}
+        <Route path="/admin/permissoes" component={AdminPermissoes} />
+        
         {/* Oportunidades (funil de vendas) */}
         <Route path="/captador/oportunidades" component={Opportunities} />
         
@@ -91,7 +98,7 @@ function Router() {
         <Route path="/investidor/simulacoes/:id" component={SimulationView} />
         
         {/* Ofertas disponíveis */}
-        <Route path="/investidor/ofertas" component={Opportunities} />
+        <Route path="/investidor/ofertas" component={OfertasTokeniza} />
         
         {/* Meus Investimentos */}
         <Route path="/investidor/investimentos" component={MeusInvestimentos} />

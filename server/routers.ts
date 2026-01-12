@@ -10,6 +10,7 @@ import { generatePDFHTML } from "./pdfExport";
 import { notifyOwner } from "./_core/notification";
 import * as auth from "./auth";
 import { sdk } from "./_core/sdk";
+import { sendVerificationCode, verifyCode } from "./whatsappVerification";
 
 /**
  * Lista de emails com acesso administrativo
@@ -218,6 +219,28 @@ export const appRouter = router({
           success: true,
           perfil: input.perfil,
         };
+      }),
+    
+    // Enviar código de verificação via WhatsApp
+    sendWhatsAppCode: publicProcedure
+      .input(z.object({
+        telefone: z.string().min(10, "Telefone inválido"),
+      }))
+      .mutation(async ({ input }) => {
+        const result = await sendVerificationCode(input.telefone);
+        return result;
+      }),
+    
+    // Verificar código recebido via WhatsApp
+    verifyWhatsAppCode: publicProcedure
+      .input(z.object({
+        telefone: z.string().min(10, "Telefone inválido"),
+        code: z.string().length(6, "Código deve ter 6 dígitos"),
+        userId: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const result = await verifyCode(input.telefone, input.code, input.userId);
+        return result;
       }),
   }),
 
@@ -2032,8 +2055,103 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getLeadById(input.id);
       }),
+   }),
+
+  // Status do Pipedrive
+  pipedrive: router({
+    checkStatus: adminProcedure.query(async () => {
+      const apiToken = process.env.PIPEDRIVE_API_TOKEN;
+      const baseUrl = process.env.PIPEDRIVE_BASE_URL || "https://api.pipedrive.com/v1";
+      
+      if (!apiToken) {
+        return {
+          connected: false,
+          error: "API Token não configurado",
+          companyName: null,
+          lastSync: null,
+        };
+      }
+      
+      try {
+        const response = await fetch(`${baseUrl}/users/me?api_token=${apiToken}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          return {
+            connected: true,
+            companyName: data.data?.company_name || "N/A",
+            userName: data.data?.name || "N/A",
+            lastSync: new Date().toISOString(),
+            error: null,
+          };
+        } else {
+          return {
+            connected: false,
+            error: data.error || "Erro desconhecido",
+            companyName: null,
+            lastSync: null,
+          };
+        }
+      } catch (error: any) {
+        return {
+          connected: false,
+          error: error.message || "Erro de conexão",
+          companyName: null,
+          lastSync: null,
+        };
+      }
+    }),
+  }),
+
+  // Administração de usuários (super admin apenas)
+  admin: router({
+    // Listar todos os usuários
+    listUsers: adminProcedure.query(async () => {
+      const database = await db.getDb();
+      if (!database) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+      }
+      const { users } = await import("../drizzle/schema");
+      const { desc } = await import("drizzle-orm");
+      
+      const allUsers = await database
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          telefone: users.telefone,
+          role: users.role,
+          perfil: users.perfil,
+          createdAt: users.createdAt,
+          lastSignedIn: users.lastSignedIn,
+        })
+        .from(users)
+        .orderBy(desc(users.createdAt));
+      
+      return allUsers;
+    }),
+    
+    // Atualizar role de um usuário
+    updateUserRole: adminProcedure
+      .input(z.object({
+        userId: z.number(),
+        role: z.enum(["user", "admin"]),
+      }))
+      .mutation(async ({ input }) => {
+        const database = await db.getDb();
+        if (!database) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        }
+        const { users } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        
+        await database
+          .update(users)
+          .set({ role: input.role })
+          .where(eq(users.id, input.userId));
+        
+        return { success: true };
+      }),
   }),
 });
-
-
-export type AppRouter = typeof appRouter;
+export type AppRouter = typeof appRouter;;
