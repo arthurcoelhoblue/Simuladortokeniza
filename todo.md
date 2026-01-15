@@ -2115,3 +2115,22 @@ Separar completamente as funcionalidades de Captador e Investidor em áreas dist
 **Captura de Leads:**
 - [x] RequireLeadCapture atualizado para usar dados do usuário logado
 - [x] Se usuário logado tem nome, email e telefone, cria lead automaticamente
+
+
+## Dashboard de Leads - Drill-down nos Cards (15/01/2026)
+
+- [ ] Criar endpoint leads.listFiltered com filtros por categoria
+- [ ] Implementar modal/drawer para exibir lista de leads
+- [ ] Tornar cards clicáveis (Total, Hoje, Semana, Mês)
+- [ ] Tornar cards de engajamento clicáveis (Com/Sem Simulação, Com/Sem Oportunidade)
+- [ ] Exibir tabela com dados do lead (nome, email, whatsapp, data)
+- [ ] Adicionar ações na tabela (ver detalhes, criar oportunidade)
+
+
+### Atualização 15/01/2026 - Drill-down Dashboard Leads
+- [x] Cards clicáveis no Dashboard de Leads
+- [x] Modal com lista detalhada de leads ao clicar em cada card
+- [x] Filtros funcionando (Total, Com Simulação, Sem Simulação, Com Oportunidade, Sem Oportunidade)
+- [x] Paginação na lista de leads (20 por página)
+- [x] Links clicáveis para email e WhatsApp
+- [x] Correção do adminProcedure para verificar role OU email

@@ -1,0 +1,64 @@
+{
+  "query": "SELECT id, name, email, role FROM users WHERE name LIKE '%Usuário%' OR email LIKE '%teste%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, name, email, role FROM users WHERE name LIKE '%Usuário%' OR email LIKE '%teste%';",
+  "rows": [
+    {
+      "id": "4110011",
+      "name": "Teste Versionamento",
+      "email": "teste.version@example.com",
+      "role": "admin"
+    },
+    {
+      "id": "4170011",
+      "name": "Usuário Teste Pipedrive",
+      "email": "test-pipedrive-1764147889509@example.com",
+      "role": "admin"
+    },
+    {
+      "id": "4170012",
+      "name": "Usuário Teste Pipedrive",
+      "email": "test-pipedrive-1764147928623@example.com",
+      "role": "admin"
+    },
+    {
+      "id": "4170013",
+      "name": "Usuário Teste Pipedrive",
+      "email": "test-pipedrive-1764147955895@example.com",
+      "role": "admin"
+    },
+    {
+      "id": "8820002",
+      "name": "Teste Versionamento",
+      "email": "teste.version@example.com",
+      "role": "admin"
+    },
+    {
+      "id": "8820003",
+      "name": "Usuário Teste Pipedrive",
+      "email": "test-pipedrive-1766337798720@example.com",
+      "role": "admin"
+    },
+    {
+      "id": "8820008",
+      "name": "Teste Versionamento",
+      "email": "teste.version@example.com",
+      "role": "admin"
+    },
+    {
+      "id": "8820010",
+      "name": "Usuário Teste Pipedrive",
+      "email": "test-pipedrive-1766337846620@example.com",
+      "role": "admin"
+    },
+    {
+      "id": "10860066",
+      "name": "Usuário Teste",
+      "email": "teste@exemplo.com",
+      "role": "admin"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\n4110011\tTeste Versionamento\tteste.version@example.com\tadmin\n4170011\tUsuário Teste Pipedrive\ttest-pipedrive-1764147889509@example.com\tadmin\n4170012\tUsuário Teste Pipedrive\ttest-pipedrive-1764147928623@example.com\tadmin\n4170013\tUsuário Teste Pipedrive\ttest-pipedrive-1764147955895@example.com\tadmin\n8820002\tTeste Versionamento\tteste.version@example.com\tadmin\n8820003\tUsuário Teste Pipedrive\ttest-pipedrive-1766337798720@example.com\tadmin\n8820008\tTeste Versionamento\tteste.version@example.com\tadmin\n8820010\tUsuário Teste Pipedrive\ttest-pipedrive-1766337846620@example.com\tadmin\n10860066\tUsuário Teste\tteste@exemplo.com\tadmin\n",
+  "stderr": "",
+  "execution_time_ms": 101
+}

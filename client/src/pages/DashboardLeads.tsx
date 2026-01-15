@@ -1,17 +1,41 @@
+import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { AlertCircle, BarChart3, TrendingUp, Users } from "lucide-react";
+import { AlertCircle, BarChart3, TrendingUp, Users, ChevronRight } from "lucide-react";
 import { Redirect } from "wouter";
+import LeadListModal from "@/components/LeadListModal";
+
+type FilterType = 
+  | "all" 
+  | "today" 
+  | "week" 
+  | "month"
+  | "with_simulation"
+  | "without_simulation"
+  | "with_opportunity"
+  | "without_opportunity"
+  | "without_whatsapp"
+  | "without_email"
+  | "without_location"
+  | "investidor"
+  | "emissor"
+  | "by_origin";
 
 /**
  * Dashboard de Leads (Lead Leader)
- * Acesso restrito ao usuário arthur@blueconsult.com.br
+ * Acesso restrito a administradores
  */
 export default function DashboardLeads() {
   const { user, loading: authLoading } = useAuth();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>("all");
+  const [selectedOrigin, setSelectedOrigin] = useState<string | undefined>();
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalDescription, setModalDescription] = useState<string | undefined>();
+
   // Verificar se usuário é admin pelo campo role ou por emails específicos
   const isAdmin = user?.role === "admin" || 
     user?.email === "arthur@blueconsult.com.br" || 
@@ -19,8 +43,16 @@ export default function DashboardLeads() {
 
   // Carregar métricas
   const { data, isLoading, error } = trpc.dashboard.getLeadMetrics.useQuery(undefined, {
-    enabled: isAdmin, // Só executar query se for admin
+    enabled: isAdmin,
   });
+
+  const openModal = (filter: FilterType, title: string, description?: string, origin?: string) => {
+    setSelectedFilter(filter);
+    setSelectedOrigin(origin);
+    setModalTitle(title);
+    setModalDescription(description);
+    setModalOpen(true);
+  };
 
   // Controle de acesso visual
   if (authLoading) {
@@ -76,22 +108,26 @@ export default function DashboardLeads() {
               title="Total de Leads"
               value={data.totalLeads}
               icon={<Users className="h-4 w-4 text-muted-foreground" />}
+              onClick={() => openModal("all", "Todos os Leads", `${data.totalLeads} leads no total`)}
             />
             <MetricCard
               title="Leads Hoje"
               value={data.leadsHoje}
               icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
               trend={data.leadsHoje > 0 ? "up" : undefined}
+              onClick={() => openModal("today", "Leads de Hoje", `${data.leadsHoje} leads capturados hoje`)}
             />
             <MetricCard
               title="Leads na Semana"
               value={data.leadsSemana}
               icon={<BarChart3 className="h-4 w-4 text-muted-foreground" />}
+              onClick={() => openModal("week", "Leads da Semana", `${data.leadsSemana} leads esta semana`)}
             />
             <MetricCard
               title="Leads no Mês"
               value={data.leadsMes}
               icon={<BarChart3 className="h-4 w-4 text-muted-foreground" />}
+              onClick={() => openModal("month", "Leads do Mês", `${data.leadsMes} leads este mês`)}
             />
           </div>
 
@@ -102,21 +138,25 @@ export default function DashboardLeads() {
                 title="Leads com Simulação"
                 value={data.leadsComSimulacoes}
                 subtitle={`${Math.round((data.leadsComSimulacoes / data.totalLeads) * 100)}% do total`}
+                onClick={() => openModal("with_simulation", "Leads com Simulação", "Leads que realizaram pelo menos uma simulação")}
               />
               <MetricCard
                 title="Leads sem Simulação"
                 value={data.leadsSemSimulacoes}
                 subtitle={`${Math.round((data.leadsSemSimulacoes / data.totalLeads) * 100)}% do total`}
+                onClick={() => openModal("without_simulation", "Leads sem Simulação", "Leads que ainda não realizaram simulação")}
               />
               <MetricCard
                 title="Leads com Oportunidade"
                 value={data.leadsComOportunidades}
                 subtitle={`${Math.round((data.leadsComOportunidades / data.totalLeads) * 100)}% do total`}
+                onClick={() => openModal("with_opportunity", "Leads com Oportunidade", "Leads convertidos em oportunidade")}
               />
               <MetricCard
                 title="Leads sem Oportunidade"
                 value={data.leadsSemOportunidades}
                 subtitle={`${Math.round((data.leadsSemOportunidades / data.totalLeads) * 100)}% do total`}
+                onClick={() => openModal("without_opportunity", "Leads sem Oportunidade", "Leads ainda não convertidos")}
               />
             </div>
           </Section>
@@ -131,15 +171,23 @@ export default function DashboardLeads() {
                       <TableHead>Canal de Origem</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead className="text-right">% do Total</TableHead>
+                      <TableHead className="text-right">Ação</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {data.porOrigem.map((item) => (
-                      <TableRow key={item.canalOrigem}>
+                      <TableRow 
+                        key={item.canalOrigem}
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => openModal("by_origin", `Leads: ${item.canalOrigem}`, `${item.total} leads desta origem`, item.canalOrigem)}
+                      >
                         <TableCell className="font-medium">{item.canalOrigem}</TableCell>
                         <TableCell className="text-right">{item.total}</TableCell>
                         <TableCell className="text-right">
                           {Math.round((item.total / data.totalLeads) * 100)}%
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <ChevronRight className="h-4 w-4 inline-block text-muted-foreground" />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -156,11 +204,13 @@ export default function DashboardLeads() {
                 title="Investidores"
                 value={data.porTipo.investidor}
                 subtitle="Leads com simulações de investimento"
+                onClick={() => openModal("investidor", "Leads Investidores", "Leads que simularam investimentos")}
               />
               <MetricCard
                 title="Emissores"
                 value={data.porTipo.emissor}
                 subtitle="Leads com simulações de financiamento"
+                onClick={() => openModal("emissor", "Leads Emissores", "Leads que simularam captação")}
               />
             </div>
           </Section>
@@ -226,23 +276,36 @@ export default function DashboardLeads() {
                 value={data.dadosFaltantes.semWhatsapp}
                 subtitle={`${Math.round((data.dadosFaltantes.semWhatsapp / data.totalLeads) * 100)}% do total`}
                 variant="warning"
+                onClick={() => openModal("without_whatsapp", "Leads sem WhatsApp", "Leads sem número de WhatsApp cadastrado")}
               />
               <MetricCard
                 title="Leads sem Email"
                 value={data.dadosFaltantes.semEmail}
                 subtitle={`${Math.round((data.dadosFaltantes.semEmail / data.totalLeads) * 100)}% do total`}
                 variant="warning"
+                onClick={() => openModal("without_email", "Leads sem Email", "Leads sem email cadastrado")}
               />
               <MetricCard
                 title="Leads sem Cidade/Estado"
                 value={data.dadosFaltantes.semCidadeOuEstado}
                 subtitle={`${Math.round((data.dadosFaltantes.semCidadeOuEstado / data.totalLeads) * 100)}% do total`}
                 variant="warning"
+                onClick={() => openModal("without_location", "Leads sem Localização", "Leads sem cidade ou estado cadastrado")}
               />
             </div>
           </Section>
         </>
       )}
+
+      {/* Modal de Lista de Leads */}
+      <LeadListModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        filter={selectedFilter}
+        origin={selectedOrigin}
+        title={modalTitle}
+        description={modalDescription}
+      />
     </div>
   );
 }
@@ -265,14 +328,21 @@ interface MetricCardProps {
   icon?: React.ReactNode;
   trend?: "up" | "down";
   variant?: "default" | "warning";
+  onClick?: () => void;
 }
 
-function MetricCard({ title, value, subtitle, icon, trend, variant = "default" }: MetricCardProps) {
+function MetricCard({ title, value, subtitle, icon, trend, variant = "default", onClick }: MetricCardProps) {
   return (
-    <Card className={variant === "warning" ? "border-orange-500/50" : ""}>
+    <Card 
+      className={`${variant === "warning" ? "border-orange-500/50" : ""} ${onClick ? "cursor-pointer hover:bg-muted/50 transition-colors" : ""}`}
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {icon}
+        <div className="flex items-center gap-2">
+          {icon}
+          {onClick && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
@@ -301,7 +371,6 @@ function DashboardSkeleton() {
           </Card>
         ))}
       </div>
-      <Skeleton className="h-64 w-full" />
     </div>
   );
 }

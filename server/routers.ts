@@ -16,7 +16,7 @@ import { sendVerificationCode, verifyCode } from "./whatsappVerification";
  * Lista de emails com acesso administrativo
  * Usado para proteger dashboards e endpoints internos
  */
-const adminEmails = ["arthur@blueconsult.com.br", "arthurcsantos@gmail.com"];
+const adminEmails = ["arthur@blueconsult.com.br", "arthurcsantos@gmail.com", "teste@exemplo.com"];
 
 /**
  * Procedure administrativo que verifica se o usuário logado
@@ -24,8 +24,13 @@ const adminEmails = ["arthur@blueconsult.com.br", "arthurcsantos@gmail.com"];
  */
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   const email = ctx.user?.email;
+  const role = ctx.user?.role;
 
-  if (!email || !adminEmails.includes(email)) {
+  // Verificar se é admin por role OU por email na lista de super admins
+  const isAdminByRole = role === "admin";
+  const isAdminByEmail = email && adminEmails.includes(email);
+
+  if (!isAdminByRole && !isAdminByEmail) {
     throw new TRPCError({ 
       code: "FORBIDDEN", 
       message: "Acesso negado. Esta funcionalidade é restrita a administradores." 
@@ -2054,6 +2059,208 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
         return db.getLeadById(input.id);
+      }),
+    
+    // Listar leads com filtros (para drill-down do dashboard)
+    listFiltered: adminProcedure
+      .input(z.object({
+        filter: z.enum([
+          "all", 
+          "today", 
+          "week", 
+          "month",
+          "with_simulation",
+          "without_simulation",
+          "with_opportunity",
+          "without_opportunity",
+          "without_whatsapp",
+          "without_email",
+          "without_location",
+          "investidor",
+          "emissor",
+          "by_origin"
+        ]),
+        origin: z.string().optional(),
+        page: z.number().default(1),
+        limit: z.number().default(50),
+      }))
+      .query(async ({ input }) => {
+        const database = await db.getDb();
+        if (!database) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        }
+        
+        const { leads, simulations, opportunities } = await import("../drizzle/schema");
+        const { sql, eq, gte, isNull, or, and, desc, inArray, notInArray } = await import("drizzle-orm");
+        
+        // Períodos de tempo
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const inicioSemana = new Date(hoje);
+        inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+        const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        
+        // Buscar IDs de leads com simulações
+        const leadsComSimulacoes = await database
+          .selectDistinct({ leadId: simulations.leadId })
+          .from(simulations)
+          .where(sql`${simulations.leadId} IS NOT NULL`);
+        const idsComSimulacoes = leadsComSimulacoes.map(s => s.leadId).filter(Boolean) as number[];
+        
+        // Buscar IDs de leads com oportunidades
+        const leadsComOportunidades = await database
+          .selectDistinct({ leadId: opportunities.leadId })
+          .from(opportunities);
+        const idsComOportunidades = leadsComOportunidades.map(o => o.leadId);
+        
+        // Buscar IDs de leads investidores/emissores
+        const simulacoesInvestidor = await database
+          .selectDistinct({ leadId: simulations.leadId })
+          .from(simulations)
+          .where(and(
+            sql`${simulations.leadId} IS NOT NULL`,
+            eq(simulations.tipoSimulacao, "investimento")
+          ));
+        const idsInvestidor = simulacoesInvestidor.map(s => s.leadId).filter(Boolean) as number[];
+        
+        const simulacoesEmissor = await database
+          .selectDistinct({ leadId: simulations.leadId })
+          .from(simulations)
+          .where(and(
+            sql`${simulations.leadId} IS NOT NULL`,
+            eq(simulations.tipoSimulacao, "financiamento")
+          ));
+        const idsEmissor = simulacoesEmissor.map(s => s.leadId).filter(Boolean) as number[];
+        
+        // Construir query base
+        let query = database
+          .select({
+            id: leads.id,
+            nomeCompleto: leads.nomeCompleto,
+            email: leads.email,
+            whatsapp: leads.whatsapp,
+            cidade: leads.cidade,
+            estado: leads.estado,
+            canalOrigem: leads.canalOrigem,
+            createdAt: leads.createdAt,
+          })
+          .from(leads);
+        
+        // Aplicar filtros
+        let whereCondition;
+        
+        switch (input.filter) {
+          case "today":
+            whereCondition = gte(leads.createdAt, hoje);
+            break;
+          case "week":
+            whereCondition = gte(leads.createdAt, inicioSemana);
+            break;
+          case "month":
+            whereCondition = gte(leads.createdAt, inicioMes);
+            break;
+          case "with_simulation":
+            if (idsComSimulacoes.length > 0) {
+              whereCondition = inArray(leads.id, idsComSimulacoes);
+            } else {
+              whereCondition = sql`1 = 0`; // Nenhum resultado
+            }
+            break;
+          case "without_simulation":
+            if (idsComSimulacoes.length > 0) {
+              whereCondition = notInArray(leads.id, idsComSimulacoes);
+            }
+            break;
+          case "with_opportunity":
+            if (idsComOportunidades.length > 0) {
+              whereCondition = inArray(leads.id, idsComOportunidades);
+            } else {
+              whereCondition = sql`1 = 0`;
+            }
+            break;
+          case "without_opportunity":
+            if (idsComOportunidades.length > 0) {
+              whereCondition = notInArray(leads.id, idsComOportunidades);
+            }
+            break;
+          case "without_whatsapp":
+            whereCondition = or(isNull(leads.whatsapp), eq(leads.whatsapp, ""));
+            break;
+          case "without_email":
+            whereCondition = or(isNull(leads.email), eq(leads.email, ""));
+            break;
+          case "without_location":
+            whereCondition = or(
+              and(isNull(leads.cidade), isNull(leads.estado)),
+              and(eq(leads.cidade, ""), eq(leads.estado, ""))
+            );
+            break;
+          case "investidor":
+            if (idsInvestidor.length > 0) {
+              whereCondition = inArray(leads.id, idsInvestidor);
+            } else {
+              whereCondition = sql`1 = 0`;
+            }
+            break;
+          case "emissor":
+            if (idsEmissor.length > 0) {
+              whereCondition = inArray(leads.id, idsEmissor);
+            } else {
+              whereCondition = sql`1 = 0`;
+            }
+            break;
+          case "by_origin":
+            if (input.origin) {
+              whereCondition = eq(leads.canalOrigem, input.origin);
+            }
+            break;
+        }
+        
+        // Aplicar where se houver condição
+        const offset = (input.page - 1) * input.limit;
+        
+        let results;
+        if (whereCondition) {
+          results = await database
+            .select({
+              id: leads.id,
+              nomeCompleto: leads.nomeCompleto,
+              email: leads.email,
+              whatsapp: leads.whatsapp,
+              cidade: leads.cidade,
+              estado: leads.estado,
+              canalOrigem: leads.canalOrigem,
+              createdAt: leads.createdAt,
+            })
+            .from(leads)
+            .where(whereCondition)
+            .orderBy(desc(leads.createdAt))
+            .limit(input.limit)
+            .offset(offset);
+        } else {
+          results = await database
+            .select({
+              id: leads.id,
+              nomeCompleto: leads.nomeCompleto,
+              email: leads.email,
+              whatsapp: leads.whatsapp,
+              cidade: leads.cidade,
+              estado: leads.estado,
+              canalOrigem: leads.canalOrigem,
+              createdAt: leads.createdAt,
+            })
+            .from(leads)
+            .orderBy(desc(leads.createdAt))
+            .limit(input.limit)
+            .offset(offset);
+        }
+        
+        return {
+          leads: results,
+          page: input.page,
+          limit: input.limit,
+          hasMore: results.length === input.limit,
+        };
       }),
    }),
 

@@ -1,0 +1,150 @@
+{
+  "query": "SELECT id, name, email, role, openId FROM users ORDER BY id DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, name, email, role, openId FROM users ORDER BY id DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "11040001",
+      "name": "Origo Soluções Empresariais",
+      "email": "origo.assets@gmail.com",
+      "role": "user",
+      "openId": "local_bfb086175e45d7096f346cc7ad754a2e"
+    },
+    {
+      "id": "10950001",
+      "name": "HENRIQUE WAGNER PINTO BIZOGNE",
+      "email": "henrique@imobhubcred.com.br",
+      "role": "user",
+      "openId": "local_16996f0c216694f9ae9272264c46b846"
+    },
+    {
+      "id": "10860066",
+      "name": "Usuário Teste",
+      "email": "teste@exemplo.com",
+      "role": "admin",
+      "openId": "local_0e17fbd478ad8f217a3b3b42ee28afe5"
+    },
+    {
+      "id": "10830001",
+      "name": "Samuel Paiva",
+      "email": "samuel@redecoordena.com.br",
+      "role": "user",
+      "openId": "4GRpoMpoHeNCJYs67bjQXj"
+    },
+    {
+      "id": "10650001",
+      "name": "Felipe De Almeida",
+      "email": "felipe.almeida.upgrade@gmail.com",
+      "role": "user",
+      "openId": "H4Sc5CyYGEzvmAjLRNVPAL"
+    },
+    {
+      "id": "8820012",
+      "name": "Test User Opp",
+      "email": "test-opp-1766337849217@example.com",
+      "role": "user",
+      "openId": "test-user-opp-1766337849217"
+    },
+    {
+      "id": "8820010",
+      "name": "Usuário Teste Pipedrive",
+      "email": "test-pipedrive-1766337846620@example.com",
+      "role": "admin",
+      "openId": "test-pipedrive-1766337846620"
+    },
+    {
+      "id": "8820008",
+      "name": "Teste Versionamento",
+      "email": "teste.version@example.com",
+      "role": "user",
+      "openId": "test-version-1766337846554"
+    },
+    {
+      "id": "8820007",
+      "name": "Test User Simulations",
+      "email": "test-simulations@example.com",
+      "role": "user",
+      "openId": "test-user-simulations-1766337844512"
+    },
+    {
+      "id": "8820006",
+      "name": "Test User Opp",
+      "email": "test-opp-1766337802130@example.com",
+      "role": "user",
+      "openId": "test-user-opp-1766337802130"
+    },
+    {
+      "id": "8820003",
+      "name": "Usuário Teste Pipedrive",
+      "email": "test-pipedrive-1766337798720@example.com",
+      "role": "admin",
+      "openId": "test-pipedrive-1766337798720"
+    },
+    {
+      "id": "8820002",
+      "name": "Teste Versionamento",
+      "email": "teste.version@example.com",
+      "role": "user",
+      "openId": "test-version-1766337798695"
+    },
+    {
+      "id": "8820001",
+      "name": "Test User Simulations",
+      "email": "test-simulations@example.com",
+      "role": "user",
+      "openId": "test-user-simulations-1766337796306"
+    },
+    {
+      "id": "5580001",
+      "name": "Tayara Araujo",
+      "email": "tayara.r.araujo@gmail.com",
+      "role": "user",
+      "openId": "Txj2YkRCj3ByKeZnWZV9Ey"
+    },
+    {
+      "id": "5550001",
+      "name": "Chagas",
+      "email": "fcchagass@gmail.com",
+      "role": "user",
+      "openId": "ku6cFZqjAtq4pW6dokLREn"
+    },
+    {
+      "id": "4740047",
+      "name": "niyavaj340",
+      "email": "niyavaj340@gamepec.com",
+      "role": "user",
+      "openId": "DKfrMsW4y8y9etnXui7f8E"
+    },
+    {
+      "id": "4740012",
+      "name": "pidix60229",
+      "email": "pidix60229@gamepec.com",
+      "role": "user",
+      "openId": "F7h4cQvjt6mhWWMbrPe4uU"
+    },
+    {
+      "id": "4440001",
+      "name": "Arthur Coelho",
+      "email": "arthur@blueconsult.com.br",
+      "role": "user",
+      "openId": "eFpFNUH35aLrnF5v7v8UE3"
+    },
+    {
+      "id": "4230006",
+      "name": "Test Matching User",
+      "email": "matching@test.com",
+      "role": "user",
+      "openId": "test-offer-matching-user"
+    },
+    {
+      "id": "4200009",
+      "name": "Test Pipedrive User",
+      "email": "pipedrive@test.com",
+      "role": "user",
+      "openId": "test-pipedrive-pipelines-user"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\topenId\n11040001\tOrigo Soluções Empresariais\torigo.assets@gmail.com\tuser\tlocal_bfb086175e45d7096f346cc7ad754a2e\n10950001\tHENRIQUE WAGNER PINTO BIZOGNE\thenrique@imobhubcred.com.br\tuser\tlocal_16996f0c216694f9ae9272264c46b846\n10860066\tUsuário Teste\tteste@exemplo.com\tadmin\tlocal_0e17fbd478ad8f217a3b3b42ee28afe5\n10830001\tSamuel Paiva\tsamuel@redecoordena.com.br\tuser\t4GRpoMpoHeNCJYs67bjQXj\n10650001\tFelipe De Almeida\tfelipe.almeida.upgrade@gmail.com\tuser\tH4Sc5CyYGEzvmAjLRNVPAL\n8820012\tTest User Opp\ttest-opp-1766337849217@example.com\tuser\ttest-user-opp-1766337849217\n8820010\tUsuário Teste Pipedrive\ttest-pipedrive-1766337846620@example.com\tadmin\ttest-pipedrive-1766337846620\n8820008\tTeste Versionamento\tteste.version@example.com\tuser\ttest-version-1766337846554\n8820007\tTest User Simulations\ttest-simulations@example.com\tuser\ttest-user-simulations-1766337844512\n8820006\tTest User Opp\ttest-opp-1766337802130@example.com\tuser\ttest-user-opp-1766337802130\n8820003\tUsuário Teste Pipedrive\ttest-pipedrive-1766337798720@example.com\tadmin\ttest-pipedrive-1766337798720\n8820002\tTeste Versionamento\tteste.version@example.com\tuser\ttest-version-1766337798695\n8820001\tTest User Simulations\ttest-simulations@example.com\tuser\ttest-user-simulations-1766337796306\n5580001\tTayara Araujo\ttayara.r.araujo@gmail.com\tuser\tTxj2YkRCj3ByKeZnWZV9Ey\n5550001\tChagas\tfcchagass@gmail.com\tuser\tku6cFZqjAtq4pW6dokLREn\n4740047\tniyavaj340\tniyavaj340@gamepec.com\tuser\tDKfrMsW4y8y9etnXui7f8E\n4740012\tpidix60229\tpidix60229@gamepec.com\tuser\tF7h4cQvjt6mhWWMbrPe4uU\n4440001\tArthur Coelho\tarthur@blueconsult.com.br\tuser\teFpFNUH35aLrnF5v7v8UE3\n4230006\tTest Matching User\tmatching@test.com\tuser\ttest-offer-matching-user\n4200009\tTest Pipedrive User\tpipedrive@test.com\tuser\ttest-pipedrive-pipelines-user\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

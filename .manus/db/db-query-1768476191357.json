@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, name, email, role FROM users LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2jqMZP8uptaqoP6.root --database neJFcwibfa3kRchdhTVVes --execute SELECT id, name, email, role FROM users LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Arthur Coelho",
+      "email": "arthurcsantos@gmail.com",
+      "role": "admin"
+    },
+    {
+      "id": "1020040",
+      "name": "Roney Gustavo",
+      "email": "roney.gustavo@blueconsult.com.br",
+      "role": "user"
+    },
+    {
+      "id": "1050007",
+      "name": "Vanessa Dulcine",
+      "email": "vanessadulcine@gmail.com",
+      "role": "user"
+    },
+    {
+      "id": "1200011",
+      "name": "Mychel Mendes",
+      "email": "mychel@blueconsult.com.br",
+      "role": "user"
+    },
+    {
+      "id": "1860024",
+      "name": "Glauciane Rodrigues",
+      "email": "glauciane.rodrigues@tokeniza.com.br",
+      "role": "user"
+    },
+    {
+      "id": "2010001",
+      "name": "Vanessa Dulcine",
+      "email": "vanessa@blueconsult.com.br",
+      "role": "user"
+    },
+    {
+      "id": "4050006",
+      "name": "Test User Simulations",
+      "email": "test-simulations@example.com",
+      "role": "user"
+    },
+    {
+      "id": "4050007",
+      "name": "Test User Simulations",
+      "email": "test-simulations@example.com",
+      "role": "user"
+    },
+    {
+      "id": "4050008",
+      "name": "Test User Simulations",
+      "email": "test-simulations@example.com",
+      "role": "user"
+    },
+    {
+      "id": "4050009",
+      "name": "Test User Simulations",
+      "email": "test-simulations@example.com",
+      "role": "user"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\n1\tArthur Coelho\tarthurcsantos@gmail.com\tadmin\n1020040\tRoney Gustavo\troney.gustavo@blueconsult.com.br\tuser\n1050007\tVanessa Dulcine\tvanessadulcine@gmail.com\tuser\n1200011\tMychel Mendes\tmychel@blueconsult.com.br\tuser\n1860024\tGlauciane Rodrigues\tglauciane.rodrigues@tokeniza.com.br\tuser\n2010001\tVanessa Dulcine\tvanessa@blueconsult.com.br\tuser\n4050006\tTest User Simulations\ttest-simulations@example.com\tuser\n4050007\tTest User Simulations\ttest-simulations@example.com\tuser\n4050008\tTest User Simulations\ttest-simulations@example.com\tuser\n4050009\tTest User Simulations\ttest-simulations@example.com\tuser\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}
